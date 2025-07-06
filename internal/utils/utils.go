@@ -5,6 +5,8 @@ import (
 	"frog-go/internal/core/errors"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func ToUint(s string) (uint, error) {
@@ -15,50 +17,51 @@ func ToUint(s string) (uint, error) {
 	return uint(val), nil
 }
 
-func ToDate(dateStr string) (time.Time, error) {
+func ToNillableUUID(str string) (*uuid.UUID, error) {
+	if str == "" {
+		return nil, nil
+	}
+
+	parsedUUID, err := uuid.Parse(str)
+	if err != nil {
+		return nil, err
+	}
+
+	return &parsedUUID, nil
+}
+
+func ToDateTime(dateStr string) (time.Time, error) {
 	if dateStr == "" {
 		return time.Time{}, errors.ErrEmptyField
 
 	}
-	t, err := time.Parse("2006-01-02", dateStr)
+	t, err := time.Parse(time.RFC3339, dateStr)
 	if err != nil {
 		return time.Time{}, err
 	}
 	return t, nil
 }
 
-func ToDateUnsafe(dateStr *string) *time.Time {
+func ToDateTimeUnsafe(dateStr *string) *time.Time {
 	if dateStr == nil || *dateStr == "" {
 		return nil
 	}
-	t, err := time.Parse("2006-01-02", *dateStr)
+	t, err := time.Parse(time.RFC3339, *dateStr)
 	if err != nil {
 		return nil
 	}
 	return &t
 }
 
-func ToNillableDate(dateStr string) (*time.Time, error) {
+func ToNillableDateTime(dateStr string) (*time.Time, error) {
 	if dateStr == "" {
 		return nil, nil
 	}
-	t, err := time.Parse("2006-01-02", dateStr)
+	t, err := time.Parse(time.RFC3339, dateStr)
 	if err != nil {
 		return nil, err
 	}
 	return &t, nil
-}
-
-func ToDateTimeString(date time.Time) string {
-	return date.Format("2006-01-02 15:04:05")
-}
-
-func SafeToNillableDateTimeString(date *time.Time) *string {
-	if date == nil || date.IsZero() {
-		return nil
-	}
-	formatted := date.Format("2006-01-02")
-	return &formatted
 }
 
 func FormatDuration(d time.Duration) string {

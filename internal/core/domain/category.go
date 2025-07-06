@@ -16,7 +16,6 @@ type Category struct {
 }
 
 func NewCategory(name string, description, color *string) (*Category, error) {
-
 	if name == "" {
 		return nil, errors.EmptyField("name")
 	}
