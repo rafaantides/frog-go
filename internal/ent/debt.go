@@ -31,8 +31,6 @@ type Debt struct {
 	PurchaseDate time.Time `json:"purchase_date,omitempty"`
 	// DueDate holds the value of the "due_date" field.
 	DueDate *time.Time `json:"due_date,omitempty"`
-	// CategoryID holds the value of the "category_id" field.
-	CategoryID uuid.UUID `json:"category_id,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -73,7 +71,7 @@ func (*Debt) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case debt.FieldCreatedAt, debt.FieldUpdatedAt, debt.FieldPurchaseDate, debt.FieldDueDate:
 			values[i] = new(sql.NullTime)
-		case debt.FieldID, debt.FieldCategoryID:
+		case debt.FieldID:
 			values[i] = new(uuid.UUID)
 		case debt.ForeignKeys[0]: // category_id
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
@@ -134,12 +132,6 @@ func (d *Debt) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				d.DueDate = new(time.Time)
 				*d.DueDate = value.Time
-			}
-		case debt.FieldCategoryID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field category_id", values[i])
-			} else if value != nil {
-				d.CategoryID = *value
 			}
 		case debt.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -214,9 +206,6 @@ func (d *Debt) String() string {
 		builder.WriteString("due_date=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("category_id=")
-	builder.WriteString(fmt.Sprintf("%v", d.CategoryID))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(d.Status)

@@ -82,12 +82,6 @@ func (dc *DebtCreate) SetNillableDueDate(t *time.Time) *DebtCreate {
 	return dc
 }
 
-// SetCategoryID sets the "category_id" field.
-func (dc *DebtCreate) SetCategoryID(u uuid.UUID) *DebtCreate {
-	dc.mutation.SetCategoryID(u)
-	return dc
-}
-
 // SetStatus sets the "status" field.
 func (dc *DebtCreate) SetStatus(s string) *DebtCreate {
 	dc.mutation.SetStatus(s)
@@ -210,9 +204,6 @@ func (dc *DebtCreate) check() error {
 	if _, ok := dc.mutation.PurchaseDate(); !ok {
 		return &ValidationError{Name: "purchase_date", err: errors.New(`ent: missing required field "Debt.purchase_date"`)}
 	}
-	if _, ok := dc.mutation.CategoryID(); !ok {
-		return &ValidationError{Name: "category_id", err: errors.New(`ent: missing required field "Debt.category_id"`)}
-	}
 	if _, ok := dc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Debt.status"`)}
 	}
@@ -279,10 +270,6 @@ func (dc *DebtCreate) createSpec() (*Debt, *sqlgraph.CreateSpec) {
 	if value, ok := dc.mutation.DueDate(); ok {
 		_spec.SetField(debt.FieldDueDate, field.TypeTime, value)
 		_node.DueDate = &value
-	}
-	if value, ok := dc.mutation.CategoryID(); ok {
-		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
-		_node.CategoryID = value
 	}
 	if value, ok := dc.mutation.Status(); ok {
 		_spec.SetField(debt.FieldStatus, field.TypeString, value)

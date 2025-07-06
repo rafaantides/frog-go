@@ -86,11 +86,6 @@ func DueDate(v time.Time) predicate.Debt {
 	return predicate.Debt(sql.FieldEQ(FieldDueDate, v))
 }
 
-// CategoryID applies equality check predicate on the "category_id" field. It's identical to CategoryIDEQ.
-func CategoryID(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldEQ(FieldCategoryID, v))
-}
-
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v string) predicate.Debt {
 	return predicate.Debt(sql.FieldEQ(FieldStatus, v))
@@ -369,46 +364,6 @@ func DueDateIsNil() predicate.Debt {
 // DueDateNotNil applies the NotNil predicate on the "due_date" field.
 func DueDateNotNil() predicate.Debt {
 	return predicate.Debt(sql.FieldNotNull(FieldDueDate))
-}
-
-// CategoryIDEQ applies the EQ predicate on the "category_id" field.
-func CategoryIDEQ(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldEQ(FieldCategoryID, v))
-}
-
-// CategoryIDNEQ applies the NEQ predicate on the "category_id" field.
-func CategoryIDNEQ(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldNEQ(FieldCategoryID, v))
-}
-
-// CategoryIDIn applies the In predicate on the "category_id" field.
-func CategoryIDIn(vs ...uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldIn(FieldCategoryID, vs...))
-}
-
-// CategoryIDNotIn applies the NotIn predicate on the "category_id" field.
-func CategoryIDNotIn(vs ...uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldNotIn(FieldCategoryID, vs...))
-}
-
-// CategoryIDGT applies the GT predicate on the "category_id" field.
-func CategoryIDGT(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldGT(FieldCategoryID, v))
-}
-
-// CategoryIDGTE applies the GTE predicate on the "category_id" field.
-func CategoryIDGTE(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldGTE(FieldCategoryID, v))
-}
-
-// CategoryIDLT applies the LT predicate on the "category_id" field.
-func CategoryIDLT(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldLT(FieldCategoryID, v))
-}
-
-// CategoryIDLTE applies the LTE predicate on the "category_id" field.
-func CategoryIDLTE(v uuid.UUID) predicate.Debt {
-	return predicate.Debt(sql.FieldLTE(FieldCategoryID, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

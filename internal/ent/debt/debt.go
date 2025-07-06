@@ -27,8 +27,6 @@ const (
 	FieldPurchaseDate = "purchase_date"
 	// FieldDueDate holds the string denoting the due_date field in the database.
 	FieldDueDate = "due_date"
-	// FieldCategoryID holds the string denoting the category_id field in the database.
-	FieldCategoryID = "category_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
@@ -53,7 +51,6 @@ var Columns = []string{
 	FieldTitle,
 	FieldPurchaseDate,
 	FieldDueDate,
-	FieldCategoryID,
 	FieldStatus,
 }
 
@@ -131,11 +128,6 @@ func ByPurchaseDate(opts ...sql.OrderTermOption) OrderOption {
 // ByDueDate orders the results by the due_date field.
 func ByDueDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDueDate, opts...).ToFunc()
-}
-
-// ByCategoryID orders the results by the category_id field.
-func ByCategoryID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCategoryID, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

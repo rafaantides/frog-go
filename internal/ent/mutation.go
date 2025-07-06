@@ -632,7 +632,6 @@ type DebtMutation struct {
 	title           *string
 	purchase_date   *time.Time
 	due_date        *time.Time
-	category_id     *uuid.UUID
 	status          *string
 	clearedFields   map[string]struct{}
 	category        *uuid.UUID
@@ -995,42 +994,6 @@ func (m *DebtMutation) ResetDueDate() {
 	delete(m.clearedFields, debt.FieldDueDate)
 }
 
-// SetCategoryID sets the "category_id" field.
-func (m *DebtMutation) SetCategoryID(u uuid.UUID) {
-	m.category_id = &u
-}
-
-// CategoryID returns the value of the "category_id" field in the mutation.
-func (m *DebtMutation) CategoryID() (r uuid.UUID, exists bool) {
-	v := m.category_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCategoryID returns the old "category_id" field's value of the Debt entity.
-// If the Debt object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DebtMutation) OldCategoryID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCategoryID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCategoryID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCategoryID: %w", err)
-	}
-	return oldValue.CategoryID, nil
-}
-
-// ResetCategoryID resets all changes to the "category_id" field.
-func (m *DebtMutation) ResetCategoryID() {
-	m.category_id = nil
-}
-
 // SetStatus sets the "status" field.
 func (m *DebtMutation) SetStatus(s string) {
 	m.status = &s
@@ -1140,7 +1103,7 @@ func (m *DebtMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DebtMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, debt.FieldCreatedAt)
 	}
@@ -1158,9 +1121,6 @@ func (m *DebtMutation) Fields() []string {
 	}
 	if m.due_date != nil {
 		fields = append(fields, debt.FieldDueDate)
-	}
-	if m.category_id != nil {
-		fields = append(fields, debt.FieldCategoryID)
 	}
 	if m.status != nil {
 		fields = append(fields, debt.FieldStatus)
@@ -1185,8 +1145,6 @@ func (m *DebtMutation) Field(name string) (ent.Value, bool) {
 		return m.PurchaseDate()
 	case debt.FieldDueDate:
 		return m.DueDate()
-	case debt.FieldCategoryID:
-		return m.CategoryID()
 	case debt.FieldStatus:
 		return m.Status()
 	}
@@ -1210,8 +1168,6 @@ func (m *DebtMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPurchaseDate(ctx)
 	case debt.FieldDueDate:
 		return m.OldDueDate(ctx)
-	case debt.FieldCategoryID:
-		return m.OldCategoryID(ctx)
 	case debt.FieldStatus:
 		return m.OldStatus(ctx)
 	}
@@ -1264,13 +1220,6 @@ func (m *DebtMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDueDate(v)
-		return nil
-	case debt.FieldCategoryID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCategoryID(v)
 		return nil
 	case debt.FieldStatus:
 		v, ok := value.(string)
@@ -1369,9 +1318,6 @@ func (m *DebtMutation) ResetField(name string) error {
 		return nil
 	case debt.FieldDueDate:
 		m.ResetDueDate()
-		return nil
-	case debt.FieldCategoryID:
-		m.ResetCategoryID()
 		return nil
 	case debt.FieldStatus:
 		m.ResetStatus()

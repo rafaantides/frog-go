@@ -94,7 +94,7 @@ func init() {
 		}
 	}()
 	// debtDescStatus is the schema descriptor for status field.
-	debtDescStatus := debtFields[4].Descriptor()
+	debtDescStatus := debtFields[3].Descriptor()
 	// debt.DefaultStatus holds the default value on creation for the status field.
 	debt.DefaultStatus = debtDescStatus.Default.(string)
 	// debt.StatusValidator is a validator for the "status" field. It is called by the builders before save.

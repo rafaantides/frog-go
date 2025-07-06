@@ -32,8 +32,8 @@ var (
 		{Name: "title", Type: field.TypeString, Size: 255},
 		{Name: "purchase_date", Type: field.TypeTime},
 		{Name: "due_date", Type: field.TypeTime, Nullable: true},
-		{Name: "category_id", Type: field.TypeUUID},
 		{Name: "status", Type: field.TypeString, Default: "pending"},
+		{Name: "category_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// DebtsTable holds the schema information for the "debts" table.
 	DebtsTable = &schema.Table{
@@ -43,21 +43,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "debts_categories_category",
-				Columns:    []*schema.Column{DebtsColumns[7]},
+				Columns:    []*schema.Column{DebtsColumns[8]},
 				RefColumns: []*schema.Column{CategoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "debt_purchase_date_category_id",
+				Name:    "debt_purchase_date",
 				Unique:  false,
-				Columns: []*schema.Column{DebtsColumns[5], DebtsColumns[7]},
+				Columns: []*schema.Column{DebtsColumns[5]},
 			},
 			{
-				Name:    "debt_due_date_category_id",
+				Name:    "debt_due_date",
 				Unique:  false,
-				Columns: []*schema.Column{DebtsColumns[6], DebtsColumns[7]},
+				Columns: []*schema.Column{DebtsColumns[6]},
+			},
+			{
+				Name:    "debt_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{DebtsColumns[8]},
 			},
 		},
 	}

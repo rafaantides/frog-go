@@ -105,20 +105,6 @@ func (du *DebtUpdate) ClearDueDate() *DebtUpdate {
 	return du
 }
 
-// SetCategoryID sets the "category_id" field.
-func (du *DebtUpdate) SetCategoryID(u uuid.UUID) *DebtUpdate {
-	du.mutation.SetCategoryID(u)
-	return du
-}
-
-// SetNillableCategoryID sets the "category_id" field if the given value is not nil.
-func (du *DebtUpdate) SetNillableCategoryID(u *uuid.UUID) *DebtUpdate {
-	if u != nil {
-		du.SetCategoryID(*u)
-	}
-	return du
-}
-
 // SetStatus sets the "status" field.
 func (du *DebtUpdate) SetStatus(s string) *DebtUpdate {
 	du.mutation.SetStatus(s)
@@ -247,9 +233,6 @@ func (du *DebtUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if du.mutation.DueDateCleared() {
 		_spec.ClearField(debt.FieldDueDate, field.TypeTime)
 	}
-	if value, ok := du.mutation.CategoryID(); ok {
-		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
-	}
 	if value, ok := du.mutation.Status(); ok {
 		_spec.SetField(debt.FieldStatus, field.TypeString, value)
 	}
@@ -374,20 +357,6 @@ func (duo *DebtUpdateOne) SetNillableDueDate(t *time.Time) *DebtUpdateOne {
 // ClearDueDate clears the value of the "due_date" field.
 func (duo *DebtUpdateOne) ClearDueDate() *DebtUpdateOne {
 	duo.mutation.ClearDueDate()
-	return duo
-}
-
-// SetCategoryID sets the "category_id" field.
-func (duo *DebtUpdateOne) SetCategoryID(u uuid.UUID) *DebtUpdateOne {
-	duo.mutation.SetCategoryID(u)
-	return duo
-}
-
-// SetNillableCategoryID sets the "category_id" field if the given value is not nil.
-func (duo *DebtUpdateOne) SetNillableCategoryID(u *uuid.UUID) *DebtUpdateOne {
-	if u != nil {
-		duo.SetCategoryID(*u)
-	}
 	return duo
 }
 
@@ -548,9 +517,6 @@ func (duo *DebtUpdateOne) sqlSave(ctx context.Context) (_node *Debt, err error) 
 	}
 	if duo.mutation.DueDateCleared() {
 		_spec.ClearField(debt.FieldDueDate, field.TypeTime)
-	}
-	if value, ok := duo.mutation.CategoryID(); ok {
-		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
 	}
 	if value, ok := duo.mutation.Status(); ok {
 		_spec.SetField(debt.FieldStatus, field.TypeString, value)

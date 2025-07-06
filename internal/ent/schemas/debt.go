@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/google/uuid"
 )
 
 type Debt struct {
@@ -29,7 +28,6 @@ func (Debt) Fields() []ent.Field {
 		field.String("title").MaxLen(255).NotEmpty(),
 		field.Time("purchase_date"),
 		field.Time("due_date").Nillable().Optional(),
-		field.UUID("category_id", uuid.UUID{}),
 
 		field.String("status").
 			NotEmpty().
@@ -54,7 +52,8 @@ func (Debt) Edges() []ent.Edge {
 
 func (Debt) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("purchase_date", "category_id"),
-		index.Fields("due_date", "category_id"),
+		index.Fields("purchase_date"),
+		index.Fields("due_date"),
+		index.Edges("category"),
 	}
 }
