@@ -1,4 +1,12 @@
 # ------------------------
+# 🧪 Desenvolvimento
+# ------------------------
+
+dev-api: ## Inicia a API em modo desenvolvimento com Air
+	@echo "🚀 Iniciando API em modo desenvolvimento..."
+	air -c ./config/air/.air.toml
+
+# ------------------------
 # 🏗️ Ent - Codegen
 # ------------------------
 .PHONY: ent-generate

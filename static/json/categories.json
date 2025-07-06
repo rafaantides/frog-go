@@ -1,0 +1,25 @@
+{
+  "Assinaturas e Streaming": [
+    "Assinatura 01",
+    "Assinatura 02",
+    "Assinatura 03",
+    "Assinatura 04"
+  ],
+  "Alimentação e Delivery": [
+    "Entrega de bebidas",
+    "Restaurante",
+    "Hamburgueria",
+    "Restaurante"
+  ],
+  "Saúde e Bem-estar": ["Farmácia"],
+  "Compras e E-commerce": [
+    "Loja de variedades",
+    "Loja de cosméticos",
+    "Loja de eletrônicos"
+  ],
+  "Transporte": ["Transporte por app"],
+  "Vestuario e Estética": ["Loja de roupas"],
+  "Mercado e Conveniência": ["Supermercado"],
+  "Cafés e Bares": ["Bar", "Cafeteria"],
+  "Eventos e Lazer": ["Evento/festa", "Cinema"]
+}
