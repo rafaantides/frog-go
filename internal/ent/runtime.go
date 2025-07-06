@@ -93,6 +93,26 @@ func init() {
 			return nil
 		}
 	}()
+	// debtDescStatus is the schema descriptor for status field.
+	debtDescStatus := debtFields[4].Descriptor()
+	// debt.DefaultStatus holds the default value on creation for the status field.
+	debt.DefaultStatus = debtDescStatus.Default.(string)
+	// debt.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	debt.StatusValidator = func() func(string) error {
+		validators := debtDescStatus.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(status string) error {
+			for _, fn := range fns {
+				if err := fn(status); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// debtDescID is the schema descriptor for id field.
 	debtDescID := debtMixinFields0[0].Descriptor()
 	// debt.DefaultID holds the default value on creation for the id field.

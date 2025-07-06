@@ -17,6 +17,16 @@ func ToUint(s string) (uint, error) {
 	return uint(val), nil
 }
 
+func ToUUIDSlice(strs []string) []uuid.UUID {
+	var result []uuid.UUID
+	for _, s := range strs {
+		if id, err := uuid.Parse(s); err == nil {
+			result = append(result, id)
+		}
+	}
+	return result
+}
+
 func ToNillableUUID(str string) (*uuid.UUID, error) {
 	if str == "" {
 		return nil, nil
@@ -62,6 +72,18 @@ func ToNillableDateTime(dateStr string) (*time.Time, error) {
 		return nil, err
 	}
 	return &t, nil
+}
+
+func ToDateTimeString(date time.Time) string {
+	return date.Format("2006-01-02 15:04:05")
+}
+
+func ToNillableDateTimeString(date *time.Time) *string {
+	if date == nil || date.IsZero() {
+		return nil
+	}
+	formatted := date.Format("2006-01-02")
+	return &formatted
 }
 
 func FormatDuration(d time.Duration) string {

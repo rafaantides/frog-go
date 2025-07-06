@@ -1,6 +1,8 @@
 package schemas
 
 import (
+	"fmt"
+	"frog-go/internal/core/domain"
 	"frog-go/internal/utils/mixins"
 
 	"entgo.io/ent"
@@ -26,8 +28,18 @@ func (Debt) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("title").MaxLen(255).NotEmpty(),
 		field.Time("purchase_date"),
-		field.Time("due_date"),
+		field.Time("due_date").Nillable().Optional(),
 		field.UUID("category_id", uuid.UUID{}),
+
+		field.String("status").
+			NotEmpty().
+			Default(string(domain.DebtStatusPending)).
+			Validate(func(s string) error {
+				if !domain.DebtStatus(s).IsValid() {
+					return fmt.Errorf("invalid status: %q", s)
+				}
+				return nil
+			}),
 	}
 }
 

@@ -99,6 +99,12 @@ func (du *DebtUpdate) SetNillableDueDate(t *time.Time) *DebtUpdate {
 	return du
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (du *DebtUpdate) ClearDueDate() *DebtUpdate {
+	du.mutation.ClearDueDate()
+	return du
+}
+
 // SetCategoryID sets the "category_id" field.
 func (du *DebtUpdate) SetCategoryID(u uuid.UUID) *DebtUpdate {
 	du.mutation.SetCategoryID(u)
@@ -109,6 +115,20 @@ func (du *DebtUpdate) SetCategoryID(u uuid.UUID) *DebtUpdate {
 func (du *DebtUpdate) SetNillableCategoryID(u *uuid.UUID) *DebtUpdate {
 	if u != nil {
 		du.SetCategoryID(*u)
+	}
+	return du
+}
+
+// SetStatus sets the "status" field.
+func (du *DebtUpdate) SetStatus(s string) *DebtUpdate {
+	du.mutation.SetStatus(s)
+	return du
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (du *DebtUpdate) SetNillableStatus(s *string) *DebtUpdate {
+	if s != nil {
+		du.SetStatus(*s)
 	}
 	return du
 }
@@ -186,6 +206,11 @@ func (du *DebtUpdate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Debt.title": %w`, err)}
 		}
 	}
+	if v, ok := du.mutation.Status(); ok {
+		if err := debt.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Debt.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -219,8 +244,14 @@ func (du *DebtUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := du.mutation.DueDate(); ok {
 		_spec.SetField(debt.FieldDueDate, field.TypeTime, value)
 	}
+	if du.mutation.DueDateCleared() {
+		_spec.ClearField(debt.FieldDueDate, field.TypeTime)
+	}
 	if value, ok := du.mutation.CategoryID(); ok {
 		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
+	}
+	if value, ok := du.mutation.Status(); ok {
+		_spec.SetField(debt.FieldStatus, field.TypeString, value)
 	}
 	if du.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -340,6 +371,12 @@ func (duo *DebtUpdateOne) SetNillableDueDate(t *time.Time) *DebtUpdateOne {
 	return duo
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (duo *DebtUpdateOne) ClearDueDate() *DebtUpdateOne {
+	duo.mutation.ClearDueDate()
+	return duo
+}
+
 // SetCategoryID sets the "category_id" field.
 func (duo *DebtUpdateOne) SetCategoryID(u uuid.UUID) *DebtUpdateOne {
 	duo.mutation.SetCategoryID(u)
@@ -350,6 +387,20 @@ func (duo *DebtUpdateOne) SetCategoryID(u uuid.UUID) *DebtUpdateOne {
 func (duo *DebtUpdateOne) SetNillableCategoryID(u *uuid.UUID) *DebtUpdateOne {
 	if u != nil {
 		duo.SetCategoryID(*u)
+	}
+	return duo
+}
+
+// SetStatus sets the "status" field.
+func (duo *DebtUpdateOne) SetStatus(s string) *DebtUpdateOne {
+	duo.mutation.SetStatus(s)
+	return duo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (duo *DebtUpdateOne) SetNillableStatus(s *string) *DebtUpdateOne {
+	if s != nil {
+		duo.SetStatus(*s)
 	}
 	return duo
 }
@@ -440,6 +491,11 @@ func (duo *DebtUpdateOne) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Debt.title": %w`, err)}
 		}
 	}
+	if v, ok := duo.mutation.Status(); ok {
+		if err := debt.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Debt.status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -490,8 +546,14 @@ func (duo *DebtUpdateOne) sqlSave(ctx context.Context) (_node *Debt, err error) 
 	if value, ok := duo.mutation.DueDate(); ok {
 		_spec.SetField(debt.FieldDueDate, field.TypeTime, value)
 	}
+	if duo.mutation.DueDateCleared() {
+		_spec.ClearField(debt.FieldDueDate, field.TypeTime)
+	}
 	if value, ok := duo.mutation.CategoryID(); ok {
 		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
+	}
+	if value, ok := duo.mutation.Status(); ok {
+		_spec.SetField(debt.FieldStatus, field.TypeString, value)
 	}
 	if duo.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{

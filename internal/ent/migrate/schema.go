@@ -31,8 +31,9 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
 		{Name: "title", Type: field.TypeString, Size: 255},
 		{Name: "purchase_date", Type: field.TypeTime},
-		{Name: "due_date", Type: field.TypeTime},
+		{Name: "due_date", Type: field.TypeTime, Nullable: true},
 		{Name: "category_id", Type: field.TypeUUID},
+		{Name: "status", Type: field.TypeString, Default: "pending"},
 	}
 	// DebtsTable holds the schema information for the "debts" table.
 	DebtsTable = &schema.Table{

@@ -74,9 +74,31 @@ func (dc *DebtCreate) SetDueDate(t time.Time) *DebtCreate {
 	return dc
 }
 
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (dc *DebtCreate) SetNillableDueDate(t *time.Time) *DebtCreate {
+	if t != nil {
+		dc.SetDueDate(*t)
+	}
+	return dc
+}
+
 // SetCategoryID sets the "category_id" field.
 func (dc *DebtCreate) SetCategoryID(u uuid.UUID) *DebtCreate {
 	dc.mutation.SetCategoryID(u)
+	return dc
+}
+
+// SetStatus sets the "status" field.
+func (dc *DebtCreate) SetStatus(s string) *DebtCreate {
+	dc.mutation.SetStatus(s)
+	return dc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (dc *DebtCreate) SetNillableStatus(s *string) *DebtCreate {
+	if s != nil {
+		dc.SetStatus(*s)
+	}
 	return dc
 }
 
@@ -156,6 +178,10 @@ func (dc *DebtCreate) defaults() {
 		v := debt.DefaultUpdatedAt()
 		dc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := dc.mutation.Status(); !ok {
+		v := debt.DefaultStatus
+		dc.mutation.SetStatus(v)
+	}
 	if _, ok := dc.mutation.ID(); !ok {
 		v := debt.DefaultID()
 		dc.mutation.SetID(v)
@@ -184,11 +210,16 @@ func (dc *DebtCreate) check() error {
 	if _, ok := dc.mutation.PurchaseDate(); !ok {
 		return &ValidationError{Name: "purchase_date", err: errors.New(`ent: missing required field "Debt.purchase_date"`)}
 	}
-	if _, ok := dc.mutation.DueDate(); !ok {
-		return &ValidationError{Name: "due_date", err: errors.New(`ent: missing required field "Debt.due_date"`)}
-	}
 	if _, ok := dc.mutation.CategoryID(); !ok {
 		return &ValidationError{Name: "category_id", err: errors.New(`ent: missing required field "Debt.category_id"`)}
+	}
+	if _, ok := dc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Debt.status"`)}
+	}
+	if v, ok := dc.mutation.Status(); ok {
+		if err := debt.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Debt.status": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -247,11 +278,15 @@ func (dc *DebtCreate) createSpec() (*Debt, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := dc.mutation.DueDate(); ok {
 		_spec.SetField(debt.FieldDueDate, field.TypeTime, value)
-		_node.DueDate = value
+		_node.DueDate = &value
 	}
 	if value, ok := dc.mutation.CategoryID(); ok {
 		_spec.SetField(debt.FieldCategoryID, field.TypeUUID, value)
 		_node.CategoryID = value
+	}
+	if value, ok := dc.mutation.Status(); ok {
+		_spec.SetField(debt.FieldStatus, field.TypeString, value)
+		_node.Status = value
 	}
 	if nodes := dc.mutation.CategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

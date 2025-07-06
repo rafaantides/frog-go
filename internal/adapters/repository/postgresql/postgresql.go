@@ -2,8 +2,8 @@ package postgresql
 
 import (
 	stdsql "database/sql"
-	// "frog-go/internal/adapters/repository/postgresql/hooks"
 	"fmt"
+	"frog-go/internal/adapters/repository/postgresql/hooks"
 	"frog-go/internal/core/ports/outbound/repository"
 	"frog-go/internal/ent"
 	"frog-go/internal/utils/logger"
@@ -43,15 +43,14 @@ func NewPostgreSQL(user, password, host, port, database, SeedPath string) (repos
 	}
 
 	client := ent.NewClient(ent.Driver(drv))
-	// categorizer, err := hooks.NewCategorizer(SeedPath)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	categorizer, err := hooks.NewCategorizer(SeedPath)
+	if err != nil {
+		return nil, err
+	}
 
-	// client.Debt.Use(
-	// 	hooks.UpdateInvoiceAmountHook(client),
-	// 	hooks.SetCategoryFromTitleHook(client, categorizer),
-	// )
+	client.Debt.Use(
+		hooks.SetCategoryFromTitleHook(client, categorizer),
+	)
 
 	log.Start("Host: %s:%s | User: %s | DB: %s", host, port, user, database)
 

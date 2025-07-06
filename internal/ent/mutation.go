@@ -633,6 +633,7 @@ type DebtMutation struct {
 	purchase_date   *time.Time
 	due_date        *time.Time
 	category_id     *uuid.UUID
+	status          *string
 	clearedFields   map[string]struct{}
 	category        *uuid.UUID
 	clearedcategory bool
@@ -962,7 +963,7 @@ func (m *DebtMutation) DueDate() (r time.Time, exists bool) {
 // OldDueDate returns the old "due_date" field's value of the Debt entity.
 // If the Debt object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DebtMutation) OldDueDate(ctx context.Context) (v time.Time, err error) {
+func (m *DebtMutation) OldDueDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDueDate is only allowed on UpdateOne operations")
 	}
@@ -976,9 +977,22 @@ func (m *DebtMutation) OldDueDate(ctx context.Context) (v time.Time, err error) 
 	return oldValue.DueDate, nil
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (m *DebtMutation) ClearDueDate() {
+	m.due_date = nil
+	m.clearedFields[debt.FieldDueDate] = struct{}{}
+}
+
+// DueDateCleared returns if the "due_date" field was cleared in this mutation.
+func (m *DebtMutation) DueDateCleared() bool {
+	_, ok := m.clearedFields[debt.FieldDueDate]
+	return ok
+}
+
 // ResetDueDate resets all changes to the "due_date" field.
 func (m *DebtMutation) ResetDueDate() {
 	m.due_date = nil
+	delete(m.clearedFields, debt.FieldDueDate)
 }
 
 // SetCategoryID sets the "category_id" field.
@@ -1015,6 +1029,42 @@ func (m *DebtMutation) OldCategoryID(ctx context.Context) (v uuid.UUID, err erro
 // ResetCategoryID resets all changes to the "category_id" field.
 func (m *DebtMutation) ResetCategoryID() {
 	m.category_id = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *DebtMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *DebtMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Debt entity.
+// If the Debt object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DebtMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *DebtMutation) ResetStatus() {
+	m.status = nil
 }
 
 // SetCategoryID sets the "category" edge to the Category entity by id.
@@ -1090,7 +1140,7 @@ func (m *DebtMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DebtMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, debt.FieldCreatedAt)
 	}
@@ -1111,6 +1161,9 @@ func (m *DebtMutation) Fields() []string {
 	}
 	if m.category_id != nil {
 		fields = append(fields, debt.FieldCategoryID)
+	}
+	if m.status != nil {
+		fields = append(fields, debt.FieldStatus)
 	}
 	return fields
 }
@@ -1134,6 +1187,8 @@ func (m *DebtMutation) Field(name string) (ent.Value, bool) {
 		return m.DueDate()
 	case debt.FieldCategoryID:
 		return m.CategoryID()
+	case debt.FieldStatus:
+		return m.Status()
 	}
 	return nil, false
 }
@@ -1157,6 +1212,8 @@ func (m *DebtMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDueDate(ctx)
 	case debt.FieldCategoryID:
 		return m.OldCategoryID(ctx)
+	case debt.FieldStatus:
+		return m.OldStatus(ctx)
 	}
 	return nil, fmt.Errorf("unknown Debt field %s", name)
 }
@@ -1215,6 +1272,13 @@ func (m *DebtMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCategoryID(v)
 		return nil
+	case debt.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Debt field %s", name)
 }
@@ -1259,7 +1323,11 @@ func (m *DebtMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *DebtMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(debt.FieldDueDate) {
+		fields = append(fields, debt.FieldDueDate)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1272,6 +1340,11 @@ func (m *DebtMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *DebtMutation) ClearField(name string) error {
+	switch name {
+	case debt.FieldDueDate:
+		m.ClearDueDate()
+		return nil
+	}
 	return fmt.Errorf("unknown Debt nullable field %s", name)
 }
 
@@ -1299,6 +1372,9 @@ func (m *DebtMutation) ResetField(name string) error {
 		return nil
 	case debt.FieldCategoryID:
 		m.ResetCategoryID()
+		return nil
+	case debt.FieldStatus:
+		m.ResetStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown Debt field %s", name)
