@@ -23,4 +23,6 @@ type DebtService interface {
 	UpdateDebt(ctx context.Context, id uuid.UUID, input domain.Debt) (*dto.DebtResponse, error)
 	DeleteDebtByID(ctx context.Context, id uuid.UUID) error
 	ListDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) ([]dto.DebtResponse, int, error)
+	DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
+	DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.DebtStatsSummary, error)
 }

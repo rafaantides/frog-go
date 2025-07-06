@@ -17,6 +17,19 @@ func ToUint(s string) (uint, error) {
 	return uint(val), nil
 }
 
+func ToUUID(str string) (uuid.UUID, error) {
+	if str == "" {
+		return uuid.UUID{}, errors.ErrEmptyField
+	}
+
+	parsedUUID, err := uuid.Parse(str)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return parsedUUID, nil
+}
+
 func ToUUIDSlice(strs []string) []uuid.UUID {
 	var result []uuid.UUID
 	for _, s := range strs {
