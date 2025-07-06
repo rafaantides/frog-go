@@ -1,0 +1,24 @@
+[settings]
+root = "."
+tmp_dir = "tmp"
+
+[build]
+bin = "tmp/main-api"
+cmd = "go build -o tmp/main-api ./cmd/api"
+delay = 1000
+exclude = []
+full_bin = "tmp/main-api --env=./config/envs/dev.env --debug=true"
+include = ["cmd", "internal", "config", "go.mod", "go.sum"]
+log = "air_errors.log"
+
+[run]
+cmd = "go run cmd/api/main.go --env=./config/envs/dev.env --debug=true"
+
+[log]
+time = true
+
+[color]
+main = "magenta"
+
+[misc]
+clean_on_exit = true

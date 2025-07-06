@@ -22,3 +22,14 @@ ent-clean: ## Remove arquivos gerados pelo Ent (exceto schemas)
 	@echo "🧹 Limpando arquivos gerados pelo Ent (exceto schemas)..."
 	find ./internal/ent -mindepth 1 -not -name schemas -not -path "./internal/ent/schemas/*" -exec rm -rf {} +
 	@echo "✅ Limpeza concluída."
+
+# ------------------------
+# 📚 Swagger Documentation
+# ------------------------
+.PHONY: swag-generate
+swag-generate: ## 🔄 Instala e gera a documentação Swagger
+	@echo "📥 Instalando swag CLI..."
+	go install github.com/swaggo/swag/cmd/swag@latest
+	@echo "📖 Gerando documentação Swagger..."
+	swag init --dir cmd/api,internal --output docs/v1
+	@echo "✅ Documentação Swagger gerada com sucesso."
