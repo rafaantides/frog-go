@@ -8,16 +8,28 @@ import (
 	"frog-go/internal/ent"
 )
 
-// The TesteFunc type is an adapter to allow the use of ordinary
-// function as Teste mutator.
-type TesteFunc func(context.Context, *ent.TesteMutation) (ent.Value, error)
+// The CategoryFunc type is an adapter to allow the use of ordinary
+// function as Category mutator.
+type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TesteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TesteMutation); ok {
+func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CategoryMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TesteMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryMutation", m)
+}
+
+// The DebtFunc type is an adapter to allow the use of ordinary
+// function as Debt mutator.
+type DebtFunc func(context.Context, *ent.DebtMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DebtFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DebtMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DebtMutation", m)
 }
 
 // Condition is a hook condition function.

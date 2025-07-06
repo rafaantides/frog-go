@@ -6,7 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"frog-go/internal/ent/teste"
+	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/debt"
 	"reflect"
 	"sync"
 
@@ -73,7 +74,8 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			teste.Table: teste.ValidColumn,
+			category.Table: category.ValidColumn,
+			debt.Table:     debt.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

@@ -8,23 +8,65 @@ import (
 )
 
 var (
-	// TestesColumns holds the columns for the "testes" table.
-	TestesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint, Increment: true},
+	// CategoriesColumns holds the columns for the "categories" table.
+	CategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 255},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "color", Type: field.TypeString, Nullable: true, Size: 7},
 	}
-	// TestesTable holds the schema information for the "testes" table.
-	TestesTable = &schema.Table{
-		Name:       "testes",
-		Columns:    TestesColumns,
-		PrimaryKey: []*schema.Column{TestesColumns[0]},
+	// CategoriesTable holds the schema information for the "categories" table.
+	CategoriesTable = &schema.Table{
+		Name:       "categories",
+		Columns:    CategoriesColumns,
+		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
+	}
+	// DebtsColumns holds the columns for the "debts" table.
+	DebtsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
+		{Name: "title", Type: field.TypeString, Size: 255},
+		{Name: "purchase_date", Type: field.TypeTime},
+		{Name: "due_date", Type: field.TypeTime},
+		{Name: "category_id", Type: field.TypeUUID},
+	}
+	// DebtsTable holds the schema information for the "debts" table.
+	DebtsTable = &schema.Table{
+		Name:       "debts",
+		Columns:    DebtsColumns,
+		PrimaryKey: []*schema.Column{DebtsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "debts_categories_category",
+				Columns:    []*schema.Column{DebtsColumns[7]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "debt_purchase_date_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{DebtsColumns[5], DebtsColumns[7]},
+			},
+			{
+				Name:    "debt_due_date_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{DebtsColumns[6], DebtsColumns[7]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		TestesTable,
+		CategoriesTable,
+		DebtsTable,
 	}
 )
 
 func init() {
+	DebtsTable.ForeignKeys[0].RefTable = CategoriesTable
 }

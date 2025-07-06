@@ -6,5 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Teste is the predicate function for teste builders.
-type Teste func(*sql.Selector)
+// Category is the predicate function for category builders.
+type Category func(*sql.Selector)
+
+// Debt is the predicate function for debt builders.
+type Debt func(*sql.Selector)

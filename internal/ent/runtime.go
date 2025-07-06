@@ -3,25 +3,98 @@
 package ent
 
 import (
+	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/debt"
 	"frog-go/internal/ent/schemas"
-	"frog-go/internal/ent/teste"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	testeFields := schemas.Teste{}.Fields()
-	_ = testeFields
-	// testeDescCreatedAt is the schema descriptor for created_at field.
-	testeDescCreatedAt := testeFields[1].Descriptor()
-	// teste.DefaultCreatedAt holds the default value on creation for the created_at field.
-	teste.DefaultCreatedAt = testeDescCreatedAt.Default.(func() time.Time)
-	// testeDescUpdatedAt is the schema descriptor for updated_at field.
-	testeDescUpdatedAt := testeFields[2].Descriptor()
-	// teste.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	teste.DefaultUpdatedAt = testeDescUpdatedAt.Default.(func() time.Time)
-	// teste.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	teste.UpdateDefaultUpdatedAt = testeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	categoryMixin := schemas.Category{}.Mixin()
+	categoryMixinFields0 := categoryMixin[0].Fields()
+	_ = categoryMixinFields0
+	categoryMixinFields1 := categoryMixin[1].Fields()
+	_ = categoryMixinFields1
+	categoryFields := schemas.Category{}.Fields()
+	_ = categoryFields
+	// categoryDescCreatedAt is the schema descriptor for created_at field.
+	categoryDescCreatedAt := categoryMixinFields1[0].Descriptor()
+	// category.DefaultCreatedAt holds the default value on creation for the created_at field.
+	category.DefaultCreatedAt = categoryDescCreatedAt.Default.(func() time.Time)
+	// categoryDescUpdatedAt is the schema descriptor for updated_at field.
+	categoryDescUpdatedAt := categoryMixinFields1[1].Descriptor()
+	// category.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	category.DefaultUpdatedAt = categoryDescUpdatedAt.Default.(func() time.Time)
+	// category.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	category.UpdateDefaultUpdatedAt = categoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// categoryDescName is the schema descriptor for name field.
+	categoryDescName := categoryFields[0].Descriptor()
+	// category.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	category.NameValidator = func() func(string) error {
+		validators := categoryDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// categoryDescColor is the schema descriptor for color field.
+	categoryDescColor := categoryFields[2].Descriptor()
+	// category.ColorValidator is a validator for the "color" field. It is called by the builders before save.
+	category.ColorValidator = categoryDescColor.Validators[0].(func(string) error)
+	// categoryDescID is the schema descriptor for id field.
+	categoryDescID := categoryMixinFields0[0].Descriptor()
+	// category.DefaultID holds the default value on creation for the id field.
+	category.DefaultID = categoryDescID.Default.(func() uuid.UUID)
+	debtMixin := schemas.Debt{}.Mixin()
+	debtMixinFields0 := debtMixin[0].Fields()
+	_ = debtMixinFields0
+	debtMixinFields1 := debtMixin[1].Fields()
+	_ = debtMixinFields1
+	debtFields := schemas.Debt{}.Fields()
+	_ = debtFields
+	// debtDescCreatedAt is the schema descriptor for created_at field.
+	debtDescCreatedAt := debtMixinFields1[0].Descriptor()
+	// debt.DefaultCreatedAt holds the default value on creation for the created_at field.
+	debt.DefaultCreatedAt = debtDescCreatedAt.Default.(func() time.Time)
+	// debtDescUpdatedAt is the schema descriptor for updated_at field.
+	debtDescUpdatedAt := debtMixinFields1[1].Descriptor()
+	// debt.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	debt.DefaultUpdatedAt = debtDescUpdatedAt.Default.(func() time.Time)
+	// debt.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	debt.UpdateDefaultUpdatedAt = debtDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// debtDescTitle is the schema descriptor for title field.
+	debtDescTitle := debtFields[0].Descriptor()
+	// debt.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	debt.TitleValidator = func() func(string) error {
+		validators := debtDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// debtDescID is the schema descriptor for id field.
+	debtDescID := debtMixinFields0[0].Descriptor()
+	// debt.DefaultID holds the default value on creation for the id field.
+	debt.DefaultID = debtDescID.Default.(func() uuid.UUID)
 }

@@ -1,19 +1,19 @@
-package schemas
+package mixins
 
 import (
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/mixin"
 )
 
-type Teste struct {
-	ent.Schema
+type TimestampsMixin struct {
+	mixin.Schema
 }
 
-func (Teste) Fields() []ent.Field {
+func (TimestampsMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint("id"),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

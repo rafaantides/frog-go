@@ -11,11 +11,14 @@ import (
 
 	"frog-go/internal/ent/migrate"
 
-	"frog-go/internal/ent/teste"
+	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/debt"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // Client is the client that holds all ent builders.
@@ -23,8 +26,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Teste is the client for interacting with the Teste builders.
-	Teste *TesteClient
+	// Category is the client for interacting with the Category builders.
+	Category *CategoryClient
+	// Debt is the client for interacting with the Debt builders.
+	Debt *DebtClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -36,7 +41,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Teste = NewTesteClient(c.config)
+	c.Category = NewCategoryClient(c.config)
+	c.Debt = NewDebtClient(c.config)
 }
 
 type (
@@ -127,9 +133,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Teste:  NewTesteClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Category: NewCategoryClient(cfg),
+		Debt:     NewDebtClient(cfg),
 	}, nil
 }
 
@@ -147,16 +154,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Teste:  NewTesteClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Category: NewCategoryClient(cfg),
+		Debt:     NewDebtClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Teste.
+//		Category.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -178,126 +186,130 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Teste.Use(hooks...)
+	c.Category.Use(hooks...)
+	c.Debt.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Teste.Intercept(interceptors...)
+	c.Category.Intercept(interceptors...)
+	c.Debt.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *TesteMutation:
-		return c.Teste.mutate(ctx, m)
+	case *CategoryMutation:
+		return c.Category.mutate(ctx, m)
+	case *DebtMutation:
+		return c.Debt.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// TesteClient is a client for the Teste schema.
-type TesteClient struct {
+// CategoryClient is a client for the Category schema.
+type CategoryClient struct {
 	config
 }
 
-// NewTesteClient returns a client for the Teste from the given config.
-func NewTesteClient(c config) *TesteClient {
-	return &TesteClient{config: c}
+// NewCategoryClient returns a client for the Category from the given config.
+func NewCategoryClient(c config) *CategoryClient {
+	return &CategoryClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `teste.Hooks(f(g(h())))`.
-func (c *TesteClient) Use(hooks ...Hook) {
-	c.hooks.Teste = append(c.hooks.Teste, hooks...)
+// A call to `Use(f, g, h)` equals to `category.Hooks(f(g(h())))`.
+func (c *CategoryClient) Use(hooks ...Hook) {
+	c.hooks.Category = append(c.hooks.Category, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `teste.Intercept(f(g(h())))`.
-func (c *TesteClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Teste = append(c.inters.Teste, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `category.Intercept(f(g(h())))`.
+func (c *CategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Category = append(c.inters.Category, interceptors...)
 }
 
-// Create returns a builder for creating a Teste entity.
-func (c *TesteClient) Create() *TesteCreate {
-	mutation := newTesteMutation(c.config, OpCreate)
-	return &TesteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Category entity.
+func (c *CategoryClient) Create() *CategoryCreate {
+	mutation := newCategoryMutation(c.config, OpCreate)
+	return &CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Teste entities.
-func (c *TesteClient) CreateBulk(builders ...*TesteCreate) *TesteCreateBulk {
-	return &TesteCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Category entities.
+func (c *CategoryClient) CreateBulk(builders ...*CategoryCreate) *CategoryCreateBulk {
+	return &CategoryCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *TesteClient) MapCreateBulk(slice any, setFunc func(*TesteCreate, int)) *TesteCreateBulk {
+func (c *CategoryClient) MapCreateBulk(slice any, setFunc func(*CategoryCreate, int)) *CategoryCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &TesteCreateBulk{err: fmt.Errorf("calling to TesteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &CategoryCreateBulk{err: fmt.Errorf("calling to CategoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*TesteCreate, rv.Len())
+	builders := make([]*CategoryCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &TesteCreateBulk{config: c.config, builders: builders}
+	return &CategoryCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Teste.
-func (c *TesteClient) Update() *TesteUpdate {
-	mutation := newTesteMutation(c.config, OpUpdate)
-	return &TesteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Category.
+func (c *CategoryClient) Update() *CategoryUpdate {
+	mutation := newCategoryMutation(c.config, OpUpdate)
+	return &CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *TesteClient) UpdateOne(t *Teste) *TesteUpdateOne {
-	mutation := newTesteMutation(c.config, OpUpdateOne, withTeste(t))
-	return &TesteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CategoryClient) UpdateOne(ca *Category) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategory(ca))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TesteClient) UpdateOneID(id uint) *TesteUpdateOne {
-	mutation := newTesteMutation(c.config, OpUpdateOne, withTesteID(id))
-	return &TesteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CategoryClient) UpdateOneID(id uuid.UUID) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategoryID(id))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Teste.
-func (c *TesteClient) Delete() *TesteDelete {
-	mutation := newTesteMutation(c.config, OpDelete)
-	return &TesteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Category.
+func (c *CategoryClient) Delete() *CategoryDelete {
+	mutation := newCategoryMutation(c.config, OpDelete)
+	return &CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *TesteClient) DeleteOne(t *Teste) *TesteDeleteOne {
-	return c.DeleteOneID(t.ID)
+func (c *CategoryClient) DeleteOne(ca *Category) *CategoryDeleteOne {
+	return c.DeleteOneID(ca.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TesteClient) DeleteOneID(id uint) *TesteDeleteOne {
-	builder := c.Delete().Where(teste.ID(id))
+func (c *CategoryClient) DeleteOneID(id uuid.UUID) *CategoryDeleteOne {
+	builder := c.Delete().Where(category.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &TesteDeleteOne{builder}
+	return &CategoryDeleteOne{builder}
 }
 
-// Query returns a query builder for Teste.
-func (c *TesteClient) Query() *TesteQuery {
-	return &TesteQuery{
+// Query returns a query builder for Category.
+func (c *CategoryClient) Query() *CategoryQuery {
+	return &CategoryQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeTeste},
+		ctx:    &QueryContext{Type: TypeCategory},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Teste entity by its id.
-func (c *TesteClient) Get(ctx context.Context, id uint) (*Teste, error) {
-	return c.Query().Where(teste.ID(id)).Only(ctx)
+// Get returns a Category entity by its id.
+func (c *CategoryClient) Get(ctx context.Context, id uuid.UUID) (*Category, error) {
+	return c.Query().Where(category.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TesteClient) GetX(ctx context.Context, id uint) *Teste {
+func (c *CategoryClient) GetX(ctx context.Context, id uuid.UUID) *Category {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -306,36 +318,185 @@ func (c *TesteClient) GetX(ctx context.Context, id uint) *Teste {
 }
 
 // Hooks returns the client hooks.
-func (c *TesteClient) Hooks() []Hook {
-	return c.hooks.Teste
+func (c *CategoryClient) Hooks() []Hook {
+	return c.hooks.Category
 }
 
 // Interceptors returns the client interceptors.
-func (c *TesteClient) Interceptors() []Interceptor {
-	return c.inters.Teste
+func (c *CategoryClient) Interceptors() []Interceptor {
+	return c.inters.Category
 }
 
-func (c *TesteClient) mutate(ctx context.Context, m *TesteMutation) (Value, error) {
+func (c *CategoryClient) mutate(ctx context.Context, m *CategoryMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&TesteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&TesteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&TesteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&TesteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Teste mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Category mutation op: %q", m.Op())
+	}
+}
+
+// DebtClient is a client for the Debt schema.
+type DebtClient struct {
+	config
+}
+
+// NewDebtClient returns a client for the Debt from the given config.
+func NewDebtClient(c config) *DebtClient {
+	return &DebtClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `debt.Hooks(f(g(h())))`.
+func (c *DebtClient) Use(hooks ...Hook) {
+	c.hooks.Debt = append(c.hooks.Debt, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `debt.Intercept(f(g(h())))`.
+func (c *DebtClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Debt = append(c.inters.Debt, interceptors...)
+}
+
+// Create returns a builder for creating a Debt entity.
+func (c *DebtClient) Create() *DebtCreate {
+	mutation := newDebtMutation(c.config, OpCreate)
+	return &DebtCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Debt entities.
+func (c *DebtClient) CreateBulk(builders ...*DebtCreate) *DebtCreateBulk {
+	return &DebtCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DebtClient) MapCreateBulk(slice any, setFunc func(*DebtCreate, int)) *DebtCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DebtCreateBulk{err: fmt.Errorf("calling to DebtClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DebtCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DebtCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Debt.
+func (c *DebtClient) Update() *DebtUpdate {
+	mutation := newDebtMutation(c.config, OpUpdate)
+	return &DebtUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DebtClient) UpdateOne(d *Debt) *DebtUpdateOne {
+	mutation := newDebtMutation(c.config, OpUpdateOne, withDebt(d))
+	return &DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DebtClient) UpdateOneID(id uuid.UUID) *DebtUpdateOne {
+	mutation := newDebtMutation(c.config, OpUpdateOne, withDebtID(id))
+	return &DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Debt.
+func (c *DebtClient) Delete() *DebtDelete {
+	mutation := newDebtMutation(c.config, OpDelete)
+	return &DebtDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DebtClient) DeleteOne(d *Debt) *DebtDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DebtClient) DeleteOneID(id uuid.UUID) *DebtDeleteOne {
+	builder := c.Delete().Where(debt.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DebtDeleteOne{builder}
+}
+
+// Query returns a query builder for Debt.
+func (c *DebtClient) Query() *DebtQuery {
+	return &DebtQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDebt},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Debt entity by its id.
+func (c *DebtClient) Get(ctx context.Context, id uuid.UUID) (*Debt, error) {
+	return c.Query().Where(debt.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DebtClient) GetX(ctx context.Context, id uuid.UUID) *Debt {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCategory queries the category edge of a Debt.
+func (c *DebtClient) QueryCategory(d *Debt) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(debt.Table, debt.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, debt.CategoryTable, debt.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DebtClient) Hooks() []Hook {
+	return c.hooks.Debt
+}
+
+// Interceptors returns the client interceptors.
+func (c *DebtClient) Interceptors() []Interceptor {
+	return c.inters.Debt
+}
+
+func (c *DebtClient) mutate(ctx context.Context, m *DebtMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DebtCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DebtUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DebtDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Debt mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Teste []ent.Hook
+		Category, Debt []ent.Hook
 	}
 	inters struct {
-		Teste []ent.Interceptor
+		Category, Debt []ent.Interceptor
 	}
 )
