@@ -4,8 +4,8 @@ package ent
 
 import (
 	"frog-go/internal/ent/category"
-	"frog-go/internal/ent/debt"
 	"frog-go/internal/ent/schemas"
+	"frog-go/internal/ent/transaction"
 	"time"
 
 	"github.com/google/uuid"
@@ -58,28 +58,28 @@ func init() {
 	categoryDescID := categoryMixinFields0[0].Descriptor()
 	// category.DefaultID holds the default value on creation for the id field.
 	category.DefaultID = categoryDescID.Default.(func() uuid.UUID)
-	debtMixin := schemas.Debt{}.Mixin()
-	debtMixinFields0 := debtMixin[0].Fields()
-	_ = debtMixinFields0
-	debtMixinFields1 := debtMixin[1].Fields()
-	_ = debtMixinFields1
-	debtFields := schemas.Debt{}.Fields()
-	_ = debtFields
-	// debtDescCreatedAt is the schema descriptor for created_at field.
-	debtDescCreatedAt := debtMixinFields1[0].Descriptor()
-	// debt.DefaultCreatedAt holds the default value on creation for the created_at field.
-	debt.DefaultCreatedAt = debtDescCreatedAt.Default.(func() time.Time)
-	// debtDescUpdatedAt is the schema descriptor for updated_at field.
-	debtDescUpdatedAt := debtMixinFields1[1].Descriptor()
-	// debt.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	debt.DefaultUpdatedAt = debtDescUpdatedAt.Default.(func() time.Time)
-	// debt.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	debt.UpdateDefaultUpdatedAt = debtDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// debtDescTitle is the schema descriptor for title field.
-	debtDescTitle := debtFields[0].Descriptor()
-	// debt.TitleValidator is a validator for the "title" field. It is called by the builders before save.
-	debt.TitleValidator = func() func(string) error {
-		validators := debtDescTitle.Validators
+	transactionMixin := schemas.Transaction{}.Mixin()
+	transactionMixinFields0 := transactionMixin[0].Fields()
+	_ = transactionMixinFields0
+	transactionMixinFields1 := transactionMixin[1].Fields()
+	_ = transactionMixinFields1
+	transactionFields := schemas.Transaction{}.Fields()
+	_ = transactionFields
+	// transactionDescCreatedAt is the schema descriptor for created_at field.
+	transactionDescCreatedAt := transactionMixinFields1[0].Descriptor()
+	// transaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	transaction.DefaultCreatedAt = transactionDescCreatedAt.Default.(func() time.Time)
+	// transactionDescUpdatedAt is the schema descriptor for updated_at field.
+	transactionDescUpdatedAt := transactionMixinFields1[1].Descriptor()
+	// transaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	transaction.DefaultUpdatedAt = transactionDescUpdatedAt.Default.(func() time.Time)
+	// transaction.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	transaction.UpdateDefaultUpdatedAt = transactionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// transactionDescTitle is the schema descriptor for title field.
+	transactionDescTitle := transactionFields[0].Descriptor()
+	// transaction.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	transaction.TitleValidator = func() func(string) error {
+		validators := transactionDescTitle.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
@@ -93,13 +93,13 @@ func init() {
 			return nil
 		}
 	}()
-	// debtDescStatus is the schema descriptor for status field.
-	debtDescStatus := debtFields[3].Descriptor()
-	// debt.DefaultStatus holds the default value on creation for the status field.
-	debt.DefaultStatus = debtDescStatus.Default.(string)
-	// debt.StatusValidator is a validator for the "status" field. It is called by the builders before save.
-	debt.StatusValidator = func() func(string) error {
-		validators := debtDescStatus.Validators
+	// transactionDescStatus is the schema descriptor for status field.
+	transactionDescStatus := transactionFields[3].Descriptor()
+	// transaction.DefaultStatus holds the default value on creation for the status field.
+	transaction.DefaultStatus = transactionDescStatus.Default.(string)
+	// transaction.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	transaction.StatusValidator = func() func(string) error {
+		validators := transactionDescStatus.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
@@ -113,8 +113,8 @@ func init() {
 			return nil
 		}
 	}()
-	// debtDescID is the schema descriptor for id field.
-	debtDescID := debtMixinFields0[0].Descriptor()
-	// debt.DefaultID holds the default value on creation for the id field.
-	debt.DefaultID = debtDescID.Default.(func() uuid.UUID)
+	// transactionDescID is the schema descriptor for id field.
+	transactionDescID := transactionMixinFields0[0].Descriptor()
+	// transaction.DefaultID holds the default value on creation for the id field.
+	transaction.DefaultID = transactionDescID.Default.(func() uuid.UUID)
 }

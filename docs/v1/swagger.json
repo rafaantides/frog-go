@@ -1,244 +1,220 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "contact": {}
-    },
-    "paths": {
-        "/v1/debts": {
-            "get": {
-                "description": "Lista todas as dívidas aplicando filtros e paginação",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dívidas"
-                ],
-                "summary": "Lista dívidas com filtros e paginação",
-                "parameters": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Filtrar por status",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Filtrar por categorias",
-                        "name": "category_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "Valor mínimo",
-                        "name": "min_amount",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "Valor máximo",
-                        "name": "max_amount",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Data inicial",
-                        "name": "start_date",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Data final",
-                        "name": "end_date",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Número da página",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limite por página",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Campo de ordenação",
-                        "name": "order_by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Ordem (asc, desc)",
-                        "name": "order",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.DebtResponse"
-                            }
-                        }
-                    }
-                }
+  "swagger": "2.0",
+  "info": {
+    "contact": {}
+  },
+  "paths": {
+    "/v1/transactions": {
+      "get": {
+        "description": "Lista todas as transações aplicando filtros e paginação",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Transações"],
+        "summary": "Lista transações com filtros e paginação",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
             },
-            "post": {
-                "description": "Cria uma nova dívida com os dados fornecidos no corpo da requisição",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dívidas"
-                ],
-                "summary": "Cria uma nova dívida",
-                "parameters": [
-                    {
-                        "description": "Dados da dívida",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.DebtRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/dto.DebtResponse"
-                        }
-                    }
-                }
+            "collectionFormat": "csv",
+            "description": "Filtrar por status",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "csv",
+            "description": "Filtrar por categorias",
+            "name": "category_id",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Valor mínimo",
+            "name": "min_amount",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "description": "Valor máximo",
+            "name": "max_amount",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Data inicial",
+            "name": "start_date",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Data final",
+            "name": "end_date",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Número da página",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Limite por página",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Campo de ordenação",
+            "name": "order_by",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Ordem (asc, desc)",
+            "name": "order",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/dto.TransactionResponse"
+              }
             }
-        },
-        "/v1/debts/{id}": {
-            "get": {
-                "description": "Retorna os dados de uma dívida com base no ID fornecido",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dívidas"
-                ],
-                "summary": "Busca uma dívida por ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID da dívida",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.DebtResponse"
-                        }
-                    }
-                }
-            }
+          }
         }
+      },
+      "post": {
+        "description": "Cria uma nova transação com os dados fornecidos no corpo da requisição",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Transações"],
+        "summary": "Cria uma nova transação",
+        "parameters": [
+          {
+            "description": "Dados da transação",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dto.TransactionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/dto.TransactionResponse"
+            }
+          }
+        }
+      }
     },
-    "definitions": {
-        "dto.DebtCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
+    "/v1/transactions/{id}": {
+      "get": {
+        "description": "Retorna os dados de uma transação com base no ID fornecido",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Transações"],
+        "summary": "Busca uma transação por ID",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID da transação",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/dto.TransactionResponse"
             }
-        },
-        "dto.DebtRequest": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "due_date": {
-                    "type": "string"
-                },
-                "purchase_date": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string",
-                    "enum": [
-                        "pending",
-                        "paid",
-                        "canceled"
-                    ]
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.DebtResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "category": {
-                    "$ref": "#/definitions/dto.DebtCategoryResponse"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "due_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "purchase_date": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
+          }
         }
+      }
     }
+  },
+  "definitions": {
+    "dto.TransactionCategoryResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "dto.TransactionRequest": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "category_id": {
+          "type": "string"
+        },
+        "due_date": {
+          "type": "string"
+        },
+        "purchase_date": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "paid", "canceled"]
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "dto.TransactionResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "category": {
+          "$ref": "#/definitions/dto.TransactionCategoryResponse"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "due_date": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "purchase_date": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }

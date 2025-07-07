@@ -5,7 +5,7 @@ package ent
 import (
 	"fmt"
 	"frog-go/internal/ent/category"
-	"frog-go/internal/ent/debt"
+	"frog-go/internal/ent/transaction"
 	"strings"
 	"time"
 
@@ -14,8 +14,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// Debt is the model entity for the Debt schema.
-type Debt struct {
+// Transaction is the model entity for the Transaction schema.
+type Transaction struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
@@ -34,14 +34,14 @@ type Debt struct {
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the DebtQuery when eager-loading is set.
-	Edges        DebtEdges `json:"edges"`
+	// The values are being populated by the TransactionQuery when eager-loading is set.
+	Edges        TransactionEdges `json:"edges"`
 	category_id  *uuid.UUID
 	selectValues sql.SelectValues
 }
 
-// DebtEdges holds the relations/edges for other nodes in the graph.
-type DebtEdges struct {
+// TransactionEdges holds the relations/edges for other nodes in the graph.
+type TransactionEdges struct {
 	// Category holds the value of the category edge.
 	Category *Category `json:"category,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -51,7 +51,7 @@ type DebtEdges struct {
 
 // CategoryOrErr returns the Category value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e DebtEdges) CategoryOrErr() (*Category, error) {
+func (e TransactionEdges) CategoryOrErr() (*Category, error) {
 	if e.Category != nil {
 		return e.Category, nil
 	} else if e.loadedTypes[0] {
@@ -61,19 +61,19 @@ func (e DebtEdges) CategoryOrErr() (*Category, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Debt) scanValues(columns []string) ([]any, error) {
+func (*Transaction) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case debt.FieldAmount:
+		case transaction.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case debt.FieldTitle, debt.FieldStatus:
+		case transaction.FieldTitle, transaction.FieldStatus:
 			values[i] = new(sql.NullString)
-		case debt.FieldCreatedAt, debt.FieldUpdatedAt, debt.FieldPurchaseDate, debt.FieldDueDate:
+		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldPurchaseDate, transaction.FieldDueDate:
 			values[i] = new(sql.NullTime)
-		case debt.FieldID:
+		case transaction.FieldID:
 			values[i] = new(uuid.UUID)
-		case debt.ForeignKeys[0]: // category_id
+		case transaction.ForeignKeys[0]: // category_id
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
@@ -83,135 +83,135 @@ func (*Debt) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Debt fields.
-func (d *Debt) assignValues(columns []string, values []any) error {
+// to the Transaction fields.
+func (t *Transaction) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case debt.FieldID:
+		case transaction.FieldID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				d.ID = *value
+				t.ID = *value
 			}
-		case debt.FieldCreatedAt:
+		case transaction.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				d.CreatedAt = value.Time
+				t.CreatedAt = value.Time
 			}
-		case debt.FieldUpdatedAt:
+		case transaction.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				d.UpdatedAt = value.Time
+				t.UpdatedAt = value.Time
 			}
-		case debt.FieldAmount:
+		case transaction.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				d.Amount = value.Float64
+				t.Amount = value.Float64
 			}
-		case debt.FieldTitle:
+		case transaction.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				d.Title = value.String
+				t.Title = value.String
 			}
-		case debt.FieldPurchaseDate:
+		case transaction.FieldPurchaseDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field purchase_date", values[i])
 			} else if value.Valid {
-				d.PurchaseDate = value.Time
+				t.PurchaseDate = value.Time
 			}
-		case debt.FieldDueDate:
+		case transaction.FieldDueDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field due_date", values[i])
 			} else if value.Valid {
-				d.DueDate = new(time.Time)
-				*d.DueDate = value.Time
+				t.DueDate = new(time.Time)
+				*t.DueDate = value.Time
 			}
-		case debt.FieldStatus:
+		case transaction.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				d.Status = value.String
+				t.Status = value.String
 			}
-		case debt.ForeignKeys[0]:
+		case transaction.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
-				d.category_id = new(uuid.UUID)
-				*d.category_id = *value.S.(*uuid.UUID)
+				t.category_id = new(uuid.UUID)
+				*t.category_id = *value.S.(*uuid.UUID)
 			}
 		default:
-			d.selectValues.Set(columns[i], values[i])
+			t.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Debt.
+// Value returns the ent.Value that was dynamically selected and assigned to the Transaction.
 // This includes values selected through modifiers, order, etc.
-func (d *Debt) Value(name string) (ent.Value, error) {
-	return d.selectValues.Get(name)
+func (t *Transaction) Value(name string) (ent.Value, error) {
+	return t.selectValues.Get(name)
 }
 
-// QueryCategory queries the "category" edge of the Debt entity.
-func (d *Debt) QueryCategory() *CategoryQuery {
-	return NewDebtClient(d.config).QueryCategory(d)
+// QueryCategory queries the "category" edge of the Transaction entity.
+func (t *Transaction) QueryCategory() *CategoryQuery {
+	return NewTransactionClient(t.config).QueryCategory(t)
 }
 
-// Update returns a builder for updating this Debt.
-// Note that you need to call Debt.Unwrap() before calling this method if this Debt
+// Update returns a builder for updating this Transaction.
+// Note that you need to call Transaction.Unwrap() before calling this method if this Transaction
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (d *Debt) Update() *DebtUpdateOne {
-	return NewDebtClient(d.config).UpdateOne(d)
+func (t *Transaction) Update() *TransactionUpdateOne {
+	return NewTransactionClient(t.config).UpdateOne(t)
 }
 
-// Unwrap unwraps the Debt entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Transaction entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (d *Debt) Unwrap() *Debt {
-	_tx, ok := d.config.driver.(*txDriver)
+func (t *Transaction) Unwrap() *Transaction {
+	_tx, ok := t.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Debt is not a transactional entity")
+		panic("ent: Transaction is not a transactional entity")
 	}
-	d.config.driver = _tx.drv
-	return d
+	t.config.driver = _tx.drv
+	return t
 }
 
 // String implements the fmt.Stringer.
-func (d *Debt) String() string {
+func (t *Transaction) String() string {
 	var builder strings.Builder
-	builder.WriteString("Debt(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", d.ID))
+	builder.WriteString("Transaction(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(d.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
-	builder.WriteString(fmt.Sprintf("%v", d.Amount))
+	builder.WriteString(fmt.Sprintf("%v", t.Amount))
 	builder.WriteString(", ")
 	builder.WriteString("title=")
-	builder.WriteString(d.Title)
+	builder.WriteString(t.Title)
 	builder.WriteString(", ")
 	builder.WriteString("purchase_date=")
-	builder.WriteString(d.PurchaseDate.Format(time.ANSIC))
+	builder.WriteString(t.PurchaseDate.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := d.DueDate; v != nil {
+	if v := t.DueDate; v != nil {
 		builder.WriteString("due_date=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(d.Status)
+	builder.WriteString(t.Status)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Debts is a parsable slice of Debt.
-type Debts []*Debt
+// Transactions is a parsable slice of Transaction.
+type Transactions []*Transaction

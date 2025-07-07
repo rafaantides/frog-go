@@ -17,12 +17,12 @@ type CategoryService interface {
 	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error)
 }
 
-type DebtService interface {
-	GetDebtByID(ctx context.Context, id uuid.UUID) (*dto.DebtResponse, error)
-	CreateDebt(ctx context.Context, input domain.Debt) (*dto.DebtResponse, error)
-	UpdateDebt(ctx context.Context, id uuid.UUID, input domain.Debt) (*dto.DebtResponse, error)
-	DeleteDebtByID(ctx context.Context, id uuid.UUID) error
-	ListDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) ([]dto.DebtResponse, int, error)
-	DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
-	DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.DebtStatsSummary, error)
+type TransactionService interface {
+	GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error)
+	CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error)
+	UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
+	DeleteTransactionByID(ctx context.Context, id uuid.UUID) error
+	ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
+	TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
+	TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
 }

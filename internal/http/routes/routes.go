@@ -44,9 +44,9 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	engine.StaticFile("/favicon.ico", "./static/favicon.ico")
 	registerDocsRoutes(engine.Group("/docs/v1"))
 
-	debtService := service.NewDebtService(r.repo)
-	debtHandler := handler.NewDebtHandler(debtService)
-	registerDebtRoutes(v1.Group("/debts"), debtHandler)
+	transactionService := service.NewTransactionService(r.repo)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+	registerTransactionRoutes(v1.Group("/transactions"), transactionHandler)
 
 	categoryService := service.NewCategoryService(r.repo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
@@ -77,14 +77,14 @@ func registerDocsRoutes(router *gin.RouterGroup) {
 
 }
 
-func registerDebtRoutes(router *gin.RouterGroup, handler *handler.DebtHandler) {
-	router.POST("", handler.CreateDebtHandler)
-	router.GET("", handler.ListDebtsHandler)
-	router.GET("/:id", handler.GetDebtByIDHandler)
-	router.PUT("/:id", handler.UpdateDebtHandler)
-	router.DELETE("/:id", handler.DeleteDebtHandler)
-	router.GET("/summary", handler.DebtsSummaryHandler)
-	router.GET("/stats", handler.DebtsGeneralStatsHandler)
+func registerTransactionRoutes(router *gin.RouterGroup, handler *handler.TransactionHandler) {
+	router.POST("", handler.CreateTransactionHandler)
+	router.GET("", handler.ListTransactionsHandler)
+	router.GET("/:id", handler.GetTransactionByIDHandler)
+	router.PUT("/:id", handler.UpdateTransactionHandler)
+	router.DELETE("/:id", handler.DeleteTransactionHandler)
+	router.GET("/summary", handler.TransactionsSummaryHandler)
+	router.GET("/stats", handler.TransactionsGeneralStatsHandler)
 }
 
 func registerCategoryRoutes(router *gin.RouterGroup, handler *handler.CategoryHandler) {

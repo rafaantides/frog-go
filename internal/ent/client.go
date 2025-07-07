@@ -12,7 +12,7 @@ import (
 	"frog-go/internal/ent/migrate"
 
 	"frog-go/internal/ent/category"
-	"frog-go/internal/ent/debt"
+	"frog-go/internal/ent/transaction"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -28,8 +28,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
-	// Debt is the client for interacting with the Debt builders.
-	Debt *DebtClient
+	// Transaction is the client for interacting with the Transaction builders.
+	Transaction *TransactionClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -42,7 +42,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Category = NewCategoryClient(c.config)
-	c.Debt = NewDebtClient(c.config)
+	c.Transaction = NewTransactionClient(c.config)
 }
 
 type (
@@ -133,10 +133,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Category: NewCategoryClient(cfg),
-		Debt:     NewDebtClient(cfg),
+		ctx:         ctx,
+		config:      cfg,
+		Category:    NewCategoryClient(cfg),
+		Transaction: NewTransactionClient(cfg),
 	}, nil
 }
 
@@ -154,10 +154,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Category: NewCategoryClient(cfg),
-		Debt:     NewDebtClient(cfg),
+		ctx:         ctx,
+		config:      cfg,
+		Category:    NewCategoryClient(cfg),
+		Transaction: NewTransactionClient(cfg),
 	}, nil
 }
 
@@ -187,14 +187,14 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Category.Use(hooks...)
-	c.Debt.Use(hooks...)
+	c.Transaction.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Category.Intercept(interceptors...)
-	c.Debt.Intercept(interceptors...)
+	c.Transaction.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -202,8 +202,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *CategoryMutation:
 		return c.Category.mutate(ctx, m)
-	case *DebtMutation:
-		return c.Debt.mutate(ctx, m)
+	case *TransactionMutation:
+		return c.Transaction.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -342,107 +342,107 @@ func (c *CategoryClient) mutate(ctx context.Context, m *CategoryMutation) (Value
 	}
 }
 
-// DebtClient is a client for the Debt schema.
-type DebtClient struct {
+// TransactionClient is a client for the Transaction schema.
+type TransactionClient struct {
 	config
 }
 
-// NewDebtClient returns a client for the Debt from the given config.
-func NewDebtClient(c config) *DebtClient {
-	return &DebtClient{config: c}
+// NewTransactionClient returns a client for the Transaction from the given config.
+func NewTransactionClient(c config) *TransactionClient {
+	return &TransactionClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `debt.Hooks(f(g(h())))`.
-func (c *DebtClient) Use(hooks ...Hook) {
-	c.hooks.Debt = append(c.hooks.Debt, hooks...)
+// A call to `Use(f, g, h)` equals to `transaction.Hooks(f(g(h())))`.
+func (c *TransactionClient) Use(hooks ...Hook) {
+	c.hooks.Transaction = append(c.hooks.Transaction, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `debt.Intercept(f(g(h())))`.
-func (c *DebtClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Debt = append(c.inters.Debt, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `transaction.Intercept(f(g(h())))`.
+func (c *TransactionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Transaction = append(c.inters.Transaction, interceptors...)
 }
 
-// Create returns a builder for creating a Debt entity.
-func (c *DebtClient) Create() *DebtCreate {
-	mutation := newDebtMutation(c.config, OpCreate)
-	return &DebtCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Transaction entity.
+func (c *TransactionClient) Create() *TransactionCreate {
+	mutation := newTransactionMutation(c.config, OpCreate)
+	return &TransactionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Debt entities.
-func (c *DebtClient) CreateBulk(builders ...*DebtCreate) *DebtCreateBulk {
-	return &DebtCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Transaction entities.
+func (c *TransactionClient) CreateBulk(builders ...*TransactionCreate) *TransactionCreateBulk {
+	return &TransactionCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *DebtClient) MapCreateBulk(slice any, setFunc func(*DebtCreate, int)) *DebtCreateBulk {
+func (c *TransactionClient) MapCreateBulk(slice any, setFunc func(*TransactionCreate, int)) *TransactionCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &DebtCreateBulk{err: fmt.Errorf("calling to DebtClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &TransactionCreateBulk{err: fmt.Errorf("calling to TransactionClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*DebtCreate, rv.Len())
+	builders := make([]*TransactionCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &DebtCreateBulk{config: c.config, builders: builders}
+	return &TransactionCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Debt.
-func (c *DebtClient) Update() *DebtUpdate {
-	mutation := newDebtMutation(c.config, OpUpdate)
-	return &DebtUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Transaction.
+func (c *TransactionClient) Update() *TransactionUpdate {
+	mutation := newTransactionMutation(c.config, OpUpdate)
+	return &TransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *DebtClient) UpdateOne(d *Debt) *DebtUpdateOne {
-	mutation := newDebtMutation(c.config, OpUpdateOne, withDebt(d))
-	return &DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TransactionClient) UpdateOne(t *Transaction) *TransactionUpdateOne {
+	mutation := newTransactionMutation(c.config, OpUpdateOne, withTransaction(t))
+	return &TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *DebtClient) UpdateOneID(id uuid.UUID) *DebtUpdateOne {
-	mutation := newDebtMutation(c.config, OpUpdateOne, withDebtID(id))
-	return &DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TransactionClient) UpdateOneID(id uuid.UUID) *TransactionUpdateOne {
+	mutation := newTransactionMutation(c.config, OpUpdateOne, withTransactionID(id))
+	return &TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Debt.
-func (c *DebtClient) Delete() *DebtDelete {
-	mutation := newDebtMutation(c.config, OpDelete)
-	return &DebtDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Transaction.
+func (c *TransactionClient) Delete() *TransactionDelete {
+	mutation := newTransactionMutation(c.config, OpDelete)
+	return &TransactionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *DebtClient) DeleteOne(d *Debt) *DebtDeleteOne {
-	return c.DeleteOneID(d.ID)
+func (c *TransactionClient) DeleteOne(t *Transaction) *TransactionDeleteOne {
+	return c.DeleteOneID(t.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *DebtClient) DeleteOneID(id uuid.UUID) *DebtDeleteOne {
-	builder := c.Delete().Where(debt.ID(id))
+func (c *TransactionClient) DeleteOneID(id uuid.UUID) *TransactionDeleteOne {
+	builder := c.Delete().Where(transaction.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &DebtDeleteOne{builder}
+	return &TransactionDeleteOne{builder}
 }
 
-// Query returns a query builder for Debt.
-func (c *DebtClient) Query() *DebtQuery {
-	return &DebtQuery{
+// Query returns a query builder for Transaction.
+func (c *TransactionClient) Query() *TransactionQuery {
+	return &TransactionQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeDebt},
+		ctx:    &QueryContext{Type: TypeTransaction},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Debt entity by its id.
-func (c *DebtClient) Get(ctx context.Context, id uuid.UUID) (*Debt, error) {
-	return c.Query().Where(debt.ID(id)).Only(ctx)
+// Get returns a Transaction entity by its id.
+func (c *TransactionClient) Get(ctx context.Context, id uuid.UUID) (*Transaction, error) {
+	return c.Query().Where(transaction.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *DebtClient) GetX(ctx context.Context, id uuid.UUID) *Debt {
+func (c *TransactionClient) GetX(ctx context.Context, id uuid.UUID) *Transaction {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -450,53 +450,53 @@ func (c *DebtClient) GetX(ctx context.Context, id uuid.UUID) *Debt {
 	return obj
 }
 
-// QueryCategory queries the category edge of a Debt.
-func (c *DebtClient) QueryCategory(d *Debt) *CategoryQuery {
+// QueryCategory queries the category edge of a Transaction.
+func (c *TransactionClient) QueryCategory(t *Transaction) *CategoryQuery {
 	query := (&CategoryClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
+		id := t.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(debt.Table, debt.FieldID, id),
+			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, debt.CategoryTable, debt.CategoryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.CategoryTable, transaction.CategoryColumn),
 		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *DebtClient) Hooks() []Hook {
-	return c.hooks.Debt
+func (c *TransactionClient) Hooks() []Hook {
+	return c.hooks.Transaction
 }
 
 // Interceptors returns the client interceptors.
-func (c *DebtClient) Interceptors() []Interceptor {
-	return c.inters.Debt
+func (c *TransactionClient) Interceptors() []Interceptor {
+	return c.inters.Transaction
 }
 
-func (c *DebtClient) mutate(ctx context.Context, m *DebtMutation) (Value, error) {
+func (c *TransactionClient) mutate(ctx context.Context, m *TransactionMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&DebtCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TransactionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&DebtUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&DebtUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&TransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&DebtDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&TransactionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Debt mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Transaction mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Category, Debt []ent.Hook
+		Category, Transaction []ent.Hook
 	}
 	inters struct {
-		Category, Debt []ent.Interceptor
+		Category, Transaction []ent.Interceptor
 	}
 )

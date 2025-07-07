@@ -20,12 +20,12 @@ type Repository interface {
 	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, error)
 	CountCategories(ctx context.Context, pgn *pagination.Pagination) (int, error)
 
-	GetDebtByID(ctx context.Context, id uuid.UUID) (*dto.DebtResponse, error)
-	CreateDebt(ctx context.Context, input domain.Debt) (*dto.DebtResponse, error)
-	UpdateDebt(ctx context.Context, id uuid.UUID, input domain.Debt) (*dto.DebtResponse, error)
-	DeleteDebtByID(ctx context.Context, id uuid.UUID) error
-	ListDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) ([]dto.DebtResponse, error)
-	CountDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) (int, error)
-	DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
-	DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.DebtStatsSummary, error)
+	GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error)
+	CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error)
+	UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
+	DeleteTransactionByID(ctx context.Context, id uuid.UUID) error
+	ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error)
+	CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error)
+	TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
+	TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
 }

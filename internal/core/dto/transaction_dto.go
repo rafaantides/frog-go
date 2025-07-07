@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DebtRequest struct {
+type TransactionRequest struct {
 	Title        string  `json:"title"`
 	Amount       float64 `json:"amount"`
 	PurchaseDate string  `json:"purchase_date"`
@@ -19,7 +19,7 @@ type DebtRequest struct {
 }
 
 // TODO: fazer um bind que funcione com uuid.UUID o ShouldBindQuery n esta reconhecendo o *[]uuid.UUID
-type DebtFilters struct {
+type TransactionFilters struct {
 	CategoryID *[]string `json:"category_id"`
 	Status     *[]string `form:"status"`
 	MinAmount  *float64  `form:"min_amount"`
@@ -28,24 +28,24 @@ type DebtFilters struct {
 	EndDate    *string   `form:"end_date"`
 }
 
-type DebtResponse struct {
+type TransactionResponse struct {
 	ID           uuid.UUID             `json:"id"`
 	Title        string                `json:"title"`
 	Amount       float64               `json:"amount"`
 	PurchaseDate string                `json:"purchase_date"`
 	DueDate      *string               `json:"due_date"`
-	Category     *DebtCategoryResponse `json:"category"`
+	Category     *TransactionCategoryResponse `json:"category"`
 	Status       string                `json:"status"`
 	CreatedAt    string                `json:"created_at"`
 	UpdatedAt    string                `json:"updated_at"`
 }
 
-type DebtCategoryResponse struct {
+type TransactionCategoryResponse struct {
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
 }
 
-func (r *DebtRequest) ToDomain() (*domain.Debt, error) {
+func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 	purchaseDate, err := utils.ToDateTime(r.PurchaseDate)
 	if err != nil {
 		return nil, errors.InvalidParam("purchase_date", err)
@@ -67,9 +67,9 @@ func (r *DebtRequest) ToDomain() (*domain.Debt, error) {
 		}
 	}
 
-	status := domain.DebtStatus(r.Status)
+	status := domain.TransactionStatus(r.Status)
 
-	return domain.NewDebt(
+	return domain.NewTransaction(
 		r.Title,
 		r.Amount,
 		purchaseDate,

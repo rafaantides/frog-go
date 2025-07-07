@@ -14,7 +14,7 @@ const (
 )
 
 const (
-	ResourceDebts = "debts"
+	ResourceTransactions = "transactions"
 	ActionCreate  = "create"
 	ModelNubank   = "nubank"
 )

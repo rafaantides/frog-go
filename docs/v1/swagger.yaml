@@ -1,12 +1,12 @@
 definitions:
-  dto.DebtCategoryResponse:
+  dto.TransactionCategoryResponse:
     properties:
       id:
         type: string
       name:
         type: string
     type: object
-  dto.DebtRequest:
+  dto.TransactionRequest:
     properties:
       amount:
         type: number
@@ -18,21 +18,21 @@ definitions:
         type: string
       status:
         enum:
-        - pending
-        - paid
-        - canceled
+          - pending
+          - paid
+          - canceled
         type: string
       title:
         type: string
     required:
-    - status
+      - status
     type: object
-  dto.DebtResponse:
+  dto.TransactionResponse:
     properties:
       amount:
         type: number
       category:
-        $ref: '#/definitions/dto.DebtCategoryResponse'
+        $ref: "#/definitions/dto.TransactionCategoryResponse"
       created_at:
         type: string
       due_date:
@@ -51,110 +51,110 @@ definitions:
 info:
   contact: {}
 paths:
-  /v1/debts:
+  /v1/transactions:
     get:
       consumes:
-      - application/json
-      description: Lista todas as dívidas aplicando filtros e paginação
+        - application/json
+      description: Lista todas as transações aplicando filtros e paginação
       parameters:
-      - collectionFormat: csv
-        description: Filtrar por status
-        in: query
-        items:
+        - collectionFormat: csv
+          description: Filtrar por status
+          in: query
+          items:
+            type: string
+          name: status
+          type: array
+        - collectionFormat: csv
+          description: Filtrar por categorias
+          in: query
+          items:
+            type: string
+          name: category_id
+          type: array
+        - description: Valor mínimo
+          in: query
+          name: min_amount
+          type: number
+        - description: Valor máximo
+          in: query
+          name: max_amount
+          type: number
+        - description: Data inicial
+          in: query
+          name: start_date
           type: string
-        name: status
-        type: array
-      - collectionFormat: csv
-        description: Filtrar por categorias
-        in: query
-        items:
+        - description: Data final
+          in: query
+          name: end_date
           type: string
-        name: category_id
-        type: array
-      - description: Valor mínimo
-        in: query
-        name: min_amount
-        type: number
-      - description: Valor máximo
-        in: query
-        name: max_amount
-        type: number
-      - description: Data inicial
-        in: query
-        name: start_date
-        type: string
-      - description: Data final
-        in: query
-        name: end_date
-        type: string
-      - description: Número da página
-        in: query
-        name: page
-        type: integer
-      - description: Limite por página
-        in: query
-        name: limit
-        type: integer
-      - description: Campo de ordenação
-        in: query
-        name: order_by
-        type: string
-      - description: Ordem (asc, desc)
-        in: query
-        name: order
-        type: string
+        - description: Número da página
+          in: query
+          name: page
+          type: integer
+        - description: Limite por página
+          in: query
+          name: limit
+          type: integer
+        - description: Campo de ordenação
+          in: query
+          name: order_by
+          type: string
+        - description: Ordem (asc, desc)
+          in: query
+          name: order
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.DebtResponse'
+              $ref: "#/definitions/dto.TransactionResponse"
             type: array
-      summary: Lista dívidas com filtros e paginação
+      summary: Lista transações com filtros e paginação
       tags:
-      - Dívidas
+        - Transações
     post:
       consumes:
-      - application/json
-      description: Cria uma nova dívida com os dados fornecidos no corpo da requisição
+        - application/json
+      description: Cria uma nova transação com os dados fornecidos no corpo da requisição
       parameters:
-      - description: Dados da dívida
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.DebtRequest'
+        - description: Dados da transação
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dto.TransactionRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.DebtResponse'
-      summary: Cria uma nova dívida
+            $ref: "#/definitions/dto.TransactionResponse"
+      summary: Cria uma nova transação
       tags:
-      - Dívidas
-  /v1/debts/{id}:
+        - Transações
+  /v1/transactions/{id}:
     get:
       consumes:
-      - application/json
-      description: Retorna os dados de uma dívida com base no ID fornecido
+        - application/json
+      description: Retorna os dados de uma transação com base no ID fornecido
       parameters:
-      - description: ID da dívida
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: ID da transação
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.DebtResponse'
-      summary: Busca uma dívida por ID
+            $ref: "#/definitions/dto.TransactionResponse"
+      summary: Busca uma transação por ID
       tags:
-      - Dívidas
+        - Transações
 swagger: "2.0"

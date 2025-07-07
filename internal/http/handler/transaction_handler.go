@@ -13,26 +13,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DebtHandler struct {
-	service inbound.DebtService
+type TransactionHandler struct {
+	service inbound.TransactionService
 }
 
-func NewDebtHandler(service inbound.DebtService) *DebtHandler {
-	return &DebtHandler{service: service}
+func NewTransactionHandler(service inbound.TransactionService) *TransactionHandler {
+	return &TransactionHandler{service: service}
 }
 
-// CreateDebtHandler godoc
-// @Summary Cria uma nova dívida
-// @Description Cria uma nova dívida com os dados fornecidos no corpo da requisição
-// @Tags Dívidas
+// CreateTransactionHandler godoc
+// @Summary Cria uma nova transação
+// @Description Cria uma nova transação com os dados fornecidos no corpo da requisição
+// @Tags Transações
 // @Accept json
 // @Produce json
-// @Param request body dto.DebtRequest true "Dados da dívida"
-// @Success 201 {object} dto.DebtResponse
-// @Router /v1/debts [post]
-func (h *DebtHandler) CreateDebtHandler(c *gin.Context) {
+// @Param request body dto.TransactionRequest true "Dados da transação"
+// @Success 201 {object} dto.TransactionResponse
+// @Router /v1/transactions [post]
+func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	var req dto.DebtRequest
+	var req dto.TransactionRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -45,7 +45,7 @@ func (h *DebtHandler) CreateDebtHandler(c *gin.Context) {
 		return
 	}
 
-	data, err := h.service.CreateDebt(ctx, *input)
+	data, err := h.service.CreateTransaction(ctx, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -54,16 +54,16 @@ func (h *DebtHandler) CreateDebtHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, data)
 }
 
-// GetDebtByIDHandler godoc
-// @Summary Busca uma dívida por ID
-// @Description Retorna os dados de uma dívida com base no ID fornecido
-// @Tags Dívidas
+// GetTransactionByIDHandler godoc
+// @Summary Busca uma transação por ID
+// @Description Retorna os dados de uma transação com base no ID fornecido
+// @Tags Transações
 // @Accept json
 // @Produce json
-// @Param id path string true "ID da dívida"
-// @Success 200 {object} dto.DebtResponse
-// @Router /v1/debts/{id} [get]
-func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
+// @Param id path string true "ID da transação"
+// @Success 200 {object} dto.TransactionResponse
+// @Router /v1/transactions/{id} [get]
+func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
@@ -71,7 +71,7 @@ func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
 		return
 	}
 
-	data, err := h.service.GetDebtByID(ctx, id)
+	data, err := h.service.GetTransactionByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, appError.ErrNotFound) {
 			c.Error(appError.NewAppError(http.StatusNotFound, err))
@@ -84,10 +84,10 @@ func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-// ListDebtsHandler godoc
-// @Summary Lista dívidas com filtros e paginação
-// @Description Lista todas as dívidas aplicando filtros e paginação
-// @Tags Dívidas
+// ListTransactionsHandler godoc
+// @Summary Lista transações com filtros e paginação
+// @Description Lista todas as transações aplicando filtros e paginação
+// @Tags Transações
 // @Accept json
 // @Produce json
 // @Param status query []string false "Filtrar por status"
@@ -100,11 +100,11 @@ func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
 // @Param limit query int false "Limite por página"
 // @Param order_by query string false "Campo de ordenação"
 // @Param order query string false "Ordem (asc, desc)"
-// @Success 200 {array} dto.DebtResponse
-// @Router /v1/debts [get]
-func (h *DebtHandler) ListDebtsHandler(c *gin.Context) {
+// @Success 200 {array} dto.TransactionResponse
+// @Router /v1/transactions [get]
+func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	var flt dto.DebtFilters
+	var flt dto.TransactionFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -135,7 +135,7 @@ func (h *DebtHandler) ListDebtsHandler(c *gin.Context) {
 		return
 	}
 
-	response, total, err := h.service.ListDebts(ctx, flt, pgn)
+	response, total, err := h.service.ListTransactions(ctx, flt, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -147,7 +147,7 @@ func (h *DebtHandler) ListDebtsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *DebtHandler) UpdateDebtHandler(c *gin.Context) {
+func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
@@ -155,7 +155,7 @@ func (h *DebtHandler) UpdateDebtHandler(c *gin.Context) {
 		return
 	}
 
-	var req dto.DebtRequest
+	var req dto.TransactionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -167,7 +167,7 @@ func (h *DebtHandler) UpdateDebtHandler(c *gin.Context) {
 		return
 	}
 
-	data, err := h.service.UpdateDebt(ctx, id, *input)
+	data, err := h.service.UpdateTransaction(ctx, id, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -176,7 +176,7 @@ func (h *DebtHandler) UpdateDebtHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-func (h *DebtHandler) DeleteDebtHandler(c *gin.Context) {
+func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
@@ -184,7 +184,7 @@ func (h *DebtHandler) DeleteDebtHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeleteDebtByID(ctx, id)
+	err = h.service.DeleteTransactionByID(ctx, id)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -193,7 +193,7 @@ func (h *DebtHandler) DeleteDebtHandler(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-func (h *DebtHandler) DebtsSummaryHandler(c *gin.Context) {
+func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.ChartFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
@@ -201,7 +201,7 @@ func (h *DebtHandler) DebtsSummaryHandler(c *gin.Context) {
 		return
 	}
 
-	response, err := h.service.DebtsSummary(ctx, flt)
+	response, err := h.service.TransactionsSummary(ctx, flt)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -211,7 +211,7 @@ func (h *DebtHandler) DebtsSummaryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *DebtHandler) DebtsGeneralStatsHandler(c *gin.Context) {
+func (h *TransactionHandler) TransactionsGeneralStatsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.ChartFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
@@ -219,7 +219,7 @@ func (h *DebtHandler) DebtsGeneralStatsHandler(c *gin.Context) {
 		return
 	}
 
-	response, err := h.service.DebtsGeneralStats(ctx, flt)
+	response, err := h.service.TransactionsGeneralStats(ctx, flt)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))

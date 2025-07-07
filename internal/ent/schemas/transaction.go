@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-type Debt struct {
+type Transaction struct {
 	ent.Schema
 }
 
-func (Debt) Mixin() []ent.Mixin {
+func (Transaction) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.UUIDMixin{},
 		mixins.TimestampsMixin{},
@@ -23,7 +23,7 @@ func (Debt) Mixin() []ent.Mixin {
 	}
 }
 
-func (Debt) Fields() []ent.Field {
+func (Transaction) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("title").MaxLen(255).NotEmpty(),
 		field.Time("purchase_date"),
@@ -31,9 +31,9 @@ func (Debt) Fields() []ent.Field {
 
 		field.String("status").
 			NotEmpty().
-			Default(string(domain.DebtStatusPending)).
+			Default(string(domain.TransactionStatusPending)).
 			Validate(func(s string) error {
-				if !domain.DebtStatus(s).IsValid() {
+				if !domain.TransactionStatus(s).IsValid() {
 					return fmt.Errorf("invalid status: %q", s)
 				}
 				return nil
@@ -41,7 +41,7 @@ func (Debt) Fields() []ent.Field {
 	}
 }
 
-func (Debt) Edges() []ent.Edge {
+func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
 		// TODO: ver se tem como deixar category obrigatorio na modelagem, acredito q talvez n de por estar usando um hook para popular no create
 		edge.To("category", Category.Type).
@@ -50,7 +50,7 @@ func (Debt) Edges() []ent.Edge {
 	}
 }
 
-func (Debt) Indexes() []ent.Index {
+func (Transaction) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("purchase_date"),
 		index.Fields("due_date"),

@@ -8,7 +8,7 @@ import (
 	"frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/category"
-	"frog-go/internal/ent/debt"
+	"frog-go/internal/ent/transaction"
 	"frog-go/internal/utils"
 	"sort"
 	"time"
@@ -20,11 +20,11 @@ import (
 	"github.com/google/uuid"
 )
 
-const debtEntity = "debts"
+const transactionEntity = "transactions"
 
-func (d *PostgreSQL) GetDebtByID(ctx context.Context, id uuid.UUID) (*dto.DebtResponse, error) {
-	row, err := d.Client.Debt.Query().
-		Where(debt.IDEQ(id)).
+func (d *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error) {
+	row, err := d.Client.Transaction.Query().
+		Where(transaction.IDEQ(id)).
 		WithCategory().
 		Only(ctx)
 
@@ -34,11 +34,11 @@ func (d *PostgreSQL) GetDebtByID(ctx context.Context, id uuid.UUID) (*dto.DebtRe
 		}
 		return nil, err
 	}
-	return newDebtResponse(row)
+	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) DeleteDebtByID(ctx context.Context, id uuid.UUID) error {
-	err := d.Client.Debt.DeleteOneID(id).Exec(ctx)
+func (d *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) error {
+	err := d.Client.Transaction.DeleteOneID(id).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return errors.ErrNotFound
@@ -48,8 +48,8 @@ func (d *PostgreSQL) DeleteDebtByID(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (d *PostgreSQL) CreateDebt(ctx context.Context, input domain.Debt) (*dto.DebtResponse, error) {
-	created, err := d.Client.Debt.
+func (d *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error) {
+	created, err := d.Client.Transaction.
 		Create().
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
@@ -60,23 +60,23 @@ func (d *PostgreSQL) CreateDebt(ctx context.Context, input domain.Debt) (*dto.De
 		Save(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToSave(debtEntity, err)
+		return nil, errors.FailedToSave(transactionEntity, err)
 	}
 
-	row, err := d.Client.Debt.Query().
-		Where(debt.ID(created.ID)).
+	row, err := d.Client.Transaction.Query().
+		Where(transaction.ID(created.ID)).
 		WithCategory().
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind(debtEntity, err)
+		return nil, errors.FailedToFind(transactionEntity, err)
 	}
 
-	return newDebtResponse(row)
+	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) UpdateDebt(ctx context.Context, id uuid.UUID, input domain.Debt) (*dto.DebtResponse, error) {
-	updated, err := d.Client.Debt.
+func (d *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error) {
+	updated, err := d.Client.Transaction.
 		UpdateOneID(id).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
@@ -90,27 +90,27 @@ func (d *PostgreSQL) UpdateDebt(ctx context.Context, id uuid.UUID, input domain.
 		if ent.IsNotFound(err) {
 			return nil, errors.ErrNotFound
 		}
-		return nil, errors.FailedToSave(debtEntity, err)
+		return nil, errors.FailedToSave(transactionEntity, err)
 	}
 
-	row, err := d.Client.Debt.Query().
-		Where(debt.ID(updated.ID)).
+	row, err := d.Client.Transaction.Query().
+		Where(transaction.ID(updated.ID)).
 		WithCategory().
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind(debtEntity, err)
+		return nil, errors.FailedToFind(transactionEntity, err)
 	}
 
-	return newDebtResponse(row)
+	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) ListDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) ([]dto.DebtResponse, error) {
-	query := d.Client.Debt.Query().
+func (d *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
+	query := d.Client.Transaction.Query().
 		WithCategory()
 
-	query = applyDebtFilters(query, flt, pgn)
-	query = apllyDebtOrderBy(query, pgn)
+	query = applyTransactionFilters(query, flt, pgn)
+	query = apllyTransactionOrderBy(query, pgn)
 	query = query.Limit(pgn.PageSize).Offset(pgn.Offset())
 
 	data, err := query.All(ctx)
@@ -118,12 +118,12 @@ func (d *PostgreSQL) ListDebts(ctx context.Context, flt dto.DebtFilters, pgn *pa
 		return nil, err
 	}
 
-	return newDebtResponseList(data)
+	return newTransactionResponseList(data)
 }
 
-func (d *PostgreSQL) CountDebts(ctx context.Context, flt dto.DebtFilters, pgn *pagination.Pagination) (int, error) {
-	query := d.Client.Debt.Query()
-	query = applyDebtFilters(query, flt, pgn)
+func (d *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error) {
+	query := d.Client.Transaction.Query()
+	query = applyTransactionFilters(query, flt, pgn)
 
 	total, err := query.Count(ctx)
 	if err != nil {
@@ -132,7 +132,7 @@ func (d *PostgreSQL) CountDebts(ctx context.Context, flt dto.DebtFilters, pgn *p
 	return total, nil
 }
 
-func (d *PostgreSQL) DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.DebtStatsSummary, error) {
+func (d *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error) {
 	startDate, err := utils.ToDateTime(flt.StartDate)
 	if err != nil {
 		return nil, err
@@ -144,10 +144,10 @@ func (d *PostgreSQL) DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters
 
 	query := `
 		SELECT
-			COALESCE(SUM(d.amount), 0) AS total_amount,
+			COALESCE(SUM(t.amount), 0) AS total_amount,
 			COUNT(*) AS total_transactions,
-			COUNT(DISTINCT d.title) AS unique_establishments
-		FROM debts d
+			COUNT(DISTINCT t.title) AS unique_establishments
+		FROM transactions t
 		WHERE d.purchase_date BETWEEN $1 AND $2
 	`
 
@@ -165,7 +165,7 @@ func (d *PostgreSQL) DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters
 		averagePerTransaction = totalAmount / float64(totalTransactions)
 	}
 
-	return &dto.DebtStatsSummary{
+	return &dto.TransactionStatsSummary{
 		TotalAmount:           totalAmount,
 		TotalTransactions:     totalTransactions,
 		UniqueEstablishments:  uniqueEstablishments,
@@ -173,7 +173,7 @@ func (d *PostgreSQL) DebtsGeneralStats(ctx context.Context, flt dto.ChartFilters
 	}, nil
 }
 
-func (d *PostgreSQL) DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
+func (d *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
 	var periodTrunc string
 
 	switch flt.Period {
@@ -218,13 +218,13 @@ func (d *PostgreSQL) DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]
 	// Buscar os dados de débitos agrupados por data e categoria
 	query := `
 		SELECT 
-			DATE_TRUNC($1, d.purchase_date) AS period,
+			DATE_TRUNC($1, t.purchase_date) AS period,
 			COALESCE(c.name, 'Sem categoria') AS category,
-			SUM(d.amount) AS total,
+			SUM(t.amount) AS total,
 			COUNT(*) AS transactions
-		FROM debts d
-		LEFT JOIN categories c ON d.category_id = c.id
-		WHERE d.purchase_date BETWEEN $2 AND $3
+		FROM transactions t
+		LEFT JOIN categories c ON t.category_id = c.id
+		WHERE t.purchase_date BETWEEN $2 AND $3
 		GROUP BY period, category
 		ORDER BY period
 	`
@@ -305,8 +305,8 @@ func (d *PostgreSQL) DebtsSummary(ctx context.Context, flt dto.ChartFilters) ([]
 	return result, nil
 }
 
-func mapDebtToResponse(row *ent.Debt) dto.DebtResponse {
-	response := dto.DebtResponse{
+func mapTransactionToResponse(row *ent.Transaction) dto.TransactionResponse {
+	response := dto.TransactionResponse{
 		ID:           row.ID,
 		Title:        row.Title,
 		Amount:       row.Amount,
@@ -318,7 +318,7 @@ func mapDebtToResponse(row *ent.Debt) dto.DebtResponse {
 	}
 
 	if row.Edges.Category != nil {
-		response.Category = &dto.DebtCategoryResponse{
+		response.Category = &dto.TransactionCategoryResponse{
 			ID:   row.Edges.Category.ID,
 			Name: row.Edges.Category.Name,
 		}
@@ -327,26 +327,26 @@ func mapDebtToResponse(row *ent.Debt) dto.DebtResponse {
 	return response
 }
 
-func newDebtResponse(row *ent.Debt) (*dto.DebtResponse, error) {
+func newTransactionResponse(row *ent.Transaction) (*dto.TransactionResponse, error) {
 	if row == nil {
 		return nil, nil
 	}
-	response := mapDebtToResponse(row)
+	response := mapTransactionToResponse(row)
 	return &response, nil
 }
 
-func newDebtResponseList(rows []*ent.Debt) ([]dto.DebtResponse, error) {
+func newTransactionResponseList(rows []*ent.Transaction) ([]dto.TransactionResponse, error) {
 	if rows == nil {
 		return nil, nil
 	}
-	response := make([]dto.DebtResponse, 0, len(rows))
+	response := make([]dto.TransactionResponse, 0, len(rows))
 	for _, row := range rows {
-		response = append(response, mapDebtToResponse(row))
+		response = append(response, mapTransactionToResponse(row))
 	}
 	return response, nil
 }
 
-func apllyDebtOrderBy(query *ent.DebtQuery, pgn *pagination.Pagination) *ent.DebtQuery {
+func apllyTransactionOrderBy(query *ent.TransactionQuery, pgn *pagination.Pagination) *ent.TransactionQuery {
 
 	var orderDirection sql.OrderTermOption
 	if pgn.OrderDirection == config.OrderAsc {
@@ -358,24 +358,24 @@ func apllyDebtOrderBy(query *ent.DebtQuery, pgn *pagination.Pagination) *ent.Deb
 	switch pgn.OrderBy {
 	case "category":
 		query.Order(
-			debt.ByCategoryField(category.FieldName, orderDirection),
-			debt.ByID(sql.OrderAsc()),
+			transaction.ByCategoryField(category.FieldName, orderDirection),
+			transaction.ByID(sql.OrderAsc()),
 		)
 	case "status":
 		query.Order(
-			debt.ByStatus(orderDirection),
-			debt.ByID(sql.OrderAsc()),
+			transaction.ByStatus(orderDirection),
+			transaction.ByID(sql.OrderAsc()),
 		)
 	default:
 		if pgn.OrderDirection == config.OrderAsc {
 			query = query.Order(
 				ent.Asc(pgn.OrderBy),
-				ent.Asc(debt.FieldID),
+				ent.Asc(transaction.FieldID),
 			)
 		} else {
 			query = query.Order(
 				ent.Desc(pgn.OrderBy),
-				ent.Asc(debt.FieldID),
+				ent.Asc(transaction.FieldID),
 			)
 		}
 	}
@@ -383,13 +383,13 @@ func apllyDebtOrderBy(query *ent.DebtQuery, pgn *pagination.Pagination) *ent.Deb
 	return query
 }
 
-func applyDebtFilters(query *ent.DebtQuery, flt dto.DebtFilters, pgn *pagination.Pagination) *ent.DebtQuery {
+func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFilters, pgn *pagination.Pagination) *ent.TransactionQuery {
 	if pgn.Search != "" {
 		query = query.Where(
-			debt.Or(
-				debt.TitleContainsFold(pgn.Search),
-				debt.StatusContainsFold(pgn.Search),
-				debt.HasCategoryWith(
+			transaction.Or(
+				transaction.TitleContainsFold(pgn.Search),
+				transaction.StatusContainsFold(pgn.Search),
+				transaction.HasCategoryWith(
 					category.NameContainsFold(pgn.Search),
 				),
 			),
@@ -398,7 +398,7 @@ func applyDebtFilters(query *ent.DebtQuery, flt dto.DebtFilters, pgn *pagination
 
 	if flt.Status != nil && len(*flt.Status) > 0 {
 		query = query.Where(
-			debt.StatusIn((*flt.Status)...),
+			transaction.StatusIn((*flt.Status)...),
 		)
 	}
 
@@ -406,27 +406,27 @@ func applyDebtFilters(query *ent.DebtQuery, flt dto.DebtFilters, pgn *pagination
 		categoryIds := utils.ToUUIDSlice(*flt.CategoryID)
 		if len(categoryIds) > 0 {
 			query = query.Where(
-				debt.HasCategoryWith(category.IDIn(categoryIds...)),
+				transaction.HasCategoryWith(category.IDIn(categoryIds...)),
 			)
 		}
 	}
 
 	if flt.MinAmount != nil {
 		query = query.Where(
-			debt.AmountGTE(*flt.MinAmount),
+			transaction.AmountGTE(*flt.MinAmount),
 		)
 	}
 	if flt.MaxAmount != nil {
 		query = query.Where(
-			debt.AmountLTE(*flt.MaxAmount),
+			transaction.AmountLTE(*flt.MaxAmount),
 		)
 	}
 	if t := utils.ToDateTimeUnsafe(flt.StartDate); t != nil {
-		query = query.Where(debt.PurchaseDateGTE(*t))
+		query = query.Where(transaction.PurchaseDateGTE(*t))
 	}
 
 	if t := utils.ToDateTimeUnsafe(flt.EndDate); t != nil {
-		query = query.Where(debt.PurchaseDateLTE(*t))
+		query = query.Where(transaction.PurchaseDateLTE(*t))
 	}
 
 	return query

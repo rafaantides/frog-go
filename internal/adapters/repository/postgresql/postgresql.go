@@ -48,7 +48,7 @@ func NewPostgreSQL(user, password, host, port, database, SeedPath string) (repos
 		return nil, err
 	}
 
-	client.Debt.Use(
+	client.Transaction.Use(
 		hooks.SetCategoryFromTitleHook(client, categorizer),
 	)
 

@@ -14,8 +14,8 @@ type Tx struct {
 	config
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
-	// Debt is the client for interacting with the Debt builders.
-	Debt *DebtClient
+	// Transaction is the client for interacting with the Transaction builders.
+	Transaction *TransactionClient
 
 	// lazily loaded.
 	client     *Client
@@ -148,7 +148,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Category = NewCategoryClient(tx.config)
-	tx.Debt = NewDebtClient(tx.config)
+	tx.Transaction = NewTransactionClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

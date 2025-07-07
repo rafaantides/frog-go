@@ -57,8 +57,8 @@ func startSeed() {
 	}
 
 	if cfg.SeedPath != "" {
-		if err := seedDebts(ctx, postgresRepo, log, cfg.SeedPath); err != nil {
-			log.Fatal("Error aseeding debts: %v", err)
+		if err := seedTransactions(ctx, postgresRepo, log, cfg.SeedPath); err != nil {
+			log.Fatal("Error aseeding transactions: %v", err)
 		}
 	}
 
@@ -141,19 +141,19 @@ func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger
 	return nil
 }
 
-func seedDebts(ctx context.Context, db *postgresql.PostgreSQL, lg *logger.Logger, seedPath string) error {
-	data, err := os.ReadFile(seedPath + "/debts.json")
+func seedTransactions(ctx context.Context, db *postgresql.PostgreSQL, lg *logger.Logger, seedPath string) error {
+	data, err := os.ReadFile(seedPath + "/transactions.json")
 	if err != nil {
 		return fmt.Errorf("erro ao ler arquivo JSON: %w", err)
 	}
 
-	var debts []domain.Debt
-	if err := json.Unmarshal(data, &debts); err != nil {
+	var transactions []domain.Transaction
+	if err := json.Unmarshal(data, &transactions); err != nil {
 		return fmt.Errorf("erro ao parsear JSON: %w", err)
 	}
 
-	for _, d := range debts {
-		_, err := db.Client.Debt.
+	for _, d := range transactions {
+		_, err := db.Client.Transaction.
 			Create().
 			SetTitle(d.Title).
 			SetAmount(d.Amount).
@@ -161,7 +161,7 @@ func seedDebts(ctx context.Context, db *postgresql.PostgreSQL, lg *logger.Logger
 			SetDueDate(*d.DueDate).
 			Save(ctx)
 		if err != nil {
-			return fmt.Errorf("erro ao criar dívida '%s': %w", d.Title, err)
+			return fmt.Errorf("erro ao criar transação '%s': %w", d.Title, err)
 		}
 		lg.Info("✅ Dívida criada: %s", d.Title)
 	}

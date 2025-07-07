@@ -9,46 +9,46 @@ import (
 	"github.com/google/uuid"
 )
 
-type DebtStatus string
+type TransactionStatus string
 
 const (
-	DebtStatusPending  DebtStatus = "pending"
-	DebtStatusPaid     DebtStatus = "paid"
-	DebtStatusCanceled DebtStatus = "canceled"
+	TransactionStatusPending  TransactionStatus = "pending"
+	TransactionStatusPaid     TransactionStatus = "paid"
+	TransactionStatusCanceled TransactionStatus = "canceled"
 )
 
-func ValidDebtStatus() []string {
+func ValidTransactionStatus() []string {
 	return []string{
-		string(DebtStatusPending),
-		string(DebtStatusPaid),
-		string(DebtStatusCanceled),
+		string(TransactionStatusPending),
+		string(TransactionStatusPaid),
+		string(TransactionStatusCanceled),
 	}
 }
 
-func (a DebtStatus) IsValid() bool {
-	return slices.Contains(ValidDebtStatus(), string(a))
+func (a TransactionStatus) IsValid() bool {
+	return slices.Contains(ValidTransactionStatus(), string(a))
 }
 
-type Debt struct {
+type Transaction struct {
 	ID           uuid.UUID  `json:"id"`
 	Title        string     `json:"title"`
 	Amount       float64    `json:"amount"`
 	PurchaseDate time.Time  `json:"purchase_date"`
 	DueDate      *time.Time `json:"due_date"`
 	CategoryID   *uuid.UUID `json:"category_id"`
-	Status       DebtStatus `json:"status"`
+	Status       TransactionStatus `json:"status"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
 
-func NewDebt(
+func NewTransaction(
 	title string,
 	amount float64,
 	purchaseDate time.Time,
 	dueDate *time.Time,
 	categoryID *uuid.UUID,
-	status *DebtStatus,
-) (*Debt, error) {
+	status *TransactionStatus,
+) (*Transaction, error) {
 	if title == "" {
 		return nil, errors.EmptyField("name")
 	}
@@ -57,7 +57,7 @@ func NewDebt(
 		return nil, errors.EmptyField("amount")
 	}
 
-	statusValue := DebtStatusPending
+	statusValue := TransactionStatusPending
 	if status != nil {
 		statusValue = *status
 	}
@@ -66,7 +66,7 @@ func NewDebt(
 		return nil, errors.InvalidParam("status", fmt.Errorf("invalid value"))
 	}
 
-	return &Debt{
+	return &Transaction{
 		Title:        title,
 		Amount:       amount,
 		PurchaseDate: purchaseDate,

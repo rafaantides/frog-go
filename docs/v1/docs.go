@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/debts": {
+        "/v1/transactions": {
             "get": {
-                "description": "Lista todas as dívidas aplicando filtros e paginação",
+                "description": "Lista todas as transações aplicando filtros e paginação",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,9 +25,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Dívidas"
+                    "Transações"
                 ],
-                "summary": "Lista dívidas com filtros e paginação",
+                "summary": "Lista transações com filtros e paginação",
                 "parameters": [
                     {
                         "type": "array",
@@ -104,14 +104,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.DebtResponse"
+                                "$ref": "#/definitions/dto.TransactionResponse"
                             }
                         }
                     }
                 }
             },
             "post": {
-                "description": "Cria uma nova dívida com os dados fornecidos no corpo da requisição",
+                "description": "Cria uma nova transação com os dados fornecidos no corpo da requisição",
                 "consumes": [
                     "application/json"
                 ],
@@ -119,17 +119,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Dívidas"
+                    "Transações"
                 ],
-                "summary": "Cria uma nova dívida",
+                "summary": "Cria uma nova transação",
                 "parameters": [
                     {
-                        "description": "Dados da dívida",
+                        "description": "Dados da transação",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.DebtRequest"
+                            "$ref": "#/definitions/dto.TransactionRequest"
                         }
                     }
                 ],
@@ -137,15 +137,15 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.DebtResponse"
+                            "$ref": "#/definitions/dto.TransactionResponse"
                         }
                     }
                 }
             }
         },
-        "/v1/debts/{id}": {
+        "/v1/transactions/{id}": {
             "get": {
-                "description": "Retorna os dados de uma dívida com base no ID fornecido",
+                "description": "Retorna os dados de uma transação com base no ID fornecido",
                 "consumes": [
                     "application/json"
                 ],
@@ -153,13 +153,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Dívidas"
+                    "Transações"
                 ],
-                "summary": "Busca uma dívida por ID",
+                "summary": "Busca uma transação por ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID da dívida",
+                        "description": "ID da transação",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -169,7 +169,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.DebtResponse"
+                            "$ref": "#/definitions/dto.TransactionResponse"
                         }
                     }
                 }
@@ -177,7 +177,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.DebtCategoryResponse": {
+        "dto.TransactionCategoryResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -188,7 +188,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.DebtRequest": {
+        "dto.TransactionRequest": {
             "type": "object",
             "required": [
                 "status"
@@ -219,14 +219,14 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.DebtResponse": {
+        "dto.TransactionResponse": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
                 },
                 "category": {
-                    "$ref": "#/definitions/dto.DebtCategoryResponse"
+                    "$ref": "#/definitions/dto.TransactionCategoryResponse"
                 },
                 "created_at": {
                     "type": "string"

@@ -11,7 +11,7 @@ import (
 func SetCategoryFromTitleHook(client *ent.Client, categorizer *Categorizer) ent.Hook {
 	return func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			dm, ok := m.(*ent.DebtMutation)
+			dm, ok := m.(*ent.TransactionMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type: %T", m)
 			}
@@ -22,7 +22,7 @@ func SetCategoryFromTitleHook(client *ent.Client, categorizer *Categorizer) ent.
 
 			title, exists := dm.Title()
 			if !exists {
-				return nil, fmt.Errorf("title is required to categorize debt")
+				return nil, fmt.Errorf("title is required to categorize transaction")
 			}
 
 			categoryName := categorizer.Categorize(title)
