@@ -64,6 +64,16 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{DebtsColumns[8]},
 			},
+			{
+				Name:    "debt_due_date_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{DebtsColumns[6], DebtsColumns[8]},
+			},
+			{
+				Name:    "debt_purchase_date_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{DebtsColumns[5], DebtsColumns[8]},
+			},
 		},
 	}
 	// Tables holds all the tables in the schema.

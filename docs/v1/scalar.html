@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
     <title>Scalar</title>
-    <script
-      src="https://unpkg.com/@scalar/api-reference"
-      type="module"
-    ></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
+
   <body>
-    <api-reference
-      url="/docs/v1/swagger.json"
-      layout="sidebar"
-    ></api-reference>
+    <div id="app"></div>
+
+    <!-- Load the Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
+    <!-- Initialize the Scalar API Reference -->
+    <script>
+      Scalar.createApiReference("#app", {
+        // The URL of the OpenAPI/Swagger document
+        url: "/docs/v1/swagger.json",
+        // Avoid CORS issues
+        proxyUrl: "https://proxy.scalar.com",
+      });
+    </script>
   </body>
 </html>

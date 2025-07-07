@@ -55,5 +55,7 @@ func (Debt) Indexes() []ent.Index {
 		index.Fields("purchase_date"),
 		index.Fields("due_date"),
 		index.Edges("category"),
+		index.Edges("category").Fields("due_date"),
+		index.Edges("category").Fields("purchase_date"),
 	}
 }

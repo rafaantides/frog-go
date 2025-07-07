@@ -4,6 +4,7 @@ import (
 	"frog-go/internal/core/ports/outbound/messagebus"
 	"frog-go/internal/core/ports/outbound/repository"
 	"frog-go/internal/core/service"
+
 	//"frog-go/internal/core/service/upload"
 	"frog-go/internal/http/handler"
 	"frog-go/internal/http/middlewares"
@@ -37,7 +38,7 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	v1 := engine.Group("/api/v1")
 
 	v1.Use(middlewares.ErrorMiddleware(r.log))
-	v1.Use(middlewares.CORSMiddleware())
+	// v1.Use(middlewares.CORSMiddleware())
 	v1.Use(middlewares.UUIDMiddleware(r.log))
 
 	engine.StaticFile("/favicon.ico", "./static/favicon.ico")

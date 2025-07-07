@@ -21,6 +21,15 @@ func NewDebtHandler(service inbound.DebtService) *DebtHandler {
 	return &DebtHandler{service: service}
 }
 
+// CreateDebtHandler godoc
+// @Summary Cria uma nova dívida
+// @Description Cria uma nova dívida com os dados fornecidos no corpo da requisição
+// @Tags Dívidas
+// @Accept json
+// @Produce json
+// @Param request body dto.DebtRequest true "Dados da dívida"
+// @Success 201 {object} dto.DebtResponse
+// @Router /v1/debts [post]
 func (h *DebtHandler) CreateDebtHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req dto.DebtRequest
@@ -45,6 +54,15 @@ func (h *DebtHandler) CreateDebtHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, data)
 }
 
+// GetDebtByIDHandler godoc
+// @Summary Busca uma dívida por ID
+// @Description Retorna os dados de uma dívida com base no ID fornecido
+// @Tags Dívidas
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da dívida"
+// @Success 200 {object} dto.DebtResponse
+// @Router /v1/debts/{id} [get]
 func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -66,6 +84,24 @@ func (h *DebtHandler) GetDebtByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+// ListDebtsHandler godoc
+// @Summary Lista dívidas com filtros e paginação
+// @Description Lista todas as dívidas aplicando filtros e paginação
+// @Tags Dívidas
+// @Accept json
+// @Produce json
+// @Param status query []string false "Filtrar por status"
+// @Param category_id query []string false "Filtrar por categorias"
+// @Param min_amount query number false "Valor mínimo"
+// @Param max_amount query number false "Valor máximo"
+// @Param start_date query string false "Data inicial"
+// @Param end_date query string false "Data final"
+// @Param page query int false "Número da página"
+// @Param limit query int false "Limite por página"
+// @Param order_by query string false "Campo de ordenação"
+// @Param order query string false "Ordem (asc, desc)"
+// @Success 200 {array} dto.DebtResponse
+// @Router /v1/debts [get]
 func (h *DebtHandler) ListDebtsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.DebtFilters
