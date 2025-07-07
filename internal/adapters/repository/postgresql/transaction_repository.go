@@ -53,6 +53,7 @@ func (d *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		Create().
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
+		SetKind(string(input.Kind)).
 		SetStatus(string(input.Status)).
 		SetNillableDueDate(input.DueDate).
 		SetPurchaseDate(input.PurchaseDate).
@@ -80,6 +81,7 @@ func (d *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 		UpdateOneID(id).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
+		SetKind(string(input.Kind)).
 		SetStatus(string(input.Status)).
 		SetNillableDueDate(input.DueDate).
 		SetPurchaseDate(input.PurchaseDate).
@@ -396,14 +398,20 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		)
 	}
 
-	if flt.Status != nil && len(*flt.Status) > 0 {
+	if flt.Statuses != nil && len(*flt.Statuses) > 0 {
 		query = query.Where(
-			transaction.StatusIn((*flt.Status)...),
+			transaction.StatusIn((*flt.Statuses)...),
 		)
 	}
 
-	if flt.CategoryID != nil {
-		categoryIds := utils.ToUUIDSlice(*flt.CategoryID)
+	if flt.Kinds != nil && len(*flt.Kinds) > 0 {
+		query = query.Where(
+			transaction.KindIn((*flt.Kinds)...),
+		)
+	}
+
+	if flt.CategoryIDs != nil {
+		categoryIds := utils.ToUUIDSlice(*flt.CategoryIDs)
 		if len(categoryIds) > 0 {
 			query = query.Where(
 				transaction.HasCategoryWith(category.IDIn(categoryIds...)),

@@ -9,11 +9,9 @@ type DataRecord struct {
 }
 
 type ChartFilters struct {
-	CategoryID *[]string `form:"category_id"`
-	StatusID   *[]string `form:"status_id"`
-	Period     string    `form:"period"`
-	StartDate  string    `form:"start_date"`
-	EndDate    string    `form:"end_date"`
+	Period    string `form:"period"`
+	StartDate string `form:"start_date"`
+	EndDate   string `form:"end_date"`
 }
 
 type CategorySummary struct {

@@ -119,6 +119,20 @@ func (tu *TransactionUpdate) SetNillableStatus(s *string) *TransactionUpdate {
 	return tu
 }
 
+// SetKind sets the "kind" field.
+func (tu *TransactionUpdate) SetKind(s string) *TransactionUpdate {
+	tu.mutation.SetKind(s)
+	return tu
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableKind(s *string) *TransactionUpdate {
+	if s != nil {
+		tu.SetKind(*s)
+	}
+	return tu
+}
+
 // SetCategoryID sets the "category" edge to the Category entity by ID.
 func (tu *TransactionUpdate) SetCategoryID(id uuid.UUID) *TransactionUpdate {
 	tu.mutation.SetCategoryID(id)
@@ -197,6 +211,11 @@ func (tu *TransactionUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
 		}
 	}
+	if v, ok := tu.mutation.Kind(); ok {
+		if err := transaction.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -235,6 +254,9 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := tu.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := tu.mutation.Kind(); ok {
+		_spec.SetField(transaction.FieldKind, field.TypeString, value)
 	}
 	if tu.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -374,6 +396,20 @@ func (tuo *TransactionUpdateOne) SetNillableStatus(s *string) *TransactionUpdate
 	return tuo
 }
 
+// SetKind sets the "kind" field.
+func (tuo *TransactionUpdateOne) SetKind(s string) *TransactionUpdateOne {
+	tuo.mutation.SetKind(s)
+	return tuo
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableKind(s *string) *TransactionUpdateOne {
+	if s != nil {
+		tuo.SetKind(*s)
+	}
+	return tuo
+}
+
 // SetCategoryID sets the "category" edge to the Category entity by ID.
 func (tuo *TransactionUpdateOne) SetCategoryID(id uuid.UUID) *TransactionUpdateOne {
 	tuo.mutation.SetCategoryID(id)
@@ -465,6 +501,11 @@ func (tuo *TransactionUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
 		}
 	}
+	if v, ok := tuo.mutation.Kind(); ok {
+		if err := transaction.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -520,6 +561,9 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	}
 	if value, ok := tuo.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := tuo.mutation.Kind(); ok {
+		_spec.SetField(transaction.FieldKind, field.TypeString, value)
 	}
 	if tuo.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{

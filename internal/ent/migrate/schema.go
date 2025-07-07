@@ -33,6 +33,7 @@ var (
 		{Name: "purchase_date", Type: field.TypeTime},
 		{Name: "due_date", Type: field.TypeTime, Nullable: true},
 		{Name: "status", Type: field.TypeString, Default: "pending"},
+		{Name: "kind", Type: field.TypeString, Default: "expense"},
 		{Name: "category_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
@@ -43,7 +44,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "transactions_categories_category",
-				Columns:    []*schema.Column{TransactionsColumns[8]},
+				Columns:    []*schema.Column{TransactionsColumns[9]},
 				RefColumns: []*schema.Column{CategoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -60,19 +61,24 @@ var (
 				Columns: []*schema.Column{TransactionsColumns[6]},
 			},
 			{
-				Name:    "transaction_category_id",
+				Name:    "transaction_kind",
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[8]},
 			},
 			{
-				Name:    "transaction_due_date_category_id",
+				Name:    "transaction_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[8]},
+				Columns: []*schema.Column{TransactionsColumns[9]},
 			},
 			{
-				Name:    "transaction_purchase_date_category_id",
+				Name:    "transaction_kind_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[5], TransactionsColumns[8]},
+				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[9]},
+			},
+			{
+				Name:    "transaction_kind_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[9]},
 			},
 		},
 	}

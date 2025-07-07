@@ -633,6 +633,7 @@ type TransactionMutation struct {
 	purchase_date   *time.Time
 	due_date        *time.Time
 	status          *string
+	kind            *string
 	clearedFields   map[string]struct{}
 	category        *uuid.UUID
 	clearedcategory bool
@@ -1030,6 +1031,42 @@ func (m *TransactionMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetKind sets the "kind" field.
+func (m *TransactionMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *TransactionMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the Transaction entity.
+// If the Transaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransactionMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *TransactionMutation) ResetKind() {
+	m.kind = nil
+}
+
 // SetCategoryID sets the "category" edge to the Category entity by id.
 func (m *TransactionMutation) SetCategoryID(id uuid.UUID) {
 	m.category = &id
@@ -1103,7 +1140,7 @@ func (m *TransactionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TransactionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, transaction.FieldCreatedAt)
 	}
@@ -1124,6 +1161,9 @@ func (m *TransactionMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, transaction.FieldStatus)
+	}
+	if m.kind != nil {
+		fields = append(fields, transaction.FieldKind)
 	}
 	return fields
 }
@@ -1147,6 +1187,8 @@ func (m *TransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.DueDate()
 	case transaction.FieldStatus:
 		return m.Status()
+	case transaction.FieldKind:
+		return m.Kind()
 	}
 	return nil, false
 }
@@ -1170,6 +1212,8 @@ func (m *TransactionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldDueDate(ctx)
 	case transaction.FieldStatus:
 		return m.OldStatus(ctx)
+	case transaction.FieldKind:
+		return m.OldKind(ctx)
 	}
 	return nil, fmt.Errorf("unknown Transaction field %s", name)
 }
@@ -1227,6 +1271,13 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case transaction.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)
@@ -1321,6 +1372,9 @@ func (m *TransactionMutation) ResetField(name string) error {
 		return nil
 	case transaction.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case transaction.FieldKind:
+		m.ResetKind()
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)

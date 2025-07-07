@@ -31,10 +31,20 @@ func (Transaction) Fields() []ent.Field {
 
 		field.String("status").
 			NotEmpty().
-			Default(string(domain.TransactionStatusPending)).
+			Default(string(domain.TxnStatusPending)).
 			Validate(func(s string) error {
-				if !domain.TransactionStatus(s).IsValid() {
+				if !domain.TxnStatus(s).IsValid() {
 					return fmt.Errorf("invalid status: %q", s)
+				}
+				return nil
+			}),
+
+		field.String("kind").
+			NotEmpty().
+			Default(string(domain.TxnKindExpense)).
+			Validate(func(s string) error {
+				if !domain.TxnKind(s).IsValid() {
+					return fmt.Errorf("invalid kind: %q", s)
 				}
 				return nil
 			}),
@@ -54,8 +64,9 @@ func (Transaction) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("purchase_date"),
 		index.Fields("due_date"),
+		index.Fields("kind"),
 		index.Edges("category"),
-		index.Edges("category").Fields("due_date"),
-		index.Edges("category").Fields("purchase_date"),
+		index.Edges("category").Fields("due_date").Fields("kind"),
+		index.Edges("category").Fields("purchase_date").Fields("kind"),
 	}
 }

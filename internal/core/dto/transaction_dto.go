@@ -16,28 +16,31 @@ type TransactionRequest struct {
 	DueDate      *string `json:"due_date"`
 	CategoryID   *string `json:"category_id"`
 	Status       string  `json:"status" validate:"required,oneof=pending paid canceled"`
+	Kind         string  `json:"kind" validate:"required,oneof=income expense"`
 }
 
 // TODO: fazer um bind que funcione com uuid.UUID o ShouldBindQuery n esta reconhecendo o *[]uuid.UUID
 type TransactionFilters struct {
-	CategoryID *[]string `json:"category_id"`
-	Status     *[]string `form:"status"`
-	MinAmount  *float64  `form:"min_amount"`
-	MaxAmount  *float64  `form:"max_amount"`
-	StartDate  *string   `form:"start_date"`
-	EndDate    *string   `form:"end_date"`
+	CategoryIDs *[]string `json:"category_ids"`
+	Statuses    *[]string `form:"statuses"`
+	Kinds       *[]string `form:"kinds"`
+	MinAmount   *float64  `form:"min_amount"`
+	MaxAmount   *float64  `form:"max_amount"`
+	StartDate   *string   `form:"start_date"`
+	EndDate     *string   `form:"end_date"`
 }
 
 type TransactionResponse struct {
-	ID           uuid.UUID             `json:"id"`
-	Title        string                `json:"title"`
-	Amount       float64               `json:"amount"`
-	PurchaseDate string                `json:"purchase_date"`
-	DueDate      *string               `json:"due_date"`
+	ID           uuid.UUID                    `json:"id"`
+	Title        string                       `json:"title"`
+	Amount       float64                      `json:"amount"`
+	PurchaseDate string                       `json:"purchase_date"`
+	DueDate      *string                      `json:"due_date"`
 	Category     *TransactionCategoryResponse `json:"category"`
-	Status       string                `json:"status"`
-	CreatedAt    string                `json:"created_at"`
-	UpdatedAt    string                `json:"updated_at"`
+	Kind         string                       `json:"kind"`
+	Status       string                       `json:"status"`
+	CreatedAt    string                       `json:"created_at"`
+	UpdatedAt    string                       `json:"updated_at"`
 }
 
 type TransactionCategoryResponse struct {
@@ -67,7 +70,8 @@ func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 		}
 	}
 
-	status := domain.TransactionStatus(r.Status)
+	status := domain.TxnStatus(r.Status)
+	kind := domain.TxnKind(r.Kind)
 
 	return domain.NewTransaction(
 		r.Title,
@@ -76,5 +80,6 @@ func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 		dueDate,
 		categoryID,
 		&status,
+		&kind,
 	)
 }

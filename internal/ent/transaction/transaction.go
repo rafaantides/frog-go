@@ -29,6 +29,8 @@ const (
 	FieldDueDate = "due_date"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldKind holds the string denoting the kind field in the database.
+	FieldKind = "kind"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
 	EdgeCategory = "category"
 	// Table holds the table name of the transaction in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldPurchaseDate,
 	FieldDueDate,
 	FieldStatus,
+	FieldKind,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "transactions"
@@ -88,6 +91,10 @@ var (
 	DefaultStatus string
 	// StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	StatusValidator func(string) error
+	// DefaultKind holds the default value on creation for the "kind" field.
+	DefaultKind string
+	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	KindValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -133,6 +140,11 @@ func ByDueDate(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByKind orders the results by the kind field.
+func ByKind(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldKind, opts...).ToFunc()
 }
 
 // ByCategoryField orders the results by category field.

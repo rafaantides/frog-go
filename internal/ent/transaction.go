@@ -33,6 +33,8 @@ type Transaction struct {
 	DueDate *time.Time `json:"due_date,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
+	// Kind holds the value of the "kind" field.
+	Kind string `json:"kind,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges        TransactionEdges `json:"edges"`
@@ -67,7 +69,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transaction.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case transaction.FieldTitle, transaction.FieldStatus:
+		case transaction.FieldTitle, transaction.FieldStatus, transaction.FieldKind:
 			values[i] = new(sql.NullString)
 		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldPurchaseDate, transaction.FieldDueDate:
 			values[i] = new(sql.NullTime)
@@ -139,6 +141,12 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.Status = value.String
 			}
+		case transaction.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				t.Kind = value.String
+			}
 		case transaction.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
@@ -209,6 +217,9 @@ func (t *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(t.Status)
+	builder.WriteString(", ")
+	builder.WriteString("kind=")
+	builder.WriteString(t.Kind)
 	builder.WriteByte(')')
 	return builder.String()
 }

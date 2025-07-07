@@ -113,6 +113,26 @@ func init() {
 			return nil
 		}
 	}()
+	// transactionDescKind is the schema descriptor for kind field.
+	transactionDescKind := transactionFields[4].Descriptor()
+	// transaction.DefaultKind holds the default value on creation for the kind field.
+	transaction.DefaultKind = transactionDescKind.Default.(string)
+	// transaction.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	transaction.KindValidator = func() func(string) error {
+		validators := transactionDescKind.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(kind string) error {
+			for _, fn := range fns {
+				if err := fn(kind); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// transactionDescID is the schema descriptor for id field.
 	transactionDescID := transactionMixinFields0[0].Descriptor()
 	// transaction.DefaultID holds the default value on creation for the id field.
