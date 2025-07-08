@@ -88,7 +88,9 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 
 	fmt.Printf("%v", pgn)
 
-	response, total, err := h.service.ListCategories(ctx, pgn)
+	kinds := c.QueryArray("kinds")
+
+	response, total, err := h.service.ListCategories(ctx, kinds, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))

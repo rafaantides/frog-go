@@ -35,13 +35,13 @@ func (s *categoryService) DeleteCategoryByID(ctx context.Context, id uuid.UUID) 
 	return s.repo.DeleteCategoryByID(ctx, id)
 }
 
-func (s *categoryService) ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error) {
-	data, err := s.repo.ListCategories(ctx, pgn)
+func (s *categoryService) ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error) {
+	data, err := s.repo.ListCategories(ctx, kinds, pgn)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, err := s.repo.CountCategories(ctx, pgn)
+	total, err := s.repo.CountCategories(ctx, kinds, pgn)
 	if err != nil {
 		return nil, 0, err
 	}

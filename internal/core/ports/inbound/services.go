@@ -14,7 +14,7 @@ type CategoryService interface {
 	CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error)
 	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error)
 	DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
-	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error)
+	ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error)
 }
 
 type TransactionService interface {

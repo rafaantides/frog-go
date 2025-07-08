@@ -19,6 +19,7 @@ func (Transaction) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.UUIDMixin{},
 		mixins.TimestampsMixin{},
+		mixins.TxnKindMixin{},
 		mixins.MoneyMixin{Name: "amount"},
 	}
 }
@@ -35,16 +36,6 @@ func (Transaction) Fields() []ent.Field {
 			Validate(func(s string) error {
 				if !domain.TxnStatus(s).IsValid() {
 					return fmt.Errorf("invalid status: %q", s)
-				}
-				return nil
-			}),
-
-		field.String("kind").
-			NotEmpty().
-			Default(string(domain.TxnKindExpense)).
-			Validate(func(s string) error {
-				if !domain.TxnKind(s).IsValid() {
-					return fmt.Errorf("invalid kind: %q", s)
 				}
 				return nil
 			}),
@@ -66,7 +57,7 @@ func (Transaction) Indexes() []ent.Index {
 		index.Fields("due_date"),
 		index.Fields("kind"),
 		index.Edges("category"),
-		index.Edges("category").Fields("due_date").Fields("kind"),
-		index.Edges("category").Fields("purchase_date").Fields("kind"),
+		index.Edges("category").Fields("due_date", "kind"),
+		index.Edges("category").Fields("purchase_date", "kind"),
 	}
 }

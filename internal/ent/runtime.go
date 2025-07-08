@@ -54,6 +54,26 @@ func init() {
 	categoryDescColor := categoryFields[2].Descriptor()
 	// category.ColorValidator is a validator for the "color" field. It is called by the builders before save.
 	category.ColorValidator = categoryDescColor.Validators[0].(func(string) error)
+	// categoryDescKind is the schema descriptor for kind field.
+	categoryDescKind := categoryFields[3].Descriptor()
+	// category.DefaultKind holds the default value on creation for the kind field.
+	category.DefaultKind = categoryDescKind.Default.(string)
+	// category.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	category.KindValidator = func() func(string) error {
+		validators := categoryDescKind.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(kind string) error {
+			for _, fn := range fns {
+				if err := fn(kind); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// categoryDescID is the schema descriptor for id field.
 	categoryDescID := categoryMixinFields0[0].Descriptor()
 	// category.DefaultID holds the default value on creation for the id field.

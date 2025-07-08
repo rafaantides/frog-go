@@ -24,6 +24,8 @@ const (
 	FieldDescription = "description"
 	// FieldColor holds the string denoting the color field in the database.
 	FieldColor = "color"
+	// FieldKind holds the string denoting the kind field in the database.
+	FieldKind = "kind"
 	// Table holds the table name of the category in the database.
 	Table = "categories"
 )
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldColor,
+	FieldKind,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -59,6 +62,10 @@ var (
 	NameValidator func(string) error
 	// ColorValidator is a validator for the "color" field. It is called by the builders before save.
 	ColorValidator func(string) error
+	// DefaultKind holds the default value on creation for the "kind" field.
+	DefaultKind string
+	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	KindValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -94,4 +101,9 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByColor orders the results by the color field.
 func ByColor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldColor, opts...).ToFunc()
+}
+
+// ByKind orders the results by the kind field.
+func ByKind(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldKind, opts...).ToFunc()
 }

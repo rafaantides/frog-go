@@ -16,12 +16,20 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true, Size: 7},
+		{Name: "kind", Type: field.TypeString, Default: "expense"},
 	}
 	// CategoriesTable holds the schema information for the "categories" table.
 	CategoriesTable = &schema.Table{
 		Name:       "categories",
 		Columns:    CategoriesColumns,
 		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "category_kind",
+				Unique:  false,
+				Columns: []*schema.Column{CategoriesColumns[6]},
+			},
+		},
 	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
