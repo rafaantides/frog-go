@@ -42,18 +42,17 @@ func NewWorker(
 	}
 }
 
-func (w *Worker) Start(queue string, limit, timeoutSeconds, maxAttempts int) {
+func (w *Worker) Start(queue string, limit, timeoutSeconds int) {
 	w.log.Start(
-		"Processo iniciado... Fila: %s | Concorrência: %d mensagens | Timeout: %ds | Máx. Tentativas: %d",
-		queue, limit, timeoutSeconds, maxAttempts,
+		"Processo iniciado... Fila: %s | Concorrência: %d mensagens | Timeout: %ds",
+		queue, limit, timeoutSeconds,
 	)
 
 	processInfo := fmt.Sprintf(
-		"\n\nFila: %s\nConcorrência: %d mensagens\nTimeout: %ds\nMáx. Tentativas: %d",
+		"\n\nFila: %s\nConcorrência: %d mensagens\nTimeout: %ds",
 		queue,
 		limit,
 		timeoutSeconds,
-		maxAttempts,
 	)
 
 	w.noti.SendMessage(w.ctx, fmt.Sprintf("**Processo iniciado 🚀**%s", processInfo))
@@ -67,13 +66,13 @@ func (w *Worker) Start(queue string, limit, timeoutSeconds, maxAttempts int) {
 		idleTimeout = 5 * time.Minute
 	)
 
-	consumer, err := w.mbus.Consume(queue)
+	messageHandler, err := w.mbus.Consume(queue)
 	if err != nil {
 		w.log.Fatal("Erro ao iniciar o consumo da fila %s: %v", queue, err)
 	}
-	defer consumer.Close()
+	defer messageHandler.Close()
 
-	msgs := consumer.Messages()
+	msgs := messageHandler.Messages()
 
 	go func() {
 		for {
@@ -125,7 +124,7 @@ consumeLoop:
 					defer wg.Done()
 					defer func() { <-semaphore }()
 
-					if err := w.processMessage(queue, timeoutSeconds, maxAttempts, msg.Body()); err != nil {
+					if err := w.processMessage(timeoutSeconds, msg.Body()); err != nil {
 						mu.Lock()
 						hadErrors = true
 						mu.Unlock()
@@ -155,8 +154,8 @@ consumeLoop:
 	w.log.Success("Worker finalizado com sucesso.")
 }
 
-func (w *Worker) processMessage(queue string, timeoutSeconds int, maxAttempts int, messageBody []byte) error {
-	if err := w.consumer.ProcessMessage(queue, timeoutSeconds, maxAttempts, messageBody); err != nil {
+func (w *Worker) processMessage(timeoutSeconds int, messageBody []byte) error {
+	if err := w.consumer.ProcessMessage(timeoutSeconds, messageBody); err != nil {
 		w.log.Error("ctx: %s | %v", w.ctx, err)
 		return err
 	}
