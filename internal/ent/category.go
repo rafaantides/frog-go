@@ -22,14 +22,14 @@ type Category struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Kind holds the value of the "kind" field.
+	Kind string `json:"kind,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
 	// Color holds the value of the "color" field.
-	Color *string `json:"color,omitempty"`
-	// Kind holds the value of the "kind" field.
-	Kind         string `json:"kind,omitempty"`
+	Color        *string `json:"color,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -38,7 +38,7 @@ func (*Category) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case category.FieldName, category.FieldDescription, category.FieldColor, category.FieldKind:
+		case category.FieldKind, category.FieldName, category.FieldDescription, category.FieldColor:
 			values[i] = new(sql.NullString)
 		case category.FieldCreatedAt, category.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -77,6 +77,12 @@ func (c *Category) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.UpdatedAt = value.Time
 			}
+		case category.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				c.Kind = value.String
+			}
 		case category.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -96,12 +102,6 @@ func (c *Category) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Color = new(string)
 				*c.Color = value.String
-			}
-		case category.FieldKind:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field kind", values[i])
-			} else if value.Valid {
-				c.Kind = value.String
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -145,6 +145,9 @@ func (c *Category) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	builder.WriteString("kind=")
+	builder.WriteString(c.Kind)
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
 	builder.WriteString(", ")
@@ -157,9 +160,6 @@ func (c *Category) String() string {
 		builder.WriteString("color=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("kind=")
-	builder.WriteString(c.Kind)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -49,6 +49,20 @@ func (cc *CategoryCreate) SetNillableUpdatedAt(t *time.Time) *CategoryCreate {
 	return cc
 }
 
+// SetKind sets the "kind" field.
+func (cc *CategoryCreate) SetKind(s string) *CategoryCreate {
+	cc.mutation.SetKind(s)
+	return cc
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableKind(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetKind(*s)
+	}
+	return cc
+}
+
 // SetName sets the "name" field.
 func (cc *CategoryCreate) SetName(s string) *CategoryCreate {
 	cc.mutation.SetName(s)
@@ -79,20 +93,6 @@ func (cc *CategoryCreate) SetColor(s string) *CategoryCreate {
 func (cc *CategoryCreate) SetNillableColor(s *string) *CategoryCreate {
 	if s != nil {
 		cc.SetColor(*s)
-	}
-	return cc
-}
-
-// SetKind sets the "kind" field.
-func (cc *CategoryCreate) SetKind(s string) *CategoryCreate {
-	cc.mutation.SetKind(s)
-	return cc
-}
-
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableKind(s *string) *CategoryCreate {
-	if s != nil {
-		cc.SetKind(*s)
 	}
 	return cc
 }
@@ -172,6 +172,14 @@ func (cc *CategoryCreate) check() error {
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Category.updated_at"`)}
 	}
+	if _, ok := cc.mutation.Kind(); !ok {
+		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Category.kind"`)}
+	}
+	if v, ok := cc.mutation.Kind(); ok {
+		if err := category.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Category.kind": %w`, err)}
+		}
+	}
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Category.name"`)}
 	}
@@ -183,14 +191,6 @@ func (cc *CategoryCreate) check() error {
 	if v, ok := cc.mutation.Color(); ok {
 		if err := category.ColorValidator(v); err != nil {
 			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Category.color": %w`, err)}
-		}
-	}
-	if _, ok := cc.mutation.Kind(); !ok {
-		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Category.kind"`)}
-	}
-	if v, ok := cc.mutation.Kind(); ok {
-		if err := category.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Category.kind": %w`, err)}
 		}
 	}
 	return nil
@@ -236,6 +236,10 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		_spec.SetField(category.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := cc.mutation.Kind(); ok {
+		_spec.SetField(category.FieldKind, field.TypeString, value)
+		_node.Kind = value
+	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(category.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -247,10 +251,6 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Color(); ok {
 		_spec.SetField(category.FieldColor, field.TypeString, value)
 		_node.Color = &value
-	}
-	if value, ok := cc.mutation.Kind(); ok {
-		_spec.SetField(category.FieldKind, field.TypeString, value)
-		_node.Kind = value
 	}
 	return _node, _spec
 }

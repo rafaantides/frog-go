@@ -13,10 +13,10 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "kind", Type: field.TypeString, Default: "expense"},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true, Size: 7},
-		{Name: "kind", Type: field.TypeString, Default: "expense"},
 	}
 	// CategoriesTable holds the schema information for the "categories" table.
 	CategoriesTable = &schema.Table{
@@ -27,7 +27,7 @@ var (
 			{
 				Name:    "category_kind",
 				Unique:  false,
-				Columns: []*schema.Column{CategoriesColumns[6]},
+				Columns: []*schema.Column{CategoriesColumns[3]},
 			},
 		},
 	}
@@ -36,12 +36,12 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "kind", Type: field.TypeString, Default: "expense"},
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
 		{Name: "title", Type: field.TypeString, Size: 255},
 		{Name: "purchase_date", Type: field.TypeTime},
 		{Name: "due_date", Type: field.TypeTime, Nullable: true},
 		{Name: "status", Type: field.TypeString, Default: "pending"},
-		{Name: "kind", Type: field.TypeString, Default: "expense"},
 		{Name: "category_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
@@ -61,17 +61,17 @@ var (
 			{
 				Name:    "transaction_purchase_date",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[5]},
+				Columns: []*schema.Column{TransactionsColumns[6]},
 			},
 			{
 				Name:    "transaction_due_date",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6]},
+				Columns: []*schema.Column{TransactionsColumns[7]},
 			},
 			{
 				Name:    "transaction_kind",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[8]},
+				Columns: []*schema.Column{TransactionsColumns[3]},
 			},
 			{
 				Name:    "transaction_category_id",
@@ -79,14 +79,14 @@ var (
 				Columns: []*schema.Column{TransactionsColumns[9]},
 			},
 			{
-				Name:    "transaction_kind_category_id",
+				Name:    "transaction_due_date_kind_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[9]},
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[3], TransactionsColumns[9]},
 			},
 			{
-				Name:    "transaction_kind_category_id",
+				Name:    "transaction_purchase_date_kind_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[9]},
+				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[3], TransactionsColumns[9]},
 			},
 		},
 	}

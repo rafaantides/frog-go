@@ -20,6 +20,8 @@ func init() {
 	_ = categoryMixinFields0
 	categoryMixinFields1 := categoryMixin[1].Fields()
 	_ = categoryMixinFields1
+	categoryMixinFields2 := categoryMixin[2].Fields()
+	_ = categoryMixinFields2
 	categoryFields := schemas.Category{}.Fields()
 	_ = categoryFields
 	// categoryDescCreatedAt is the schema descriptor for created_at field.
@@ -32,6 +34,26 @@ func init() {
 	category.DefaultUpdatedAt = categoryDescUpdatedAt.Default.(func() time.Time)
 	// category.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	category.UpdateDefaultUpdatedAt = categoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// categoryDescKind is the schema descriptor for kind field.
+	categoryDescKind := categoryMixinFields2[0].Descriptor()
+	// category.DefaultKind holds the default value on creation for the kind field.
+	category.DefaultKind = categoryDescKind.Default.(string)
+	// category.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	category.KindValidator = func() func(string) error {
+		validators := categoryDescKind.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(kind string) error {
+			for _, fn := range fns {
+				if err := fn(kind); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// categoryDescName is the schema descriptor for name field.
 	categoryDescName := categoryFields[0].Descriptor()
 	// category.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -54,13 +76,36 @@ func init() {
 	categoryDescColor := categoryFields[2].Descriptor()
 	// category.ColorValidator is a validator for the "color" field. It is called by the builders before save.
 	category.ColorValidator = categoryDescColor.Validators[0].(func(string) error)
-	// categoryDescKind is the schema descriptor for kind field.
-	categoryDescKind := categoryFields[3].Descriptor()
-	// category.DefaultKind holds the default value on creation for the kind field.
-	category.DefaultKind = categoryDescKind.Default.(string)
-	// category.KindValidator is a validator for the "kind" field. It is called by the builders before save.
-	category.KindValidator = func() func(string) error {
-		validators := categoryDescKind.Validators
+	// categoryDescID is the schema descriptor for id field.
+	categoryDescID := categoryMixinFields0[0].Descriptor()
+	// category.DefaultID holds the default value on creation for the id field.
+	category.DefaultID = categoryDescID.Default.(func() uuid.UUID)
+	transactionMixin := schemas.Transaction{}.Mixin()
+	transactionMixinFields0 := transactionMixin[0].Fields()
+	_ = transactionMixinFields0
+	transactionMixinFields1 := transactionMixin[1].Fields()
+	_ = transactionMixinFields1
+	transactionMixinFields2 := transactionMixin[2].Fields()
+	_ = transactionMixinFields2
+	transactionFields := schemas.Transaction{}.Fields()
+	_ = transactionFields
+	// transactionDescCreatedAt is the schema descriptor for created_at field.
+	transactionDescCreatedAt := transactionMixinFields1[0].Descriptor()
+	// transaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	transaction.DefaultCreatedAt = transactionDescCreatedAt.Default.(func() time.Time)
+	// transactionDescUpdatedAt is the schema descriptor for updated_at field.
+	transactionDescUpdatedAt := transactionMixinFields1[1].Descriptor()
+	// transaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	transaction.DefaultUpdatedAt = transactionDescUpdatedAt.Default.(func() time.Time)
+	// transaction.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	transaction.UpdateDefaultUpdatedAt = transactionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// transactionDescKind is the schema descriptor for kind field.
+	transactionDescKind := transactionMixinFields2[0].Descriptor()
+	// transaction.DefaultKind holds the default value on creation for the kind field.
+	transaction.DefaultKind = transactionDescKind.Default.(string)
+	// transaction.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	transaction.KindValidator = func() func(string) error {
+		validators := transactionDescKind.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
@@ -74,27 +119,6 @@ func init() {
 			return nil
 		}
 	}()
-	// categoryDescID is the schema descriptor for id field.
-	categoryDescID := categoryMixinFields0[0].Descriptor()
-	// category.DefaultID holds the default value on creation for the id field.
-	category.DefaultID = categoryDescID.Default.(func() uuid.UUID)
-	transactionMixin := schemas.Transaction{}.Mixin()
-	transactionMixinFields0 := transactionMixin[0].Fields()
-	_ = transactionMixinFields0
-	transactionMixinFields1 := transactionMixin[1].Fields()
-	_ = transactionMixinFields1
-	transactionFields := schemas.Transaction{}.Fields()
-	_ = transactionFields
-	// transactionDescCreatedAt is the schema descriptor for created_at field.
-	transactionDescCreatedAt := transactionMixinFields1[0].Descriptor()
-	// transaction.DefaultCreatedAt holds the default value on creation for the created_at field.
-	transaction.DefaultCreatedAt = transactionDescCreatedAt.Default.(func() time.Time)
-	// transactionDescUpdatedAt is the schema descriptor for updated_at field.
-	transactionDescUpdatedAt := transactionMixinFields1[1].Descriptor()
-	// transaction.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	transaction.DefaultUpdatedAt = transactionDescUpdatedAt.Default.(func() time.Time)
-	// transaction.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	transaction.UpdateDefaultUpdatedAt = transactionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// transactionDescTitle is the schema descriptor for title field.
 	transactionDescTitle := transactionFields[0].Descriptor()
 	// transaction.TitleValidator is a validator for the "title" field. It is called by the builders before save.
@@ -127,26 +151,6 @@ func init() {
 		return func(status string) error {
 			for _, fn := range fns {
 				if err := fn(status); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// transactionDescKind is the schema descriptor for kind field.
-	transactionDescKind := transactionFields[4].Descriptor()
-	// transaction.DefaultKind holds the default value on creation for the kind field.
-	transaction.DefaultKind = transactionDescKind.Default.(string)
-	// transaction.KindValidator is a validator for the "kind" field. It is called by the builders before save.
-	transaction.KindValidator = func() func(string) error {
-		validators := transactionDescKind.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(kind string) error {
-			for _, fn := range fns {
-				if err := fn(kind); err != nil {
 					return err
 				}
 			}

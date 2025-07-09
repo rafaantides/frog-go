@@ -142,7 +142,7 @@ func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger
 }
 
 func seedTransactions(ctx context.Context, db *postgresql.PostgreSQL, lg *logger.Logger, seedPath string) error {
-	data, err := os.ReadFile(seedPath + "/transactions.json")
+	data, err := os.ReadFile(seedPath + "transactions.json")
 	if err != nil {
 		return fmt.Errorf("erro ao ler arquivo JSON: %w", err)
 	}

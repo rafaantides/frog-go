@@ -50,6 +50,20 @@ func (tc *TransactionCreate) SetNillableUpdatedAt(t *time.Time) *TransactionCrea
 	return tc
 }
 
+// SetKind sets the "kind" field.
+func (tc *TransactionCreate) SetKind(s string) *TransactionCreate {
+	tc.mutation.SetKind(s)
+	return tc
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (tc *TransactionCreate) SetNillableKind(s *string) *TransactionCreate {
+	if s != nil {
+		tc.SetKind(*s)
+	}
+	return tc
+}
+
 // SetAmount sets the "amount" field.
 func (tc *TransactionCreate) SetAmount(f float64) *TransactionCreate {
 	tc.mutation.SetAmount(f)
@@ -92,20 +106,6 @@ func (tc *TransactionCreate) SetStatus(s string) *TransactionCreate {
 func (tc *TransactionCreate) SetNillableStatus(s *string) *TransactionCreate {
 	if s != nil {
 		tc.SetStatus(*s)
-	}
-	return tc
-}
-
-// SetKind sets the "kind" field.
-func (tc *TransactionCreate) SetKind(s string) *TransactionCreate {
-	tc.mutation.SetKind(s)
-	return tc
-}
-
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (tc *TransactionCreate) SetNillableKind(s *string) *TransactionCreate {
-	if s != nil {
-		tc.SetKind(*s)
 	}
 	return tc
 }
@@ -186,13 +186,13 @@ func (tc *TransactionCreate) defaults() {
 		v := transaction.DefaultUpdatedAt()
 		tc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := tc.mutation.Status(); !ok {
-		v := transaction.DefaultStatus
-		tc.mutation.SetStatus(v)
-	}
 	if _, ok := tc.mutation.Kind(); !ok {
 		v := transaction.DefaultKind
 		tc.mutation.SetKind(v)
+	}
+	if _, ok := tc.mutation.Status(); !ok {
+		v := transaction.DefaultStatus
+		tc.mutation.SetStatus(v)
 	}
 	if _, ok := tc.mutation.ID(); !ok {
 		v := transaction.DefaultID()
@@ -207,6 +207,14 @@ func (tc *TransactionCreate) check() error {
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Transaction.updated_at"`)}
+	}
+	if _, ok := tc.mutation.Kind(); !ok {
+		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Transaction.kind"`)}
+	}
+	if v, ok := tc.mutation.Kind(); ok {
+		if err := transaction.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+		}
 	}
 	if _, ok := tc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Transaction.amount"`)}
@@ -228,14 +236,6 @@ func (tc *TransactionCreate) check() error {
 	if v, ok := tc.mutation.Status(); ok {
 		if err := transaction.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
-		}
-	}
-	if _, ok := tc.mutation.Kind(); !ok {
-		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Transaction.kind"`)}
-	}
-	if v, ok := tc.mutation.Kind(); ok {
-		if err := transaction.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
 		}
 	}
 	return nil
@@ -281,6 +281,10 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := tc.mutation.Kind(); ok {
+		_spec.SetField(transaction.FieldKind, field.TypeString, value)
+		_node.Kind = value
+	}
 	if value, ok := tc.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
@@ -300,10 +304,6 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if value, ok := tc.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
 		_node.Status = value
-	}
-	if value, ok := tc.mutation.Kind(); ok {
-		_spec.SetField(transaction.FieldKind, field.TypeString, value)
-		_node.Kind = value
 	}
 	if nodes := tc.mutation.CategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

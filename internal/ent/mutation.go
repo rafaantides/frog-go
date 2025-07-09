@@ -38,10 +38,10 @@ type CategoryMutation struct {
 	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
+	kind          *string
 	name          *string
 	description   *string
 	color         *string
-	kind          *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Category, error)
@@ -224,6 +224,42 @@ func (m *CategoryMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetKind sets the "kind" field.
+func (m *CategoryMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *CategoryMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *CategoryMutation) ResetKind() {
+	m.kind = nil
+}
+
 // SetName sets the "name" field.
 func (m *CategoryMutation) SetName(s string) {
 	m.name = &s
@@ -358,42 +394,6 @@ func (m *CategoryMutation) ResetColor() {
 	delete(m.clearedFields, category.FieldColor)
 }
 
-// SetKind sets the "kind" field.
-func (m *CategoryMutation) SetKind(s string) {
-	m.kind = &s
-}
-
-// Kind returns the value of the "kind" field in the mutation.
-func (m *CategoryMutation) Kind() (r string, exists bool) {
-	v := m.kind
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldKind returns the old "kind" field's value of the Category entity.
-// If the Category object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CategoryMutation) OldKind(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKind is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKind requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKind: %w", err)
-	}
-	return oldValue.Kind, nil
-}
-
-// ResetKind resets all changes to the "kind" field.
-func (m *CategoryMutation) ResetKind() {
-	m.kind = nil
-}
-
 // Where appends a list predicates to the CategoryMutation builder.
 func (m *CategoryMutation) Where(ps ...predicate.Category) {
 	m.predicates = append(m.predicates, ps...)
@@ -435,6 +435,9 @@ func (m *CategoryMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, category.FieldUpdatedAt)
 	}
+	if m.kind != nil {
+		fields = append(fields, category.FieldKind)
+	}
 	if m.name != nil {
 		fields = append(fields, category.FieldName)
 	}
@@ -443,9 +446,6 @@ func (m *CategoryMutation) Fields() []string {
 	}
 	if m.color != nil {
 		fields = append(fields, category.FieldColor)
-	}
-	if m.kind != nil {
-		fields = append(fields, category.FieldKind)
 	}
 	return fields
 }
@@ -459,14 +459,14 @@ func (m *CategoryMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case category.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case category.FieldKind:
+		return m.Kind()
 	case category.FieldName:
 		return m.Name()
 	case category.FieldDescription:
 		return m.Description()
 	case category.FieldColor:
 		return m.Color()
-	case category.FieldKind:
-		return m.Kind()
 	}
 	return nil, false
 }
@@ -480,14 +480,14 @@ func (m *CategoryMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreatedAt(ctx)
 	case category.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case category.FieldKind:
+		return m.OldKind(ctx)
 	case category.FieldName:
 		return m.OldName(ctx)
 	case category.FieldDescription:
 		return m.OldDescription(ctx)
 	case category.FieldColor:
 		return m.OldColor(ctx)
-	case category.FieldKind:
-		return m.OldKind(ctx)
 	}
 	return nil, fmt.Errorf("unknown Category field %s", name)
 }
@@ -511,6 +511,13 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case category.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
 	case category.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -531,13 +538,6 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetColor(v)
-		return nil
-	case category.FieldKind:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetKind(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)
@@ -609,6 +609,9 @@ func (m *CategoryMutation) ResetField(name string) error {
 	case category.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case category.FieldKind:
+		m.ResetKind()
+		return nil
 	case category.FieldName:
 		m.ResetName()
 		return nil
@@ -617,9 +620,6 @@ func (m *CategoryMutation) ResetField(name string) error {
 		return nil
 	case category.FieldColor:
 		m.ResetColor()
-		return nil
-	case category.FieldKind:
-		m.ResetKind()
 		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)
@@ -681,13 +681,13 @@ type TransactionMutation struct {
 	id              *uuid.UUID
 	created_at      *time.Time
 	updated_at      *time.Time
+	kind            *string
 	amount          *float64
 	addamount       *float64
 	title           *string
 	purchase_date   *time.Time
 	due_date        *time.Time
 	status          *string
-	kind            *string
 	clearedFields   map[string]struct{}
 	category        *uuid.UUID
 	clearedcategory bool
@@ -870,6 +870,42 @@ func (m *TransactionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, er
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *TransactionMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetKind sets the "kind" field.
+func (m *TransactionMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *TransactionMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the Transaction entity.
+// If the Transaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransactionMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *TransactionMutation) ResetKind() {
+	m.kind = nil
 }
 
 // SetAmount sets the "amount" field.
@@ -1085,42 +1121,6 @@ func (m *TransactionMutation) ResetStatus() {
 	m.status = nil
 }
 
-// SetKind sets the "kind" field.
-func (m *TransactionMutation) SetKind(s string) {
-	m.kind = &s
-}
-
-// Kind returns the value of the "kind" field in the mutation.
-func (m *TransactionMutation) Kind() (r string, exists bool) {
-	v := m.kind
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldKind returns the old "kind" field's value of the Transaction entity.
-// If the Transaction object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TransactionMutation) OldKind(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKind is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKind requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKind: %w", err)
-	}
-	return oldValue.Kind, nil
-}
-
-// ResetKind resets all changes to the "kind" field.
-func (m *TransactionMutation) ResetKind() {
-	m.kind = nil
-}
-
 // SetCategoryID sets the "category" edge to the Category entity by id.
 func (m *TransactionMutation) SetCategoryID(id uuid.UUID) {
 	m.category = &id
@@ -1201,6 +1201,9 @@ func (m *TransactionMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, transaction.FieldUpdatedAt)
 	}
+	if m.kind != nil {
+		fields = append(fields, transaction.FieldKind)
+	}
 	if m.amount != nil {
 		fields = append(fields, transaction.FieldAmount)
 	}
@@ -1216,9 +1219,6 @@ func (m *TransactionMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, transaction.FieldStatus)
 	}
-	if m.kind != nil {
-		fields = append(fields, transaction.FieldKind)
-	}
 	return fields
 }
 
@@ -1231,6 +1231,8 @@ func (m *TransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case transaction.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case transaction.FieldKind:
+		return m.Kind()
 	case transaction.FieldAmount:
 		return m.Amount()
 	case transaction.FieldTitle:
@@ -1241,8 +1243,6 @@ func (m *TransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.DueDate()
 	case transaction.FieldStatus:
 		return m.Status()
-	case transaction.FieldKind:
-		return m.Kind()
 	}
 	return nil, false
 }
@@ -1256,6 +1256,8 @@ func (m *TransactionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCreatedAt(ctx)
 	case transaction.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case transaction.FieldKind:
+		return m.OldKind(ctx)
 	case transaction.FieldAmount:
 		return m.OldAmount(ctx)
 	case transaction.FieldTitle:
@@ -1266,8 +1268,6 @@ func (m *TransactionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldDueDate(ctx)
 	case transaction.FieldStatus:
 		return m.OldStatus(ctx)
-	case transaction.FieldKind:
-		return m.OldKind(ctx)
 	}
 	return nil, fmt.Errorf("unknown Transaction field %s", name)
 }
@@ -1290,6 +1290,13 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case transaction.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
 		return nil
 	case transaction.FieldAmount:
 		v, ok := value.(float64)
@@ -1325,13 +1332,6 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
-		return nil
-	case transaction.FieldKind:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetKind(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)
@@ -1412,6 +1412,9 @@ func (m *TransactionMutation) ResetField(name string) error {
 	case transaction.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case transaction.FieldKind:
+		m.ResetKind()
+		return nil
 	case transaction.FieldAmount:
 		m.ResetAmount()
 		return nil
@@ -1426,9 +1429,6 @@ func (m *TransactionMutation) ResetField(name string) error {
 		return nil
 	case transaction.FieldStatus:
 		m.ResetStatus()
-		return nil
-	case transaction.FieldKind:
-		m.ResetKind()
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)

@@ -22,6 +22,14 @@ dev-api: ## Inicia a API em modo desenvolvimento com Air
 	@echo "🚀 Iniciando API em modo desenvolvimento..."
 	air -c ./config/air/.air.toml
 
+dev-seed: ## Popula o banco com valores iniciais
+	@echo "🚀 Populando banco com valores iniciais..."
+	go run cmd/seed/main.go --env="./config/envs/dev.env"
+
+dev-worker-transactions: ## Inicia o worker de transações em modo desenvolvimento com Air
+	@echo "🚀 Iniciando consumer de transações em modo desenvolvimento..."
+	air -c ./config/air/.air-consumer-transactions.toml
+
 # ------------------------
 # 🏗️ Ent - Codegen
 # ------------------------
