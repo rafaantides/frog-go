@@ -9,6 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
+var acceptedLayouts = []string{
+	time.RFC3339,
+	"2006-01-02",
+}
+
 func ToUint(s string) (uint, error) {
 	val, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
@@ -53,49 +58,59 @@ func ToNillableUUID(str string) (*uuid.UUID, error) {
 	return &parsedUUID, nil
 }
 
+// parseDate tenta todos os formatos possíveis
+func parseDate(dateStr string) (time.Time, error) {
+	for _, layout := range acceptedLayouts {
+		if t, err := time.Parse(layout, dateStr); err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("formato de data inválido: %s", dateStr)
+}
+
+// ToDateTime: retorna time.Time, erro se string for vazia ou inválida
 func ToDateTime(dateStr string) (time.Time, error) {
 	if dateStr == "" {
 		return time.Time{}, errors.ErrEmptyField
-
 	}
-	t, err := time.Parse(time.RFC3339, dateStr)
-	if err != nil {
-		return time.Time{}, err
-	}
-	return t, nil
+	return parseDate(dateStr)
 }
 
+// ToDateTimeUnsafe: retorna *time.Time sem erro, nil se inválido
 func ToDateTimeUnsafe(dateStr *string) *time.Time {
 	if dateStr == nil || *dateStr == "" {
 		return nil
 	}
-	t, err := time.Parse(time.RFC3339, *dateStr)
+	t, err := parseDate(*dateStr)
 	if err != nil {
 		return nil
 	}
 	return &t
 }
 
+// ToNillableDateTime: retorna *time.Time ou nil se string vazia, com erro se inválida
 func ToNillableDateTime(dateStr string) (*time.Time, error) {
 	if dateStr == "" {
 		return nil, nil
 	}
-	t, err := time.Parse(time.RFC3339, dateStr)
+	t, err := parseDate(dateStr)
 	if err != nil {
 		return nil, err
 	}
 	return &t, nil
 }
 
+// ToDateTimeString: retorna string sempre no formato "time.RFC3339 15:04:05"
 func ToDateTimeString(date time.Time) string {
-	return date.Format("2006-01-02 15:04:05")
+	return date.Format(time.RFC3339)
 }
 
+// ToNillableDateTimeString: retorna *string no formato "time.RFC3339", ou nil
 func ToNillableDateTimeString(date *time.Time) *string {
 	if date == nil || date.IsZero() {
 		return nil
 	}
-	formatted := date.Format("2006-01-02")
+	formatted := date.Format(time.RFC3339)
 	return &formatted
 }
 

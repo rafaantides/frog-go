@@ -1,13 +1,5 @@
 package dto
 
-import "time"
-
-type DataRecord struct {
-	Date     time.Time
-	Category string
-	Amount   float64
-}
-
 type ChartFilters struct {
 	Period    string `form:"period"`
 	StartDate string `form:"start_date"`

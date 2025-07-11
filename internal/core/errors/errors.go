@@ -74,6 +74,7 @@ func FailedToFind(entity string, err error) error {
 func FailedToSave(entity string, err error) error {
 	return fmt.Errorf("failed to save %s: %w", entity, err)
 }
+
 func FailedToUpdate(entity string, err error) error {
 	return fmt.Errorf("failed to update %s: %w", entity, err)
 }

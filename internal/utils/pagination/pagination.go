@@ -1,8 +1,8 @@
 package pagination
 
 import (
-	"frog-go/internal/config"
 	"fmt"
+	"frog-go/internal/config"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

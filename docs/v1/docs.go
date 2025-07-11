@@ -15,7 +15,199 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/transactions": {
+        "/api/v1/categories": {
+            "get": {
+                "description": "Lista todas as categorias aplicando filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Lista categorias com filtros e paginação",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filtrar por tipos de transação (income, expense)",
+                        "name": "kinds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: name)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CategoryResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Cria uma nova categoria com os dados fornecidos no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Cria uma nova categoria",
+                "parameters": [
+                    {
+                        "description": "Dados da categoria",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}": {
+            "get": {
+                "description": "Retorna os dados de uma categoria com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Busca uma categoria por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Atualiza os dados de uma categoria com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Atualiza uma categoria existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da categoria",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Exclui uma categoria com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Remove uma categoria",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions": {
             "get": {
                 "description": "Lista todas as transações aplicando filtros e paginação",
                 "consumes": [
@@ -37,6 +229,16 @@ const docTemplate = `{
                         "collectionFormat": "csv",
                         "description": "Filtrar por status",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filtrar por kind",
+                        "name": "kinds",
                         "in": "query"
                     },
                     {
@@ -143,7 +345,101 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/transactions/{id}": {
+        "/api/v1/transactions/stats": {
+            "get": {
+                "description": "Fornece dados estatísticos agregados das transações com base nos filtros aplicados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Retorna estatísticas gerais das transações",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data inicial (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Tipos de transação (income, expense)",
+                        "name": "kinds",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionStatsSummary"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions/summary": {
+            "get": {
+                "description": "Gera um resumo estatístico das transações baseado nos filtros fornecidos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Retorna resumo de transações",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data inicial (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Tipos de transação (income, expense)",
+                        "name": "kinds",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SummaryByDate"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions/{id}": {
             "get": {
                 "description": "Retorna os dados de uma transação com base no ID fornecido",
                 "consumes": [
@@ -173,10 +469,216 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Atualiza os dados de uma transação com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Atualiza uma transação existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da transação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da transação",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Exclui uma transação com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Remove uma transação",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da transação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/api/v1/upload": {
+            "post": {
+                "description": "Recebe um arquivo e os parâmetros necessários para processamento assíncrono.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "upload"
+                ],
+                "summary": "Processar arquivo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Arquivo para importação (ex: .csv, .xlsx)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nome do recurso (ex: transactions)",
+                        "name": "resource",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nome do modelo alvo (ex: Nubank)",
+                        "name": "model",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ação desejada (ex: create)",
+                        "name": "action",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Arquivo recebido, processamento em andamento",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro nos parâmetros ou no upload",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "dto.CategoryRequest": {
+            "type": "object",
+            "required": [
+                "kind"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CategorySummary": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                },
+                "transactions": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SummaryByDate": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CategorySummary"
+                    }
+                },
+                "date": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.TransactionCategoryResponse": {
             "type": "object",
             "properties": {
@@ -191,6 +693,7 @@ const docTemplate = `{
         "dto.TransactionRequest": {
             "type": "object",
             "required": [
+                "kind",
                 "status"
             ],
             "properties": {
@@ -202,6 +705,13 @@ const docTemplate = `{
                 },
                 "due_date": {
                     "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense"
+                    ]
                 },
                 "purchase_date": {
                     "type": "string"
@@ -237,6 +747,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "kind": {
+                    "type": "string"
+                },
                 "purchase_date": {
                     "type": "string"
                 },
@@ -248,6 +761,23 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.TransactionStatsSummary": {
+            "type": "object",
+            "properties": {
+                "average_per_transaction": {
+                    "type": "number"
+                },
+                "total_amount": {
+                    "type": "number"
+                },
+                "total_transactions": {
+                    "type": "integer"
+                },
+                "unique_establishments": {
+                    "type": "integer"
                 }
             }
         }

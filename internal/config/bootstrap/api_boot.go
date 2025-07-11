@@ -1,12 +1,12 @@
 package bootstrap
 
 import (
+	"fmt"
 	"frog-go/internal/adapters/messagebus/rabbitmq"
 	"frog-go/internal/adapters/repository/postgresql"
 	"frog-go/internal/config"
 	"frog-go/internal/core/ports/outbound/messagebus"
 	"frog-go/internal/core/ports/outbound/repository"
-	"fmt"
 )
 
 type APIDeps struct {

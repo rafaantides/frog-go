@@ -9,7 +9,7 @@ import (
 type Category struct {
 	ID          uuid.UUID
 	Name        string
-	Kind        TxnKind `json:"kind"`
+	Kind        TxnKind
 	Description *string
 	Color       *string
 	CreatedAt   string

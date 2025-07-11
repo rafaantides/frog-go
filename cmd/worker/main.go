@@ -14,9 +14,7 @@ import (
 var (
 	limit   int
 	timeout int
-	debug   bool
 	queue   string
-	port    string
 	envPath string
 )
 
@@ -24,9 +22,6 @@ func init() {
 	flag.IntVar(&limit, "limit", 5, "Número máximo de mensagens processadas simultaneamente (concorrência)")
 	flag.IntVar(&timeout, "timeout", 30, "Timeout em segundos para processamento de cada mensagem")
 	flag.StringVar(&queue, "queue", "development", "Nome da fila a ser processada")
-
-	flag.StringVar(&port, "port", "8080", "Porta para executar o servidor API")
-	flag.BoolVar(&debug, "debug", false, "Habilita o modo debug")
 	flag.StringVar(&envPath, "env", ".env", "Caminho para o arquivo .env")
 }
 
@@ -51,7 +46,6 @@ func startConsumer(resource string) {
 	}
 	defer boot.Repo.Close()
 	defer boot.Mbus.Close()
-	defer boot.Cache.Close()
 
 	factory, ok := consumers.Registry[resource]
 	if !ok {
@@ -61,8 +55,6 @@ func startConsumer(resource string) {
 	consumer := factory(boot)
 	stopChan := make(chan struct{})
 
-	log.Info("Iniciando worker com fila: %s | limite: %d | timeout: %ds", queue, limit, timeout)
-
-	w := worker.NewWorker(consumer, log, boot.Mbus, boot.Noti, stopChan)
-	w.Start(queue, limit, timeout)
+	w := worker.NewWorker(consumer, log, boot.Mbus, stopChan)
+	w.Start(resource, limit, timeout)
 }

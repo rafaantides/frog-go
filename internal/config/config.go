@@ -15,21 +15,12 @@ const (
 
 const (
 	ResourceTransactions = "transactions"
-	ActionCreate  = "create"
-	ModelNubank   = "nubank"
+	ActionCreate         = "create"
+	ModelNubank          = "nubank"
 )
 const (
 	OrderAsc  = "asc"
 	OrderDesc = "desc"
-)
-
-const (
-	StatusError            = "error"
-	StatusSuccess          = "success"
-	StatusRunning          = "running"
-	StatusRetrying         = "retrying"
-	StatusProcessError     = "processError"
-	StatusInvalidParameter = "invalidParameter"
 )
 
 type Config struct {
@@ -65,29 +56,6 @@ func LoadConfig(envPath string) (*Config, error) {
 		MessageBusPort: os.Getenv("MESSAGE_BUS_PORT"),
 
 		SeedPath: os.Getenv("SEED_PATH"),
-	}
-
-	return cfg, nil
-}
-
-type WrokerConsumer struct {
-	CachePass          string
-	CacheHost          string
-	CachePort          string
-	NotifierWebhookURL string
-}
-
-func LoadWorkerConfig(envPath string) (*WrokerConsumer, error) {
-	if err := godotenv.Load(envPath); err != nil {
-		return nil, err
-	}
-
-	cfg := &WrokerConsumer{
-		CachePass: os.Getenv("CACHE_PASS"),
-		CacheHost: os.Getenv("CACHE_HOST"),
-		CachePort: os.Getenv("CACHE_PORT"),
-
-		NotifierWebhookURL: os.Getenv("NOTIFIER_WEBHOOK_URL"),
 	}
 
 	return cfg, nil

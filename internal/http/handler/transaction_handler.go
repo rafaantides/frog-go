@@ -29,7 +29,7 @@ func NewTransactionHandler(service inbound.TransactionService) *TransactionHandl
 // @Produce json
 // @Param request body dto.TransactionRequest true "Dados da transação"
 // @Success 201 {object} dto.TransactionResponse
-// @Router /v1/transactions [post]
+// @Router /api/v1/transactions [post]
 func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req dto.TransactionRequest
@@ -62,7 +62,7 @@ func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da transação"
 // @Success 200 {object} dto.TransactionResponse
-// @Router /v1/transactions/{id} [get]
+// @Router /api/v1/transactions/{id} [get]
 func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -91,6 +91,7 @@ func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param status query []string false "Filtrar por status"
+// @Param kinds query []string false "Filtrar por kind"
 // @Param category_id query []string false "Filtrar por categorias"
 // @Param min_amount query number false "Valor mínimo"
 // @Param max_amount query number false "Valor máximo"
@@ -101,7 +102,7 @@ func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 // @Param order_by query string false "Campo de ordenação"
 // @Param order query string false "Ordem (asc, desc)"
 // @Success 200 {array} dto.TransactionResponse
-// @Router /v1/transactions [get]
+// @Router /api/v1/transactions [get]
 func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.TransactionFilters
@@ -147,6 +148,16 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UpdateTransactionHandler godoc
+// @Summary Atualiza uma transação existente
+// @Description Atualiza os dados de uma transação com base no ID fornecido e nos dados enviados no corpo da requisição
+// @Tags Transações
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da transação"
+// @Param request body dto.TransactionRequest true "Dados atualizados da transação"
+// @Success 200 {object} dto.TransactionResponse
+// @Router /api/v1/transactions/{id} [put]
 func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -176,6 +187,15 @@ func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+// DeleteTransactionHandler godoc
+// @Summary Remove uma transação
+// @Description Exclui uma transação com base no ID fornecido
+// @Tags Transações
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da transação"
+// @Success 204 "Sem conteúdo"
+// @Router /api/v1/transactions/{id} [delete]
 func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -193,6 +213,17 @@ func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// TransactionsSummaryHandler godoc
+// @Summary Retorna resumo de transações
+// @Description Gera um resumo estatístico das transações baseado nos filtros fornecidos
+// @Tags Transações
+// @Accept json
+// @Produce json
+// @Param start_date query string false "Data inicial (YYYY-MM-DD)"
+// @Param end_date query string false "Data final (YYYY-MM-DD)"
+// @Param kinds query []string false "Tipos de transação (income, expense)"
+// @Success 200 {object} dto.SummaryByDate
+// @Router /api/v1/transactions/summary [get]
 func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.ChartFilters
@@ -211,6 +242,17 @@ func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// TransactionsGeneralStatsHandler godoc
+// @Summary Retorna estatísticas gerais das transações
+// @Description Fornece dados estatísticos agregados das transações com base nos filtros aplicados
+// @Tags Transações
+// @Accept json
+// @Produce json
+// @Param start_date query string false "Data inicial (YYYY-MM-DD)"
+// @Param end_date query string false "Data final (YYYY-MM-DD)"
+// @Param kinds query []string false "Tipos de transação (income, expense)"
+// @Success 200 {object} dto.TransactionStatsSummary
+// @Router /api/v1/transactions/stats [get]
 func (h *TransactionHandler) TransactionsGeneralStatsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var flt dto.ChartFilters

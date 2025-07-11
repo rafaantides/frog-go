@@ -7,7 +7,7 @@ import (
 	"frog-go/internal/core/dto"
 	"frog-go/internal/core/errors"
 	"frog-go/internal/ent"
-	"frog-go/internal/ent/category"
+	entCategory "frog-go/internal/ent/category"
 	"frog-go/internal/ent/transaction"
 	"frog-go/internal/utils"
 	"sort"
@@ -22,8 +22,8 @@ import (
 
 const transactionEntity = "transactions"
 
-func (d *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error) {
-	row, err := d.Client.Transaction.Query().
+func (p *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error) {
+	row, err := p.Client.Transaction.Query().
 		Where(transaction.IDEQ(id)).
 		WithCategory().
 		Only(ctx)
@@ -37,8 +37,8 @@ func (d *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto
 	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) error {
-	err := d.Client.Transaction.DeleteOneID(id).Exec(ctx)
+func (p *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) error {
+	err := p.Client.Transaction.DeleteOneID(id).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return errors.ErrNotFound
@@ -48,8 +48,8 @@ func (d *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) er
 	return nil
 }
 
-func (d *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error) {
-	created, err := d.Client.Transaction.
+func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error) {
+	created, err := p.Client.Transaction.
 		Create().
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
@@ -64,7 +64,7 @@ func (d *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		return nil, errors.FailedToSave(transactionEntity, err)
 	}
 
-	row, err := d.Client.Transaction.Query().
+	row, err := p.Client.Transaction.Query().
 		Where(transaction.ID(created.ID)).
 		WithCategory().
 		Only(ctx)
@@ -76,8 +76,8 @@ func (d *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error) {
-	updated, err := d.Client.Transaction.
+func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error) {
+	updated, err := p.Client.Transaction.
 		UpdateOneID(id).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
@@ -95,7 +95,7 @@ func (d *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 		return nil, errors.FailedToSave(transactionEntity, err)
 	}
 
-	row, err := d.Client.Transaction.Query().
+	row, err := p.Client.Transaction.Query().
 		Where(transaction.ID(updated.ID)).
 		WithCategory().
 		Only(ctx)
@@ -107,12 +107,12 @@ func (d *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 	return newTransactionResponse(row)
 }
 
-func (d *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
-	query := d.Client.Transaction.Query().
+func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
+	query := p.Client.Transaction.Query().
 		WithCategory()
 
 	query = applyTransactionFilters(query, flt, pgn)
-	query = apllyTransactionOrderBy(query, pgn)
+	query = applyTransactionOrderBy(query, pgn)
 	query = query.Limit(pgn.PageSize).Offset(pgn.Offset())
 
 	data, err := query.All(ctx)
@@ -123,8 +123,8 @@ func (d *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFi
 	return newTransactionResponseList(data)
 }
 
-func (d *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error) {
-	query := d.Client.Transaction.Query()
+func (p *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error) {
+	query := p.Client.Transaction.Query()
 	query = applyTransactionFilters(query, flt, pgn)
 
 	total, err := query.Count(ctx)
@@ -134,7 +134,7 @@ func (d *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionF
 	return total, nil
 }
 
-func (d *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error) {
+func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error) {
 	startDate, err := utils.ToDateTime(flt.StartDate)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func (d *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 	var totalTransactions int
 	var uniqueEstablishments int
 
-	err = d.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&totalAmount, &totalTransactions, &uniqueEstablishments)
+	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&totalAmount, &totalTransactions, &uniqueEstablishments)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func (d *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 	}, nil
 }
 
-func (d *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
+func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
 	var periodTrunc string
 
 	switch flt.Period {
@@ -203,7 +203,7 @@ func (d *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 	// Buscar todas as categorias
 	allCategories := []string{"Sem categoria"}
 	catQuery := "SELECT name FROM categories"
-	catRows, err := d.db.QueryContext(ctx, catQuery)
+	catRows, err := p.db.QueryContext(ctx, catQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func (d *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		ORDER BY period
 	`
 
-	rows, err := d.db.QueryContext(ctx, query, periodTrunc, startDate, endDate)
+	rows, err := p.db.QueryContext(ctx, query, periodTrunc, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -313,6 +313,7 @@ func mapTransactionToResponse(row *ent.Transaction) dto.TransactionResponse {
 		Title:        row.Title,
 		Amount:       row.Amount,
 		Status:       row.Status,
+		Kind:         row.Kind,
 		PurchaseDate: utils.ToDateTimeString(row.PurchaseDate),
 		DueDate:      utils.ToNillableDateTimeString(row.DueDate),
 		CreatedAt:    utils.ToDateTimeString(row.CreatedAt),
@@ -348,7 +349,7 @@ func newTransactionResponseList(rows []*ent.Transaction) ([]dto.TransactionRespo
 	return response, nil
 }
 
-func apllyTransactionOrderBy(query *ent.TransactionQuery, pgn *pagination.Pagination) *ent.TransactionQuery {
+func applyTransactionOrderBy(query *ent.TransactionQuery, pgn *pagination.Pagination) *ent.TransactionQuery {
 
 	var orderDirection sql.OrderTermOption
 	if pgn.OrderDirection == config.OrderAsc {
@@ -360,7 +361,7 @@ func apllyTransactionOrderBy(query *ent.TransactionQuery, pgn *pagination.Pagina
 	switch pgn.OrderBy {
 	case "category":
 		query.Order(
-			transaction.ByCategoryField(category.FieldName, orderDirection),
+			transaction.ByCategoryField(entCategory.FieldName, orderDirection),
 			transaction.ByID(sql.OrderAsc()),
 		)
 	case "status":
@@ -392,7 +393,7 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 				transaction.TitleContainsFold(pgn.Search),
 				transaction.StatusContainsFold(pgn.Search),
 				transaction.HasCategoryWith(
-					category.NameContainsFold(pgn.Search),
+					entCategory.NameContainsFold(pgn.Search),
 				),
 			),
 		)
@@ -400,13 +401,13 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 
 	if flt.Statuses != nil && len(*flt.Statuses) > 0 {
 		query = query.Where(
-			transaction.StatusIn((*flt.Statuses)...),
+			transaction.StatusIn(*flt.Statuses...),
 		)
 	}
 
 	if flt.Kinds != nil && len(*flt.Kinds) > 0 {
 		query = query.Where(
-			transaction.KindIn((*flt.Kinds)...),
+			transaction.KindIn(*flt.Kinds...),
 		)
 	}
 
@@ -414,7 +415,7 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		categoryIds := utils.ToUUIDSlice(*flt.CategoryIDs)
 		if len(categoryIds) > 0 {
 			query = query.Where(
-				transaction.HasCategoryWith(category.IDIn(categoryIds...)),
+				transaction.HasCategoryWith(entCategory.IDIn(categoryIds...)),
 			)
 		}
 	}

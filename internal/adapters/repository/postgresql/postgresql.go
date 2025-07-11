@@ -57,10 +57,10 @@ func NewPostgreSQL(user, password, host, port, database, SeedPath string) (repos
 	return &PostgreSQL{Client: client, log: log, db: sqlDB}, nil
 }
 
-func (d *PostgreSQL) Close() {
-	if err := d.Client.Close(); err != nil {
-		d.log.Error("%v", err)
+func (p *PostgreSQL) Close() {
+	if err := p.Client.Close(); err != nil {
+		p.log.Error("%v", err)
 	} else {
-		d.log.Info("Database connection closed.")
+		p.log.Info("Database connection closed.")
 	}
 }

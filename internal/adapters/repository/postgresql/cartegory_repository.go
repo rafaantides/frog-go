@@ -15,8 +15,8 @@ import (
 
 const categoryEntity = "categories"
 
-func (r *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.CategoryResponse, error) {
-	row, err := r.Client.Category.Get(ctx, id)
+func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.CategoryResponse, error) {
+	row, err := p.Client.Category.Get(ctx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, errors.ErrNotFound
@@ -26,12 +26,12 @@ func (r *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.Ca
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
 }
 
-func (r *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uuid.UUID, error) {
+func (p *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uuid.UUID, error) {
 	if name == nil {
 		return nil, nil
 	}
 
-	data, err := r.Client.Category.Query().Where(category.NameEQ(*name)).Only(ctx)
+	data, err := p.Client.Category.Query().Where(category.NameEQ(*name)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, errors.ErrNotFound
@@ -43,8 +43,8 @@ func (r *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uu
 	return &id, nil
 }
 
-func (r *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error) {
-	row, err := r.Client.Category.
+func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error) {
+	row, err := p.Client.Category.
 		Create().
 		SetName(input.Name).
 		SetKind(string(input.Kind)).
@@ -59,8 +59,8 @@ func (r *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) 
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
 }
 
-func (r *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error) {
-	row, err := r.Client.Category.
+func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error) {
+	row, err := p.Client.Category.
 		UpdateOneID(id).
 		SetName(input.Name).
 		SetKind(string(input.Kind)).
@@ -78,8 +78,8 @@ func (r *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
 }
 
-func (r *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error {
-	err := r.Client.Category.DeleteOneID(id).Exec(ctx)
+func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error {
+	err := p.Client.Category.DeleteOneID(id).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return errors.ErrNotFound
@@ -89,8 +89,8 @@ func (r *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (r *PostgreSQL) ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, error) {
-	query := r.Client.Category.Query()
+func (p *PostgreSQL) ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, error) {
+	query := p.Client.Category.Query()
 	query = applyCategoryFilters(query, kinds, pgn)
 
 	if pgn.OrderDirection == config.OrderAsc {
@@ -114,8 +114,8 @@ func (r *PostgreSQL) ListCategories(ctx context.Context, kinds []string, pgn *pa
 
 }
 
-func (r *PostgreSQL) CountCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) (int, error) {
-	query := r.Client.Category.Query()
+func (p *PostgreSQL) CountCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) (int, error) {
+	query := p.Client.Category.Query()
 	query = applyCategoryFilters(query, kinds, pgn)
 
 	total, err := query.Count(ctx)
@@ -137,7 +137,7 @@ func applyCategoryFilters(query *ent.CategoryQuery, kinds []string, pgn *paginat
 
 	if len(kinds) > 0 {
 		query = query.Where(
-			category.KindIn((kinds)...),
+			category.KindIn(kinds...),
 		)
 	}
 	return query

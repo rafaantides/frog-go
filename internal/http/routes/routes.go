@@ -5,7 +5,7 @@ import (
 	"frog-go/internal/core/ports/outbound/repository"
 	"frog-go/internal/core/service"
 
-	//"frog-go/internal/core/service/upload"
+	"frog-go/internal/core/service/upload"
 	"frog-go/internal/http/handler"
 	"frog-go/internal/http/middlewares"
 	"frog-go/internal/utils/logger"
@@ -52,9 +52,9 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	registerCategoryRoutes(v1.Group("/categories"), categoryHandler)
 
-	//uploadService := upload.NewUploadService(r.mbus)
-	//uploadHander := handler.NewUploadHandler(uploadService)
-	//registerUploadRoutes(v1.Group("/upload"), uploadHander)
+	uploadService := upload.NewUploadService(r.mbus)
+	uploadHander := handler.NewUploadHandler(uploadService)
+	registerUploadRoutes(v1.Group("/upload"), uploadHander)
 
 	return engine
 }
@@ -95,6 +95,6 @@ func registerCategoryRoutes(router *gin.RouterGroup, handler *handler.CategoryHa
 	router.DELETE("/:id", handler.DeleteCategoryHandler)
 }
 
-//func registerUploadRoutes(router *gin.RouterGroup, handler *handler.UploadHandler) {
-//	router.POST("", handler.ProcessFileHandler)
-//}
+func registerUploadRoutes(router *gin.RouterGroup, handler *handler.UploadHandler) {
+	router.POST("", handler.ProcessFileHandler)
+}

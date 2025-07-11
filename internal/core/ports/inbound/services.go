@@ -5,6 +5,7 @@ import (
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
 	"frog-go/internal/utils/pagination"
+	"mime/multipart"
 
 	"github.com/google/uuid"
 )
@@ -25,4 +26,8 @@ type TransactionService interface {
 	ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
 	TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
 	TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
+}
+
+type UploadService interface {
+	ImportFile(resource, model, action string, file multipart.File, fileHeader *multipart.FileHeader) error
 }

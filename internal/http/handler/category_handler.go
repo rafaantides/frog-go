@@ -22,6 +22,15 @@ func NewCategoryHandler(service inbound.CategoryService) *CategoryHandler {
 	return &CategoryHandler{service: service}
 }
 
+// CreateCategoryHandler godoc
+// @Summary Cria uma nova categoria
+// @Description Cria uma nova categoria com os dados fornecidos no corpo da requisição
+// @Tags Categorias
+// @Accept json
+// @Produce json
+// @Param request body dto.CategoryRequest true "Dados da categoria"
+// @Success 201 {object} dto.CategoryResponse
+// @Router /api/v1/categories [post]
 func (h *CategoryHandler) CreateCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req dto.CategoryRequest
@@ -45,6 +54,15 @@ func (h *CategoryHandler) CreateCategoryHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, data)
 }
 
+// GetCategoryByIDHandler godoc
+// @Summary Busca uma categoria por ID
+// @Description Retorna os dados de uma categoria com base no ID fornecido
+// @Tags Categorias
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da categoria"
+// @Success 200 {object} dto.CategoryResponse
+// @Router /api/v1/categories/{id} [get]
 func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -66,6 +84,19 @@ func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+// ListCategorysHandler godoc
+// @Summary Lista categorias com filtros e paginação
+// @Description Lista todas as categorias aplicando filtros e paginação
+// @Tags Categorias
+// @Accept json
+// @Produce json
+// @Param kinds query []string false "Filtrar por tipos de transação (income, expense)"
+// @Param page query int false "Número da página"
+// @Param limit query int false "Limite por página"
+// @Param order_by query string false "Campo de ordenação (ex: name)"
+// @Param order query string false "Ordem (asc, desc)"
+// @Success 200 {array} dto.CategoryResponse
+// @Router /api/v1/categories [get]
 func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	pgn, err := pagination.NewPagination(c)
@@ -102,6 +133,16 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UpdateCategoryHandler godoc
+// @Summary Atualiza uma categoria existente
+// @Description Atualiza os dados de uma categoria com base no ID fornecido e nos dados enviados no corpo da requisição
+// @Tags Categorias
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da categoria"
+// @Param request body dto.CategoryRequest true "Dados atualizados da categoria"
+// @Success 200 {object} dto.CategoryResponse
+// @Router /api/v1/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))
@@ -131,6 +172,15 @@ func (h *CategoryHandler) UpdateCategoryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+// DeleteCategoryHandler godoc
+// @Summary Remove uma categoria
+// @Description Exclui uma categoria com base no ID fornecido
+// @Tags Categorias
+// @Accept json
+// @Produce json
+// @Param id path string true "ID da categoria"
+// @Success 204 "Sem conteúdo"
+// @Router /api/v1/categories/{id} [delete]
 func (h *CategoryHandler) DeleteCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := utils.ToUUID(c.Param("id"))

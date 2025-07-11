@@ -78,12 +78,12 @@ func NewTransaction(
 	}
 
 	statusValue := TxnStatusPending
-	if status != nil {
+	if status != nil && *status != "" {
 		statusValue = *status
 	}
 
 	kindValue := TxnKindExpense
-	if kind != nil {
+	if kind != nil && *kind != "" {
 		kindValue = *kind
 	}
 
