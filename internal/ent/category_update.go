@@ -34,20 +34,6 @@ func (cu *CategoryUpdate) SetUpdatedAt(t time.Time) *CategoryUpdate {
 	return cu
 }
 
-// SetKind sets the "kind" field.
-func (cu *CategoryUpdate) SetKind(s string) *CategoryUpdate {
-	cu.mutation.SetKind(s)
-	return cu
-}
-
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (cu *CategoryUpdate) SetNillableKind(s *string) *CategoryUpdate {
-	if s != nil {
-		cu.SetKind(*s)
-	}
-	return cu
-}
-
 // SetName sets the "name" field.
 func (cu *CategoryUpdate) SetName(s string) *CategoryUpdate {
 	cu.mutation.SetName(s)
@@ -145,11 +131,6 @@ func (cu *CategoryUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *CategoryUpdate) check() error {
-	if v, ok := cu.mutation.Kind(); ok {
-		if err := category.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Category.kind": %w`, err)}
-		}
-	}
 	if v, ok := cu.mutation.Name(); ok {
 		if err := category.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Category.name": %w`, err)}
@@ -177,9 +158,6 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
 		_spec.SetField(category.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := cu.mutation.Kind(); ok {
-		_spec.SetField(category.FieldKind, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Name(); ok {
 		_spec.SetField(category.FieldName, field.TypeString, value)
@@ -219,20 +197,6 @@ type CategoryUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (cuo *CategoryUpdateOne) SetUpdatedAt(t time.Time) *CategoryUpdateOne {
 	cuo.mutation.SetUpdatedAt(t)
-	return cuo
-}
-
-// SetKind sets the "kind" field.
-func (cuo *CategoryUpdateOne) SetKind(s string) *CategoryUpdateOne {
-	cuo.mutation.SetKind(s)
-	return cuo
-}
-
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (cuo *CategoryUpdateOne) SetNillableKind(s *string) *CategoryUpdateOne {
-	if s != nil {
-		cuo.SetKind(*s)
-	}
 	return cuo
 }
 
@@ -346,11 +310,6 @@ func (cuo *CategoryUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *CategoryUpdateOne) check() error {
-	if v, ok := cuo.mutation.Kind(); ok {
-		if err := category.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Category.kind": %w`, err)}
-		}
-	}
 	if v, ok := cuo.mutation.Name(); ok {
 		if err := category.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Category.name": %w`, err)}
@@ -395,9 +354,6 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(category.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := cuo.mutation.Kind(); ok {
-		_spec.SetField(category.FieldKind, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Name(); ok {
 		_spec.SetField(category.FieldName, field.TypeString, value)

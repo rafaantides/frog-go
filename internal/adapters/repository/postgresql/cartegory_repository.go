@@ -47,7 +47,6 @@ func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) 
 	row, err := p.Client.Category.
 		Create().
 		SetName(input.Name).
-		SetKind(string(input.Kind)).
 		SetNillableDescription(input.Description).
 		SetNillableColor(input.Color).
 		Save(ctx)
@@ -63,7 +62,6 @@ func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 	row, err := p.Client.Category.
 		UpdateOneID(id).
 		SetName(input.Name).
-		SetKind(string(input.Kind)).
 		SetNillableDescription(input.Description).
 		SetNillableColor(input.Color).
 		Save(ctx)
@@ -89,9 +87,9 @@ func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (p *PostgreSQL) ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, error) {
+func (p *PostgreSQL) ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, error) {
 	query := p.Client.Category.Query()
-	query = applyCategoryFilters(query, kinds, pgn)
+	query = applyCategoryFilters(query, pgn)
 
 	if pgn.OrderDirection == config.OrderAsc {
 		query = query.Order(ent.Asc(pgn.OrderBy))
@@ -114,9 +112,9 @@ func (p *PostgreSQL) ListCategories(ctx context.Context, kinds []string, pgn *pa
 
 }
 
-func (p *PostgreSQL) CountCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) (int, error) {
+func (p *PostgreSQL) CountCategories(ctx context.Context, pgn *pagination.Pagination) (int, error) {
 	query := p.Client.Category.Query()
-	query = applyCategoryFilters(query, kinds, pgn)
+	query = applyCategoryFilters(query, pgn)
 
 	total, err := query.Count(ctx)
 	if err != nil {
@@ -125,19 +123,13 @@ func (p *PostgreSQL) CountCategories(ctx context.Context, kinds []string, pgn *p
 	return total, nil
 }
 
-func applyCategoryFilters(query *ent.CategoryQuery, kinds []string, pgn *pagination.Pagination) *ent.CategoryQuery {
+func applyCategoryFilters(query *ent.CategoryQuery, pgn *pagination.Pagination) *ent.CategoryQuery {
 	if pgn.Search != "" {
 		query = query.Where(
 			category.Or(
 				category.NameContainsFold(pgn.Search),
 				category.DescriptionContainsFold(pgn.Search),
 			),
-		)
-	}
-
-	if len(kinds) > 0 {
-		query = query.Where(
-			category.KindIn(kinds...),
 		)
 	}
 	return query

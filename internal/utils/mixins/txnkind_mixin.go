@@ -18,7 +18,7 @@ func (m TxnKindMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("kind").
 			NotEmpty().
-			Default(string(domain.TxnKindExpense)).
+			Default(string(domain.KindExpense)).
 			Validate(func(s string) error {
 				if !domain.TxnKind(s).IsValid() {
 					return fmt.Errorf("invalid kind: %q", s)

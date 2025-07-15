@@ -30,16 +30,6 @@ const docTemplate = `{
                 "summary": "Lista categorias com filtros e paginação",
                 "parameters": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Filtrar por tipos de transação (income, expense)",
-                        "name": "kinds",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "description": "Número da página",
                         "name": "page",
@@ -203,6 +193,58 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/api/v1/kinds": {
+            "get": {
+                "description": "Retorna uma lista com todos os tipos possíveis.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tipos"
+                ],
+                "summary": "Lista todos os tipos de transação",
+                "responses": {
+                    "200": {
+                        "description": "Lista de tipos disponíveis",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/status": {
+            "get": {
+                "description": "Retorna uma lista com todos os status possíveis.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Status"
+                ],
+                "summary": "Lista todos os status",
+                "responses": {
+                    "200": {
+                        "description": "Lista de status disponíveis",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -547,7 +589,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "upload"
+                    "Upload"
                 ],
                 "summary": "Processar arquivo",
                 "parameters": [
@@ -606,22 +648,12 @@ const docTemplate = `{
     "definitions": {
         "dto.CategoryRequest": {
             "type": "object",
-            "required": [
-                "kind"
-            ],
             "properties": {
                 "color": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
-                },
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "income",
-                        "expense"
-                    ]
                 },
                 "name": {
                     "type": "string"
@@ -638,9 +670,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "kind": {
                     "type": "string"
                 },
                 "name": {

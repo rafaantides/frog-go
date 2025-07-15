@@ -5,15 +5,8 @@ definitions:
         type: string
       description:
         type: string
-      kind:
-        enum:
-        - income
-        - expense
-        type: string
       name:
         type: string
-    required:
-    - kind
     type: object
   dto.CategoryResponse:
     properties:
@@ -22,8 +15,6 @@ definitions:
       description:
         type: string
       id:
-        type: string
-      kind:
         type: string
       name:
         type: string
@@ -125,13 +116,6 @@ paths:
       - application/json
       description: Lista todas as categorias aplicando filtros e paginação
       parameters:
-      - collectionFormat: csv
-        description: Filtrar por tipos de transação (income, expense)
-        in: query
-        items:
-          type: string
-        name: kinds
-        type: array
       - description: Número da página
         in: query
         name: page
@@ -247,6 +231,40 @@ paths:
       summary: Atualiza uma categoria existente
       tags:
       - Categorias
+  /api/v1/kinds:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com todos os tipos possíveis.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de tipos disponíveis
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Lista todos os tipos de transação
+      tags:
+      - Tipos
+  /api/v1/status:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com todos os status possíveis.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de status disponíveis
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Lista todos os status
+      tags:
+      - Status
   /api/v1/transactions:
     get:
       consumes:
@@ -512,5 +530,5 @@ paths:
             type: object
       summary: Processar arquivo
       tags:
-      - upload
+      - Upload
 swagger: "2.0"

@@ -20,8 +20,6 @@ func init() {
 	_ = categoryMixinFields0
 	categoryMixinFields1 := categoryMixin[1].Fields()
 	_ = categoryMixinFields1
-	categoryMixinFields2 := categoryMixin[2].Fields()
-	_ = categoryMixinFields2
 	categoryFields := schemas.Category{}.Fields()
 	_ = categoryFields
 	// categoryDescCreatedAt is the schema descriptor for created_at field.
@@ -34,26 +32,6 @@ func init() {
 	category.DefaultUpdatedAt = categoryDescUpdatedAt.Default.(func() time.Time)
 	// category.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	category.UpdateDefaultUpdatedAt = categoryDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// categoryDescKind is the schema descriptor for kind field.
-	categoryDescKind := categoryMixinFields2[0].Descriptor()
-	// category.DefaultKind holds the default value on creation for the kind field.
-	category.DefaultKind = categoryDescKind.Default.(string)
-	// category.KindValidator is a validator for the "kind" field. It is called by the builders before save.
-	category.KindValidator = func() func(string) error {
-		validators := categoryDescKind.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(kind string) error {
-			for _, fn := range fns {
-				if err := fn(kind); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// categoryDescName is the schema descriptor for name field.
 	categoryDescName := categoryFields[0].Descriptor()
 	// category.NameValidator is a validator for the "name" field. It is called by the builders before save.

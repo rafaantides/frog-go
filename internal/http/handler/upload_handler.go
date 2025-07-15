@@ -15,7 +15,7 @@ type UploadHandler struct {
 //
 // @Summary      Processar arquivo
 // @Description  Recebe um arquivo e os parâmetros necessários para processamento assíncrono.
-// @Tags         upload
+// @Tags         Upload
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        file     formData  file   true   "Arquivo para importação (ex: .csv, .xlsx)"

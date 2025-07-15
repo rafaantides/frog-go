@@ -13,7 +13,6 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "kind", Type: field.TypeString, Default: "expense"},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true, Size: 7},
@@ -23,13 +22,6 @@ var (
 		Name:       "categories",
 		Columns:    CategoriesColumns,
 		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "category_kind",
-				Unique:  false,
-				Columns: []*schema.Column{CategoriesColumns[3]},
-			},
-		},
 	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{

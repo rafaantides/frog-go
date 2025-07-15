@@ -127,6 +127,7 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 		"purchase_date": true,
 		"due_date":      true,
 		"status":        true,
+		"kind":          true,
 		"created_at":    true,
 		"updated_at":    true,
 	}

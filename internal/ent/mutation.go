@@ -38,7 +38,6 @@ type CategoryMutation struct {
 	id            *uuid.UUID
 	created_at    *time.Time
 	updated_at    *time.Time
-	kind          *string
 	name          *string
 	description   *string
 	color         *string
@@ -224,42 +223,6 @@ func (m *CategoryMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetKind sets the "kind" field.
-func (m *CategoryMutation) SetKind(s string) {
-	m.kind = &s
-}
-
-// Kind returns the value of the "kind" field in the mutation.
-func (m *CategoryMutation) Kind() (r string, exists bool) {
-	v := m.kind
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldKind returns the old "kind" field's value of the Category entity.
-// If the Category object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CategoryMutation) OldKind(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKind is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKind requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKind: %w", err)
-	}
-	return oldValue.Kind, nil
-}
-
-// ResetKind resets all changes to the "kind" field.
-func (m *CategoryMutation) ResetKind() {
-	m.kind = nil
-}
-
 // SetName sets the "name" field.
 func (m *CategoryMutation) SetName(s string) {
 	m.name = &s
@@ -428,15 +391,12 @@ func (m *CategoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CategoryMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, category.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, category.FieldUpdatedAt)
-	}
-	if m.kind != nil {
-		fields = append(fields, category.FieldKind)
 	}
 	if m.name != nil {
 		fields = append(fields, category.FieldName)
@@ -459,8 +419,6 @@ func (m *CategoryMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case category.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case category.FieldKind:
-		return m.Kind()
 	case category.FieldName:
 		return m.Name()
 	case category.FieldDescription:
@@ -480,8 +438,6 @@ func (m *CategoryMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreatedAt(ctx)
 	case category.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case category.FieldKind:
-		return m.OldKind(ctx)
 	case category.FieldName:
 		return m.OldName(ctx)
 	case category.FieldDescription:
@@ -510,13 +466,6 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
-		return nil
-	case category.FieldKind:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetKind(v)
 		return nil
 	case category.FieldName:
 		v, ok := value.(string)
@@ -608,9 +557,6 @@ func (m *CategoryMutation) ResetField(name string) error {
 		return nil
 	case category.FieldUpdatedAt:
 		m.ResetUpdatedAt()
-		return nil
-	case category.FieldKind:
-		m.ResetKind()
 		return nil
 	case category.FieldName:
 		m.ResetName()

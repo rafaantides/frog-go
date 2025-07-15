@@ -32,7 +32,7 @@ func (Transaction) Fields() []ent.Field {
 
 		field.String("status").
 			NotEmpty().
-			Default(string(domain.TxnStatusPending)).
+			Default(string(domain.StatusPending)).
 			Validate(func(s string) error {
 				if !domain.TxnStatus(s).IsValid() {
 					return fmt.Errorf("invalid status: %q", s)

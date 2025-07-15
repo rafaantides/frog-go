@@ -90,7 +90,6 @@ func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 // @Tags Categorias
 // @Accept json
 // @Produce json
-// @Param kinds query []string false "Filtrar por tipos de transação (income, expense)"
 // @Param page query int false "Número da página"
 // @Param limit query int false "Limite por página"
 // @Param order_by query string false "Campo de ordenação (ex: name)"
@@ -119,9 +118,7 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 
 	fmt.Printf("%v", pgn)
 
-	kinds := c.QueryArray("kinds")
-
-	response, total, err := h.service.ListCategories(ctx, kinds, pgn)
+	response, total, err := h.service.ListCategories(ctx, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))

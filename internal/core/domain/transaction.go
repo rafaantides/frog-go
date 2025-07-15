@@ -12,23 +12,23 @@ import (
 type TxnStatus string
 
 const (
-	TxnStatusPending  TxnStatus = "pending"
-	TxnStatusPaid     TxnStatus = "paid"
-	TxnStatusCanceled TxnStatus = "canceled"
+	StatusPending  TxnStatus = "pending"
+	StatusPaid     TxnStatus = "paid"
+	StatusCanceled TxnStatus = "canceled"
 )
 
 type TxnKind string
 
 const (
-	TxnKindIncome  TxnKind = "income"
-	TxnKindExpense TxnKind = "expense"
+	KindIncome  TxnKind = "income"
+	KindExpense TxnKind = "expense"
 )
 
 func ValidTxnStatus() []string {
 	return []string{
-		string(TxnStatusPending),
-		string(TxnStatusPaid),
-		string(TxnStatusCanceled),
+		string(StatusPending),
+		string(StatusPaid),
+		string(StatusCanceled),
 	}
 }
 
@@ -38,8 +38,8 @@ func (a TxnStatus) IsValid() bool {
 
 func ValidTxnKind() []string {
 	return []string{
-		string(TxnKindIncome),
-		string(TxnKindExpense),
+		string(KindIncome),
+		string(KindExpense),
 	}
 }
 
@@ -77,12 +77,12 @@ func NewTransaction(
 		return nil, errors.EmptyField("amount")
 	}
 
-	statusValue := TxnStatusPending
+	statusValue := StatusPending
 	if status != nil && *status != "" {
 		statusValue = *status
 	}
 
-	kindValue := TxnKindExpense
+	kindValue := KindExpense
 	if kind != nil && *kind != "" {
 		kindValue = *kind
 	}

@@ -17,8 +17,8 @@ type Repository interface {
 	CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error)
 	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error)
 	DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
-	ListCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) ([]dto.CategoryResponse, error)
-	CountCategories(ctx context.Context, kinds []string, pgn *pagination.Pagination) (int, error)
+	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, error)
+	CountCategories(ctx context.Context, pgn *pagination.Pagination) (int, error)
 
 	GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error)
 	CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error)
