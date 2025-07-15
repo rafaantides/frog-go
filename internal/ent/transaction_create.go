@@ -50,16 +50,16 @@ func (tc *TransactionCreate) SetNillableUpdatedAt(t *time.Time) *TransactionCrea
 	return tc
 }
 
-// SetKind sets the "kind" field.
-func (tc *TransactionCreate) SetKind(s string) *TransactionCreate {
-	tc.mutation.SetKind(s)
+// SetRecordType sets the "record_type" field.
+func (tc *TransactionCreate) SetRecordType(s string) *TransactionCreate {
+	tc.mutation.SetRecordType(s)
 	return tc
 }
 
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (tc *TransactionCreate) SetNillableKind(s *string) *TransactionCreate {
+// SetNillableRecordType sets the "record_type" field if the given value is not nil.
+func (tc *TransactionCreate) SetNillableRecordType(s *string) *TransactionCreate {
 	if s != nil {
-		tc.SetKind(*s)
+		tc.SetRecordType(*s)
 	}
 	return tc
 }
@@ -76,23 +76,9 @@ func (tc *TransactionCreate) SetTitle(s string) *TransactionCreate {
 	return tc
 }
 
-// SetPurchaseDate sets the "purchase_date" field.
-func (tc *TransactionCreate) SetPurchaseDate(t time.Time) *TransactionCreate {
-	tc.mutation.SetPurchaseDate(t)
-	return tc
-}
-
-// SetDueDate sets the "due_date" field.
-func (tc *TransactionCreate) SetDueDate(t time.Time) *TransactionCreate {
-	tc.mutation.SetDueDate(t)
-	return tc
-}
-
-// SetNillableDueDate sets the "due_date" field if the given value is not nil.
-func (tc *TransactionCreate) SetNillableDueDate(t *time.Time) *TransactionCreate {
-	if t != nil {
-		tc.SetDueDate(*t)
-	}
+// SetRecordDate sets the "record_date" field.
+func (tc *TransactionCreate) SetRecordDate(t time.Time) *TransactionCreate {
+	tc.mutation.SetRecordDate(t)
 	return tc
 }
 
@@ -186,9 +172,9 @@ func (tc *TransactionCreate) defaults() {
 		v := transaction.DefaultUpdatedAt()
 		tc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := tc.mutation.Kind(); !ok {
-		v := transaction.DefaultKind
-		tc.mutation.SetKind(v)
+	if _, ok := tc.mutation.RecordType(); !ok {
+		v := transaction.DefaultRecordType
+		tc.mutation.SetRecordType(v)
 	}
 	if _, ok := tc.mutation.Status(); !ok {
 		v := transaction.DefaultStatus
@@ -208,12 +194,12 @@ func (tc *TransactionCreate) check() error {
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Transaction.updated_at"`)}
 	}
-	if _, ok := tc.mutation.Kind(); !ok {
-		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "Transaction.kind"`)}
+	if _, ok := tc.mutation.RecordType(); !ok {
+		return &ValidationError{Name: "record_type", err: errors.New(`ent: missing required field "Transaction.record_type"`)}
 	}
-	if v, ok := tc.mutation.Kind(); ok {
-		if err := transaction.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+	if v, ok := tc.mutation.RecordType(); ok {
+		if err := transaction.RecordTypeValidator(v); err != nil {
+			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.Amount(); !ok {
@@ -227,8 +213,8 @@ func (tc *TransactionCreate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Transaction.title": %w`, err)}
 		}
 	}
-	if _, ok := tc.mutation.PurchaseDate(); !ok {
-		return &ValidationError{Name: "purchase_date", err: errors.New(`ent: missing required field "Transaction.purchase_date"`)}
+	if _, ok := tc.mutation.RecordDate(); !ok {
+		return &ValidationError{Name: "record_date", err: errors.New(`ent: missing required field "Transaction.record_date"`)}
 	}
 	if _, ok := tc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Transaction.status"`)}
@@ -281,9 +267,9 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := tc.mutation.Kind(); ok {
-		_spec.SetField(transaction.FieldKind, field.TypeString, value)
-		_node.Kind = value
+	if value, ok := tc.mutation.RecordType(); ok {
+		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
+		_node.RecordType = value
 	}
 	if value, ok := tc.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
@@ -293,13 +279,9 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := tc.mutation.PurchaseDate(); ok {
-		_spec.SetField(transaction.FieldPurchaseDate, field.TypeTime, value)
-		_node.PurchaseDate = value
-	}
-	if value, ok := tc.mutation.DueDate(); ok {
-		_spec.SetField(transaction.FieldDueDate, field.TypeTime, value)
-		_node.DueDate = &value
+	if value, ok := tc.mutation.RecordDate(); ok {
+		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
+		_node.RecordDate = value
 	}
 	if value, ok := tc.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)

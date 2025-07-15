@@ -22,11 +22,9 @@ func (s *uploadService) processTransactions(model, action, filename string, rows
 		return fmt.Errorf("invalid filename format: %s", filename)
 	}
 
-	dueDate := parts[1]
-
 	for _, row := range rows[1:] {
 
-		transaction, err := buildTransactionRequest(model, dueDate, row, idx)
+		transaction, err := buildTransactionRequest(model, row, idx)
 		if err != nil {
 			return fmt.Errorf("failed to build request: %w", err)
 		}
@@ -55,16 +53,16 @@ func (s *uploadService) processTransactions(model, action, filename string, rows
 	return nil
 }
 
-func buildTransactionRequest(model, dueDate string, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
+func buildTransactionRequest(model string, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
 	switch model {
 	case config.ModelNubank:
-		return nubankToRequest(dueDate, row, idx)
+		return nubankToRequest(row, idx)
 	default:
 		return nil, fmt.Errorf("unknown model: %s", model)
 	}
 }
 
-func nubankToRequest(dueDate string, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
+func nubankToRequest(row []string, idx map[string]int) (*dto.TransactionRequest, error) {
 
 	amount, err := strconv.ParseFloat(getValue(row, idx, "amount"), 64)
 	if err != nil {
@@ -72,10 +70,9 @@ func nubankToRequest(dueDate string, row []string, idx map[string]int) (*dto.Tra
 	}
 
 	return &dto.TransactionRequest{
-		DueDate:      &dueDate,
-		PurchaseDate: getValue(row, idx, "date"),
-		Title:        getValue(row, idx, "title"),
-		Amount:       amount,
+		RecordDate: getValue(row, idx, "date"),
+		Title:      getValue(row, idx, "title"),
+		Amount:     amount,
 	}, nil
 }
 

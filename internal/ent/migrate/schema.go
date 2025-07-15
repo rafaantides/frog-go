@@ -28,11 +28,10 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "kind", Type: field.TypeString, Default: "expense"},
+		{Name: "record_type", Type: field.TypeString, Default: "expense"},
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
 		{Name: "title", Type: field.TypeString, Size: 255},
-		{Name: "purchase_date", Type: field.TypeTime},
-		{Name: "due_date", Type: field.TypeTime, Nullable: true},
+		{Name: "record_date", Type: field.TypeTime},
 		{Name: "status", Type: field.TypeString, Default: "pending"},
 		{Name: "category_id", Type: field.TypeUUID, Nullable: true},
 	}
@@ -44,41 +43,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "transactions_categories_category",
-				Columns:    []*schema.Column{TransactionsColumns[9]},
+				Columns:    []*schema.Column{TransactionsColumns[8]},
 				RefColumns: []*schema.Column{CategoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "transaction_purchase_date",
+				Name:    "transaction_record_date",
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[6]},
 			},
 			{
-				Name:    "transaction_due_date",
-				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[7]},
-			},
-			{
-				Name:    "transaction_kind",
+				Name:    "transaction_record_type",
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[3]},
 			},
 			{
 				Name:    "transaction_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[9]},
+				Columns: []*schema.Column{TransactionsColumns[8]},
 			},
 			{
-				Name:    "transaction_due_date_kind_category_id",
+				Name:    "transaction_record_date_record_type_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[3], TransactionsColumns[9]},
-			},
-			{
-				Name:    "transaction_purchase_date_kind_category_id",
-				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[3], TransactionsColumns[9]},
+				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[3], TransactionsColumns[8]},
 			},
 		},
 	}

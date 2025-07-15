@@ -627,12 +627,11 @@ type TransactionMutation struct {
 	id              *uuid.UUID
 	created_at      *time.Time
 	updated_at      *time.Time
-	kind            *string
+	record_type     *string
 	amount          *float64
 	addamount       *float64
 	title           *string
-	purchase_date   *time.Time
-	due_date        *time.Time
+	record_date     *time.Time
 	status          *string
 	clearedFields   map[string]struct{}
 	category        *uuid.UUID
@@ -818,40 +817,40 @@ func (m *TransactionMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetKind sets the "kind" field.
-func (m *TransactionMutation) SetKind(s string) {
-	m.kind = &s
+// SetRecordType sets the "record_type" field.
+func (m *TransactionMutation) SetRecordType(s string) {
+	m.record_type = &s
 }
 
-// Kind returns the value of the "kind" field in the mutation.
-func (m *TransactionMutation) Kind() (r string, exists bool) {
-	v := m.kind
+// RecordType returns the value of the "record_type" field in the mutation.
+func (m *TransactionMutation) RecordType() (r string, exists bool) {
+	v := m.record_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldKind returns the old "kind" field's value of the Transaction entity.
+// OldRecordType returns the old "record_type" field's value of the Transaction entity.
 // If the Transaction object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TransactionMutation) OldKind(ctx context.Context) (v string, err error) {
+func (m *TransactionMutation) OldRecordType(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+		return v, errors.New("OldRecordType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKind requires an ID field in the mutation")
+		return v, errors.New("OldRecordType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+		return v, fmt.Errorf("querying old value for OldRecordType: %w", err)
 	}
-	return oldValue.Kind, nil
+	return oldValue.RecordType, nil
 }
 
-// ResetKind resets all changes to the "kind" field.
-func (m *TransactionMutation) ResetKind() {
-	m.kind = nil
+// ResetRecordType resets all changes to the "record_type" field.
+func (m *TransactionMutation) ResetRecordType() {
+	m.record_type = nil
 }
 
 // SetAmount sets the "amount" field.
@@ -946,89 +945,40 @@ func (m *TransactionMutation) ResetTitle() {
 	m.title = nil
 }
 
-// SetPurchaseDate sets the "purchase_date" field.
-func (m *TransactionMutation) SetPurchaseDate(t time.Time) {
-	m.purchase_date = &t
+// SetRecordDate sets the "record_date" field.
+func (m *TransactionMutation) SetRecordDate(t time.Time) {
+	m.record_date = &t
 }
 
-// PurchaseDate returns the value of the "purchase_date" field in the mutation.
-func (m *TransactionMutation) PurchaseDate() (r time.Time, exists bool) {
-	v := m.purchase_date
+// RecordDate returns the value of the "record_date" field in the mutation.
+func (m *TransactionMutation) RecordDate() (r time.Time, exists bool) {
+	v := m.record_date
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPurchaseDate returns the old "purchase_date" field's value of the Transaction entity.
+// OldRecordDate returns the old "record_date" field's value of the Transaction entity.
 // If the Transaction object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TransactionMutation) OldPurchaseDate(ctx context.Context) (v time.Time, err error) {
+func (m *TransactionMutation) OldRecordDate(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPurchaseDate is only allowed on UpdateOne operations")
+		return v, errors.New("OldRecordDate is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPurchaseDate requires an ID field in the mutation")
+		return v, errors.New("OldRecordDate requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPurchaseDate: %w", err)
+		return v, fmt.Errorf("querying old value for OldRecordDate: %w", err)
 	}
-	return oldValue.PurchaseDate, nil
+	return oldValue.RecordDate, nil
 }
 
-// ResetPurchaseDate resets all changes to the "purchase_date" field.
-func (m *TransactionMutation) ResetPurchaseDate() {
-	m.purchase_date = nil
-}
-
-// SetDueDate sets the "due_date" field.
-func (m *TransactionMutation) SetDueDate(t time.Time) {
-	m.due_date = &t
-}
-
-// DueDate returns the value of the "due_date" field in the mutation.
-func (m *TransactionMutation) DueDate() (r time.Time, exists bool) {
-	v := m.due_date
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDueDate returns the old "due_date" field's value of the Transaction entity.
-// If the Transaction object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TransactionMutation) OldDueDate(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDueDate is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDueDate requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDueDate: %w", err)
-	}
-	return oldValue.DueDate, nil
-}
-
-// ClearDueDate clears the value of the "due_date" field.
-func (m *TransactionMutation) ClearDueDate() {
-	m.due_date = nil
-	m.clearedFields[transaction.FieldDueDate] = struct{}{}
-}
-
-// DueDateCleared returns if the "due_date" field was cleared in this mutation.
-func (m *TransactionMutation) DueDateCleared() bool {
-	_, ok := m.clearedFields[transaction.FieldDueDate]
-	return ok
-}
-
-// ResetDueDate resets all changes to the "due_date" field.
-func (m *TransactionMutation) ResetDueDate() {
-	m.due_date = nil
-	delete(m.clearedFields, transaction.FieldDueDate)
+// ResetRecordDate resets all changes to the "record_date" field.
+func (m *TransactionMutation) ResetRecordDate() {
+	m.record_date = nil
 }
 
 // SetStatus sets the "status" field.
@@ -1140,15 +1090,15 @@ func (m *TransactionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TransactionMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, transaction.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, transaction.FieldUpdatedAt)
 	}
-	if m.kind != nil {
-		fields = append(fields, transaction.FieldKind)
+	if m.record_type != nil {
+		fields = append(fields, transaction.FieldRecordType)
 	}
 	if m.amount != nil {
 		fields = append(fields, transaction.FieldAmount)
@@ -1156,11 +1106,8 @@ func (m *TransactionMutation) Fields() []string {
 	if m.title != nil {
 		fields = append(fields, transaction.FieldTitle)
 	}
-	if m.purchase_date != nil {
-		fields = append(fields, transaction.FieldPurchaseDate)
-	}
-	if m.due_date != nil {
-		fields = append(fields, transaction.FieldDueDate)
+	if m.record_date != nil {
+		fields = append(fields, transaction.FieldRecordDate)
 	}
 	if m.status != nil {
 		fields = append(fields, transaction.FieldStatus)
@@ -1177,16 +1124,14 @@ func (m *TransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case transaction.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case transaction.FieldKind:
-		return m.Kind()
+	case transaction.FieldRecordType:
+		return m.RecordType()
 	case transaction.FieldAmount:
 		return m.Amount()
 	case transaction.FieldTitle:
 		return m.Title()
-	case transaction.FieldPurchaseDate:
-		return m.PurchaseDate()
-	case transaction.FieldDueDate:
-		return m.DueDate()
+	case transaction.FieldRecordDate:
+		return m.RecordDate()
 	case transaction.FieldStatus:
 		return m.Status()
 	}
@@ -1202,16 +1147,14 @@ func (m *TransactionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCreatedAt(ctx)
 	case transaction.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case transaction.FieldKind:
-		return m.OldKind(ctx)
+	case transaction.FieldRecordType:
+		return m.OldRecordType(ctx)
 	case transaction.FieldAmount:
 		return m.OldAmount(ctx)
 	case transaction.FieldTitle:
 		return m.OldTitle(ctx)
-	case transaction.FieldPurchaseDate:
-		return m.OldPurchaseDate(ctx)
-	case transaction.FieldDueDate:
-		return m.OldDueDate(ctx)
+	case transaction.FieldRecordDate:
+		return m.OldRecordDate(ctx)
 	case transaction.FieldStatus:
 		return m.OldStatus(ctx)
 	}
@@ -1237,12 +1180,12 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case transaction.FieldKind:
+	case transaction.FieldRecordType:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetKind(v)
+		m.SetRecordType(v)
 		return nil
 	case transaction.FieldAmount:
 		v, ok := value.(float64)
@@ -1258,19 +1201,12 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
-	case transaction.FieldPurchaseDate:
+	case transaction.FieldRecordDate:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPurchaseDate(v)
-		return nil
-	case transaction.FieldDueDate:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDueDate(v)
+		m.SetRecordDate(v)
 		return nil
 	case transaction.FieldStatus:
 		v, ok := value.(string)
@@ -1323,11 +1259,7 @@ func (m *TransactionMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TransactionMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(transaction.FieldDueDate) {
-		fields = append(fields, transaction.FieldDueDate)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1340,11 +1272,6 @@ func (m *TransactionMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TransactionMutation) ClearField(name string) error {
-	switch name {
-	case transaction.FieldDueDate:
-		m.ClearDueDate()
-		return nil
-	}
 	return fmt.Errorf("unknown Transaction nullable field %s", name)
 }
 
@@ -1358,8 +1285,8 @@ func (m *TransactionMutation) ResetField(name string) error {
 	case transaction.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case transaction.FieldKind:
-		m.ResetKind()
+	case transaction.FieldRecordType:
+		m.ResetRecordType()
 		return nil
 	case transaction.FieldAmount:
 		m.ResetAmount()
@@ -1367,11 +1294,8 @@ func (m *TransactionMutation) ResetField(name string) error {
 	case transaction.FieldTitle:
 		m.ResetTitle()
 		return nil
-	case transaction.FieldPurchaseDate:
-		m.ResetPurchaseDate()
-		return nil
-	case transaction.FieldDueDate:
-		m.ResetDueDate()
+	case transaction.FieldRecordDate:
+		m.ResetRecordDate()
 		return nil
 	case transaction.FieldStatus:
 		m.ResetStatus()

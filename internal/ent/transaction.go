@@ -23,16 +23,14 @@ type Transaction struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// Kind holds the value of the "kind" field.
-	Kind string `json:"kind,omitempty"`
+	// RecordType holds the value of the "record_type" field.
+	RecordType string `json:"record_type,omitempty"`
 	// Amount holds the value of the "amount" field.
 	Amount float64 `json:"amount,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
-	// PurchaseDate holds the value of the "purchase_date" field.
-	PurchaseDate time.Time `json:"purchase_date,omitempty"`
-	// DueDate holds the value of the "due_date" field.
-	DueDate *time.Time `json:"due_date,omitempty"`
+	// RecordDate holds the value of the "record_date" field.
+	RecordDate time.Time `json:"record_date,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -69,9 +67,9 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transaction.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case transaction.FieldKind, transaction.FieldTitle, transaction.FieldStatus:
+		case transaction.FieldRecordType, transaction.FieldTitle, transaction.FieldStatus:
 			values[i] = new(sql.NullString)
-		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldPurchaseDate, transaction.FieldDueDate:
+		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldRecordDate:
 			values[i] = new(sql.NullTime)
 		case transaction.FieldID:
 			values[i] = new(uuid.UUID)
@@ -110,11 +108,11 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.UpdatedAt = value.Time
 			}
-		case transaction.FieldKind:
+		case transaction.FieldRecordType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field kind", values[i])
+				return fmt.Errorf("unexpected type %T for field record_type", values[i])
 			} else if value.Valid {
-				t.Kind = value.String
+				t.RecordType = value.String
 			}
 		case transaction.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -128,18 +126,11 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.Title = value.String
 			}
-		case transaction.FieldPurchaseDate:
+		case transaction.FieldRecordDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field purchase_date", values[i])
+				return fmt.Errorf("unexpected type %T for field record_date", values[i])
 			} else if value.Valid {
-				t.PurchaseDate = value.Time
-			}
-		case transaction.FieldDueDate:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field due_date", values[i])
-			} else if value.Valid {
-				t.DueDate = new(time.Time)
-				*t.DueDate = value.Time
+				t.RecordDate = value.Time
 			}
 		case transaction.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -201,8 +192,8 @@ func (t *Transaction) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("kind=")
-	builder.WriteString(t.Kind)
+	builder.WriteString("record_type=")
+	builder.WriteString(t.RecordType)
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(fmt.Sprintf("%v", t.Amount))
@@ -210,13 +201,8 @@ func (t *Transaction) String() string {
 	builder.WriteString("title=")
 	builder.WriteString(t.Title)
 	builder.WriteString(", ")
-	builder.WriteString("purchase_date=")
-	builder.WriteString(t.PurchaseDate.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := t.DueDate; v != nil {
-		builder.WriteString("due_date=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString("record_date=")
+	builder.WriteString(t.RecordDate.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(t.Status)

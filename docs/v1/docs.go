@@ -197,58 +197,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/kinds": {
-            "get": {
-                "description": "Retorna uma lista com todos os tipos possíveis.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tipos"
-                ],
-                "summary": "Lista todos os tipos de transação",
-                "responses": {
-                    "200": {
-                        "description": "Lista de tipos disponíveis",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/status": {
-            "get": {
-                "description": "Retorna uma lista com todos os status possíveis.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Status"
-                ],
-                "summary": "Lista todos os status",
-                "responses": {
-                    "200": {
-                        "description": "Lista de status disponíveis",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/transactions": {
             "get": {
                 "description": "Lista todas as transações aplicando filtros e paginação",
@@ -279,8 +227,8 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
-                        "description": "Filtrar por kind",
-                        "name": "kinds",
+                        "description": "Filtrar por tipos de transação (income, expense)",
+                        "name": "record_types",
                         "in": "query"
                     },
                     {
@@ -420,7 +368,7 @@ const docTemplate = `{
                         },
                         "collectionFormat": "csv",
                         "description": "Tipos de transação (income, expense)",
-                        "name": "kinds",
+                        "name": "record_types",
                         "in": "query"
                     }
                 ],
@@ -467,7 +415,7 @@ const docTemplate = `{
                         },
                         "collectionFormat": "csv",
                         "description": "Tipos de transação (income, expense)",
-                        "name": "kinds",
+                        "name": "record_types",
                         "in": "query"
                     }
                 ],
@@ -722,8 +670,8 @@ const docTemplate = `{
         "dto.TransactionRequest": {
             "type": "object",
             "required": [
-                "kind",
-                "status"
+                "status",
+                "record_type"
             ],
             "properties": {
                 "amount": {
@@ -732,17 +680,7 @@ const docTemplate = `{
                 "category_id": {
                     "type": "string"
                 },
-                "due_date": {
-                    "type": "string"
-                },
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                        "income",
-                        "expense"
-                    ]
-                },
-                "purchase_date": {
+                "record_date": {
                     "type": "string"
                 },
                 "status": {
@@ -755,6 +693,13 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "record_type": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense"
+                    ]
                 }
             }
         },
@@ -770,22 +715,19 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "due_date": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
-                "kind": {
-                    "type": "string"
-                },
-                "purchase_date": {
+                "record_date": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "record_type": {
                     "type": "string"
                 },
                 "updated_at": {

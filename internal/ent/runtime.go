@@ -77,20 +77,20 @@ func init() {
 	transaction.DefaultUpdatedAt = transactionDescUpdatedAt.Default.(func() time.Time)
 	// transaction.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	transaction.UpdateDefaultUpdatedAt = transactionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// transactionDescKind is the schema descriptor for kind field.
-	transactionDescKind := transactionMixinFields2[0].Descriptor()
-	// transaction.DefaultKind holds the default value on creation for the kind field.
-	transaction.DefaultKind = transactionDescKind.Default.(string)
-	// transaction.KindValidator is a validator for the "kind" field. It is called by the builders before save.
-	transaction.KindValidator = func() func(string) error {
-		validators := transactionDescKind.Validators
+	// transactionDescRecordType is the schema descriptor for record_type field.
+	transactionDescRecordType := transactionMixinFields2[0].Descriptor()
+	// transaction.DefaultRecordType holds the default value on creation for the record_type field.
+	transaction.DefaultRecordType = transactionDescRecordType.Default.(string)
+	// transaction.RecordTypeValidator is a validator for the "record_type" field. It is called by the builders before save.
+	transaction.RecordTypeValidator = func() func(string) error {
+		validators := transactionDescRecordType.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
 		}
-		return func(kind string) error {
+		return func(record_type string) error {
 			for _, fn := range fns {
-				if err := fn(kind); err != nil {
+				if err := fn(record_type); err != nil {
 					return err
 				}
 			}
@@ -116,7 +116,7 @@ func init() {
 		}
 	}()
 	// transactionDescStatus is the schema descriptor for status field.
-	transactionDescStatus := transactionFields[3].Descriptor()
+	transactionDescStatus := transactionFields[2].Descriptor()
 	// transaction.DefaultStatus holds the default value on creation for the status field.
 	transaction.DefaultStatus = transactionDescStatus.Default.(string)
 	// transaction.StatusValidator is a validator for the "status" field. It is called by the builders before save.

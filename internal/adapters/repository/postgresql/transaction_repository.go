@@ -53,10 +53,9 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		Create().
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
-		SetKind(string(input.Kind)).
+		SetRecordType(string(input.RecordType)).
 		SetStatus(string(input.Status)).
-		SetNillableDueDate(input.DueDate).
-		SetPurchaseDate(input.PurchaseDate).
+		SetRecordDate(input.RecordDate).
 		SetNillableCategoryID(input.CategoryID).
 		Save(ctx)
 
@@ -81,10 +80,9 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 		UpdateOneID(id).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
-		SetKind(string(input.Kind)).
+		SetRecordType(string(input.RecordType)).
 		SetStatus(string(input.Status)).
-		SetNillableDueDate(input.DueDate).
-		SetPurchaseDate(input.PurchaseDate).
+		SetRecordDate(input.RecordDate).
 		SetNillableCategoryID(input.CategoryID).
 		Save(ctx)
 
@@ -150,7 +148,7 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 			COUNT(*) AS total_transactions,
 			COUNT(DISTINCT t.title) AS unique_establishments
 		FROM transactions t
-		WHERE d.purchase_date BETWEEN $1 AND $2
+		WHERE d.record_date BETWEEN $1 AND $2
 	`
 
 	var totalAmount float64
@@ -220,13 +218,13 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 	// Buscar os dados de débitos agrupados por data e categoria
 	query := `
 		SELECT 
-			DATE_TRUNC($1, t.purchase_date) AS period,
+			DATE_TRUNC($1, t.record_date) AS period,
 			COALESCE(c.name, 'Sem categoria') AS category,
 			SUM(t.amount) AS total,
 			COUNT(*) AS transactions
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
-		WHERE t.purchase_date BETWEEN $2 AND $3
+		WHERE t.record_date BETWEEN $2 AND $3
 		GROUP BY period, category
 		ORDER BY period
 	`
@@ -309,15 +307,14 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 
 func mapTransactionToResponse(row *ent.Transaction) dto.TransactionResponse {
 	response := dto.TransactionResponse{
-		ID:           row.ID,
-		Title:        row.Title,
-		Amount:       row.Amount,
-		Status:       row.Status,
-		Kind:         row.Kind,
-		PurchaseDate: utils.ToDateTimeString(row.PurchaseDate),
-		DueDate:      utils.ToNillableDateTimeString(row.DueDate),
-		CreatedAt:    utils.ToDateTimeString(row.CreatedAt),
-		UpdatedAt:    utils.ToDateTimeString(row.UpdatedAt),
+		ID:         row.ID,
+		Title:      row.Title,
+		Amount:     row.Amount,
+		Status:     row.Status,
+		RecordType: row.RecordType,
+		RecordDate: utils.ToDateTimeString(row.RecordDate),
+		CreatedAt:  utils.ToDateTimeString(row.CreatedAt),
+		UpdatedAt:  utils.ToDateTimeString(row.UpdatedAt),
 	}
 
 	if row.Edges.Category != nil {
@@ -405,9 +402,9 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		)
 	}
 
-	if flt.Kinds != nil && len(*flt.Kinds) > 0 {
+	if flt.RecordTypes != nil && len(*flt.RecordTypes) > 0 {
 		query = query.Where(
-			transaction.KindIn(*flt.Kinds...),
+			transaction.RecordTypeIn(*flt.RecordTypes...),
 		)
 	}
 
@@ -431,11 +428,11 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		)
 	}
 	if t := utils.ToDateTimeUnsafe(flt.StartDate); t != nil {
-		query = query.Where(transaction.PurchaseDateGTE(*t))
+		query = query.Where(transaction.RecordDateGTE(*t))
 	}
 
 	if t := utils.ToDateTimeUnsafe(flt.EndDate); t != nil {
-		query = query.Where(transaction.PurchaseDateLTE(*t))
+		query = query.Where(transaction.RecordDateLTE(*t))
 	}
 
 	return query

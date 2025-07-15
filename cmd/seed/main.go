@@ -157,8 +157,7 @@ func seedTransactions(ctx context.Context, db *postgresql.PostgreSQL, lg *logger
 			Create().
 			SetTitle(d.Title).
 			SetAmount(d.Amount).
-			SetPurchaseDate(d.PurchaseDate).
-			SetDueDate(*d.DueDate).
+			SetRecordDate(d.RecordDate).
 			Save(ctx)
 		if err != nil {
 			return fmt.Errorf("erro ao criar transação '%s': %w", d.Title, err)

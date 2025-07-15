@@ -36,16 +36,16 @@ func (tu *TransactionUpdate) SetUpdatedAt(t time.Time) *TransactionUpdate {
 	return tu
 }
 
-// SetKind sets the "kind" field.
-func (tu *TransactionUpdate) SetKind(s string) *TransactionUpdate {
-	tu.mutation.SetKind(s)
+// SetRecordType sets the "record_type" field.
+func (tu *TransactionUpdate) SetRecordType(s string) *TransactionUpdate {
+	tu.mutation.SetRecordType(s)
 	return tu
 }
 
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableKind(s *string) *TransactionUpdate {
+// SetNillableRecordType sets the "record_type" field if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableRecordType(s *string) *TransactionUpdate {
 	if s != nil {
-		tu.SetKind(*s)
+		tu.SetRecordType(*s)
 	}
 	return tu
 }
@@ -85,37 +85,17 @@ func (tu *TransactionUpdate) SetNillableTitle(s *string) *TransactionUpdate {
 	return tu
 }
 
-// SetPurchaseDate sets the "purchase_date" field.
-func (tu *TransactionUpdate) SetPurchaseDate(t time.Time) *TransactionUpdate {
-	tu.mutation.SetPurchaseDate(t)
+// SetRecordDate sets the "record_date" field.
+func (tu *TransactionUpdate) SetRecordDate(t time.Time) *TransactionUpdate {
+	tu.mutation.SetRecordDate(t)
 	return tu
 }
 
-// SetNillablePurchaseDate sets the "purchase_date" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillablePurchaseDate(t *time.Time) *TransactionUpdate {
+// SetNillableRecordDate sets the "record_date" field if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableRecordDate(t *time.Time) *TransactionUpdate {
 	if t != nil {
-		tu.SetPurchaseDate(*t)
+		tu.SetRecordDate(*t)
 	}
-	return tu
-}
-
-// SetDueDate sets the "due_date" field.
-func (tu *TransactionUpdate) SetDueDate(t time.Time) *TransactionUpdate {
-	tu.mutation.SetDueDate(t)
-	return tu
-}
-
-// SetNillableDueDate sets the "due_date" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableDueDate(t *time.Time) *TransactionUpdate {
-	if t != nil {
-		tu.SetDueDate(*t)
-	}
-	return tu
-}
-
-// ClearDueDate clears the value of the "due_date" field.
-func (tu *TransactionUpdate) ClearDueDate() *TransactionUpdate {
-	tu.mutation.ClearDueDate()
 	return tu
 }
 
@@ -201,9 +181,9 @@ func (tu *TransactionUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tu *TransactionUpdate) check() error {
-	if v, ok := tu.mutation.Kind(); ok {
-		if err := transaction.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+	if v, ok := tu.mutation.RecordType(); ok {
+		if err := transaction.RecordTypeValidator(v); err != nil {
+			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
 	if v, ok := tu.mutation.Title(); ok {
@@ -234,8 +214,8 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := tu.mutation.Kind(); ok {
-		_spec.SetField(transaction.FieldKind, field.TypeString, value)
+	if value, ok := tu.mutation.RecordType(); ok {
+		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
 	}
 	if value, ok := tu.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
@@ -246,14 +226,8 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.Title(); ok {
 		_spec.SetField(transaction.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.PurchaseDate(); ok {
-		_spec.SetField(transaction.FieldPurchaseDate, field.TypeTime, value)
-	}
-	if value, ok := tu.mutation.DueDate(); ok {
-		_spec.SetField(transaction.FieldDueDate, field.TypeTime, value)
-	}
-	if tu.mutation.DueDateCleared() {
-		_spec.ClearField(transaction.FieldDueDate, field.TypeTime)
+	if value, ok := tu.mutation.RecordDate(); ok {
+		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 	}
 	if value, ok := tu.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
@@ -313,16 +287,16 @@ func (tuo *TransactionUpdateOne) SetUpdatedAt(t time.Time) *TransactionUpdateOne
 	return tuo
 }
 
-// SetKind sets the "kind" field.
-func (tuo *TransactionUpdateOne) SetKind(s string) *TransactionUpdateOne {
-	tuo.mutation.SetKind(s)
+// SetRecordType sets the "record_type" field.
+func (tuo *TransactionUpdateOne) SetRecordType(s string) *TransactionUpdateOne {
+	tuo.mutation.SetRecordType(s)
 	return tuo
 }
 
-// SetNillableKind sets the "kind" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableKind(s *string) *TransactionUpdateOne {
+// SetNillableRecordType sets the "record_type" field if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableRecordType(s *string) *TransactionUpdateOne {
 	if s != nil {
-		tuo.SetKind(*s)
+		tuo.SetRecordType(*s)
 	}
 	return tuo
 }
@@ -362,37 +336,17 @@ func (tuo *TransactionUpdateOne) SetNillableTitle(s *string) *TransactionUpdateO
 	return tuo
 }
 
-// SetPurchaseDate sets the "purchase_date" field.
-func (tuo *TransactionUpdateOne) SetPurchaseDate(t time.Time) *TransactionUpdateOne {
-	tuo.mutation.SetPurchaseDate(t)
+// SetRecordDate sets the "record_date" field.
+func (tuo *TransactionUpdateOne) SetRecordDate(t time.Time) *TransactionUpdateOne {
+	tuo.mutation.SetRecordDate(t)
 	return tuo
 }
 
-// SetNillablePurchaseDate sets the "purchase_date" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillablePurchaseDate(t *time.Time) *TransactionUpdateOne {
+// SetNillableRecordDate sets the "record_date" field if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableRecordDate(t *time.Time) *TransactionUpdateOne {
 	if t != nil {
-		tuo.SetPurchaseDate(*t)
+		tuo.SetRecordDate(*t)
 	}
-	return tuo
-}
-
-// SetDueDate sets the "due_date" field.
-func (tuo *TransactionUpdateOne) SetDueDate(t time.Time) *TransactionUpdateOne {
-	tuo.mutation.SetDueDate(t)
-	return tuo
-}
-
-// SetNillableDueDate sets the "due_date" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableDueDate(t *time.Time) *TransactionUpdateOne {
-	if t != nil {
-		tuo.SetDueDate(*t)
-	}
-	return tuo
-}
-
-// ClearDueDate clears the value of the "due_date" field.
-func (tuo *TransactionUpdateOne) ClearDueDate() *TransactionUpdateOne {
-	tuo.mutation.ClearDueDate()
 	return tuo
 }
 
@@ -491,9 +445,9 @@ func (tuo *TransactionUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tuo *TransactionUpdateOne) check() error {
-	if v, ok := tuo.mutation.Kind(); ok {
-		if err := transaction.KindValidator(v); err != nil {
-			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "Transaction.kind": %w`, err)}
+	if v, ok := tuo.mutation.RecordType(); ok {
+		if err := transaction.RecordTypeValidator(v); err != nil {
+			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
 	if v, ok := tuo.mutation.Title(); ok {
@@ -541,8 +495,8 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if value, ok := tuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := tuo.mutation.Kind(); ok {
-		_spec.SetField(transaction.FieldKind, field.TypeString, value)
+	if value, ok := tuo.mutation.RecordType(); ok {
+		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
 	}
 	if value, ok := tuo.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
@@ -553,14 +507,8 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if value, ok := tuo.mutation.Title(); ok {
 		_spec.SetField(transaction.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.PurchaseDate(); ok {
-		_spec.SetField(transaction.FieldPurchaseDate, field.TypeTime, value)
-	}
-	if value, ok := tuo.mutation.DueDate(); ok {
-		_spec.SetField(transaction.FieldDueDate, field.TypeTime, value)
-	}
-	if tuo.mutation.DueDateCleared() {
-		_spec.ClearField(transaction.FieldDueDate, field.TypeTime)
+	if value, ok := tuo.mutation.RecordDate(); ok {
+		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 	}
 	if value, ok := tuo.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)

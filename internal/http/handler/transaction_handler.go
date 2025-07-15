@@ -91,7 +91,7 @@ func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param status query []string false "Filtrar por status"
-// @Param kinds query []string false "Filtrar por kind"
+// @Param record_types query []string false "Filtrar por tipos de transação (income, expense)"
 // @Param category_id query []string false "Filtrar por categorias"
 // @Param min_amount query number false "Valor mínimo"
 // @Param max_amount query number false "Valor máximo"
@@ -119,20 +119,19 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	}
 
 	validColumns := map[string]bool{
-		"id":            true,
-		"title":         true,
-		"category_id":   true,
-		"category":      true,
-		"amount":        true,
-		"purchase_date": true,
-		"due_date":      true,
-		"status":        true,
-		"kind":          true,
-		"created_at":    true,
-		"updated_at":    true,
+		"id":          true,
+		"title":       true,
+		"category_id": true,
+		"category":    true,
+		"amount":      true,
+		"record_date": true,
+		"status":      true,
+		"record_type": true,
+		"created_at":  true,
+		"updated_at":  true,
 	}
 
-	if err := pgn.ValidateOrderBy("purchase_date", config.OrderAsc, validColumns); err != nil {
+	if err := pgn.ValidateOrderBy("record_date", config.OrderAsc, validColumns); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
@@ -222,7 +221,7 @@ func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 // @Produce json
 // @Param start_date query string false "Data inicial (YYYY-MM-DD)"
 // @Param end_date query string false "Data final (YYYY-MM-DD)"
-// @Param kinds query []string false "Tipos de transação (income, expense)"
+// @Param record_types query []string false "Tipos de transação (income, expense)"
 // @Success 200 {object} dto.SummaryByDate
 // @Router /api/v1/transactions/summary [get]
 func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
@@ -251,7 +250,7 @@ func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 // @Produce json
 // @Param start_date query string false "Data inicial (YYYY-MM-DD)"
 // @Param end_date query string false "Data final (YYYY-MM-DD)"
-// @Param kinds query []string false "Tipos de transação (income, expense)"
+// @Param record_types query []string false "Tipos de transação (income, expense)"
 // @Success 200 {object} dto.TransactionStatsSummary
 // @Router /api/v1/transactions/stats [get]
 func (h *TransactionHandler) TransactionsGeneralStatsHandler(c *gin.Context) {

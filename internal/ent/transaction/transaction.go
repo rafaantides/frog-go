@@ -19,16 +19,14 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldKind holds the string denoting the kind field in the database.
-	FieldKind = "kind"
+	// FieldRecordType holds the string denoting the record_type field in the database.
+	FieldRecordType = "record_type"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
-	// FieldPurchaseDate holds the string denoting the purchase_date field in the database.
-	FieldPurchaseDate = "purchase_date"
-	// FieldDueDate holds the string denoting the due_date field in the database.
-	FieldDueDate = "due_date"
+	// FieldRecordDate holds the string denoting the record_date field in the database.
+	FieldRecordDate = "record_date"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
@@ -49,11 +47,10 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldKind,
+	FieldRecordType,
 	FieldAmount,
 	FieldTitle,
-	FieldPurchaseDate,
-	FieldDueDate,
+	FieldRecordDate,
 	FieldStatus,
 }
 
@@ -85,10 +82,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultKind holds the default value on creation for the "kind" field.
-	DefaultKind string
-	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
-	KindValidator func(string) error
+	// DefaultRecordType holds the default value on creation for the "record_type" field.
+	DefaultRecordType string
+	// RecordTypeValidator is a validator for the "record_type" field. It is called by the builders before save.
+	RecordTypeValidator func(string) error
 	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	TitleValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
@@ -117,9 +114,9 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByKind orders the results by the kind field.
-func ByKind(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldKind, opts...).ToFunc()
+// ByRecordType orders the results by the record_type field.
+func ByRecordType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRecordType, opts...).ToFunc()
 }
 
 // ByAmount orders the results by the amount field.
@@ -132,14 +129,9 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
 }
 
-// ByPurchaseDate orders the results by the purchase_date field.
-func ByPurchaseDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPurchaseDate, opts...).ToFunc()
-}
-
-// ByDueDate orders the results by the due_date field.
-func ByDueDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDueDate, opts...).ToFunc()
+// ByRecordDate orders the results by the record_date field.
+func ByRecordDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRecordDate, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

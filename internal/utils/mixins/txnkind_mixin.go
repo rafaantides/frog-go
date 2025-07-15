@@ -9,19 +9,19 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
-type TxnKindMixin struct {
+type RecordTypeMixin struct {
 	mixin.Schema
 	Name string
 }
 
-func (m TxnKindMixin) Fields() []ent.Field {
+func (m RecordTypeMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("kind").
+		field.String("record_type").
 			NotEmpty().
-			Default(string(domain.KindExpense)).
+			Default(string(domain.TypeExpense)).
 			Validate(func(s string) error {
-				if !domain.TxnKind(s).IsValid() {
-					return fmt.Errorf("invalid kind: %q", s)
+				if !domain.RecordType(s).IsValid() {
+					return fmt.Errorf("invalid record_type: %q", s)
 				}
 				return nil
 			}),

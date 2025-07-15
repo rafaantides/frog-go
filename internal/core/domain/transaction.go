@@ -17,11 +17,11 @@ const (
 	StatusCanceled TxnStatus = "canceled"
 )
 
-type TxnKind string
+type RecordType string
 
 const (
-	KindIncome  TxnKind = "income"
-	KindExpense TxnKind = "expense"
+	TypeIncome  RecordType = "income"
+	TypeExpense RecordType = "expense"
 )
 
 func ValidTxnStatus() []string {
@@ -36,38 +36,36 @@ func (a TxnStatus) IsValid() bool {
 	return slices.Contains(ValidTxnStatus(), string(a))
 }
 
-func ValidTxnKind() []string {
+func ValidRecordType() []string {
 	return []string{
-		string(KindIncome),
-		string(KindExpense),
+		string(TypeIncome),
+		string(TypeExpense),
 	}
 }
 
-func (a TxnKind) IsValid() bool {
-	return slices.Contains(ValidTxnKind(), string(a))
+func (a RecordType) IsValid() bool {
+	return slices.Contains(ValidRecordType(), string(a))
 }
 
 type Transaction struct {
-	ID           uuid.UUID  `json:"id"`
-	Title        string     `json:"title"`
-	Amount       float64    `json:"amount"`
-	PurchaseDate time.Time  `json:"purchase_date"`
-	DueDate      *time.Time `json:"due_date"`
-	CategoryID   *uuid.UUID `json:"category_id"`
-	Status       TxnStatus  `json:"status"`
-	Kind         TxnKind    `json:"kind"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
+	ID         uuid.UUID  `json:"id"`
+	Title      string     `json:"title"`
+	Amount     float64    `json:"amount"`
+	RecordDate time.Time  `json:"record_date"`
+	CategoryID *uuid.UUID `json:"category_id"`
+	Status     TxnStatus  `json:"status"`
+	RecordType RecordType `json:"record_type"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
 func NewTransaction(
 	title string,
 	amount float64,
-	purchaseDate time.Time,
-	dueDate *time.Time,
+	RecordDate time.Time,
 	categoryID *uuid.UUID,
 	status *TxnStatus,
-	kind *TxnKind,
+	recordType *RecordType,
 ) (*Transaction, error) {
 	if title == "" {
 		return nil, errors.EmptyField("name")
@@ -82,9 +80,9 @@ func NewTransaction(
 		statusValue = *status
 	}
 
-	kindValue := KindExpense
-	if kind != nil && *kind != "" {
-		kindValue = *kind
+	recordTypeValue := TypeExpense
+	if recordType != nil && *recordType != "" {
+		recordTypeValue = *recordType
 	}
 
 	if !statusValue.IsValid() {
@@ -92,12 +90,11 @@ func NewTransaction(
 	}
 
 	return &Transaction{
-		Title:        title,
-		Amount:       amount,
-		PurchaseDate: purchaseDate,
-		DueDate:      dueDate,
-		Status:       statusValue,
-		Kind:         kindValue,
-		CategoryID:   categoryID,
+		Title:      title,
+		Amount:     amount,
+		RecordDate: RecordDate,
+		Status:     statusValue,
+		RecordType: recordTypeValue,
+		CategoryID: categoryID,
 	}, nil
 }

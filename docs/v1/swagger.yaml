@@ -32,7 +32,7 @@ definitions:
     properties:
       categories:
         items:
-          $ref: '#/definitions/dto.CategorySummary'
+          $ref: "#/definitions/dto.CategorySummary"
         type: array
       date:
         type: string
@@ -52,46 +52,42 @@ definitions:
         type: number
       category_id:
         type: string
-      due_date:
-        type: string
-      kind:
-        enum:
-        - income
-        - expense
-        type: string
-      purchase_date:
+      record_date:
         type: string
       status:
         enum:
-        - pending
-        - paid
-        - canceled
+          - pending
+          - paid
+          - canceled
         type: string
       title:
         type: string
+      record_type:
+        enum:
+          - income
+          - expense
+        type: string
     required:
-    - kind
-    - status
+      - status
+      - record_type
     type: object
   dto.TransactionResponse:
     properties:
       amount:
         type: number
       category:
-        $ref: '#/definitions/dto.TransactionCategoryResponse'
+        $ref: "#/definitions/dto.TransactionCategoryResponse"
       created_at:
-        type: string
-      due_date:
         type: string
       id:
         type: string
-      kind:
-        type: string
-      purchase_date:
+      record_date:
         type: string
       status:
         type: string
       title:
+        type: string
+      record_type:
         type: string
       updated_at:
         type: string
@@ -113,408 +109,378 @@ paths:
   /api/v1/categories:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Lista todas as categorias aplicando filtros e paginação
       parameters:
-      - description: Número da página
-        in: query
-        name: page
-        type: integer
-      - description: Limite por página
-        in: query
-        name: limit
-        type: integer
-      - description: 'Campo de ordenação (ex: name)'
-        in: query
-        name: order_by
-        type: string
-      - description: Ordem (asc, desc)
-        in: query
-        name: order
-        type: string
+        - description: Número da página
+          in: query
+          name: page
+          type: integer
+        - description: Limite por página
+          in: query
+          name: limit
+          type: integer
+        - description: "Campo de ordenação (ex: name)"
+          in: query
+          name: order_by
+          type: string
+        - description: Ordem (asc, desc)
+          in: query
+          name: order
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.CategoryResponse'
+              $ref: "#/definitions/dto.CategoryResponse"
             type: array
       summary: Lista categorias com filtros e paginação
       tags:
-      - Categorias
+        - Categorias
     post:
       consumes:
-      - application/json
+        - application/json
       description: Cria uma nova categoria com os dados fornecidos no corpo da requisição
       parameters:
-      - description: Dados da categoria
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CategoryRequest'
+        - description: Dados da categoria
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dto.CategoryRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.CategoryResponse'
+            $ref: "#/definitions/dto.CategoryResponse"
       summary: Cria uma nova categoria
       tags:
-      - Categorias
+        - Categorias
   /api/v1/categories/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Exclui uma categoria com base no ID fornecido
       parameters:
-      - description: ID da categoria
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: ID da categoria
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Sem conteúdo
       summary: Remove uma categoria
       tags:
-      - Categorias
+        - Categorias
     get:
       consumes:
-      - application/json
+        - application/json
       description: Retorna os dados de uma categoria com base no ID fornecido
       parameters:
-      - description: ID da categoria
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: ID da categoria
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.CategoryResponse'
+            $ref: "#/definitions/dto.CategoryResponse"
       summary: Busca uma categoria por ID
       tags:
-      - Categorias
+        - Categorias
     put:
       consumes:
-      - application/json
-      description: Atualiza os dados de uma categoria com base no ID fornecido e nos
+        - application/json
+      description:
+        Atualiza os dados de uma categoria com base no ID fornecido e nos
         dados enviados no corpo da requisição
       parameters:
-      - description: ID da categoria
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Dados atualizados da categoria
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CategoryRequest'
+        - description: ID da categoria
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Dados atualizados da categoria
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dto.CategoryRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.CategoryResponse'
+            $ref: "#/definitions/dto.CategoryResponse"
       summary: Atualiza uma categoria existente
       tags:
-      - Categorias
-  /api/v1/kinds:
-    get:
-      consumes:
-      - application/json
-      description: Retorna uma lista com todos os tipos possíveis.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Lista de tipos disponíveis
-          schema:
-            items:
-              type: string
-            type: array
-      summary: Lista todos os tipos de transação
-      tags:
-      - Tipos
-  /api/v1/status:
-    get:
-      consumes:
-      - application/json
-      description: Retorna uma lista com todos os status possíveis.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Lista de status disponíveis
-          schema:
-            items:
-              type: string
-            type: array
-      summary: Lista todos os status
-      tags:
-      - Status
+        - Categorias
   /api/v1/transactions:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Lista todas as transações aplicando filtros e paginação
       parameters:
-      - collectionFormat: csv
-        description: Filtrar por status
-        in: query
-        items:
+        - collectionFormat: csv
+          description: Filtrar por status
+          in: query
+          items:
+            type: string
+          name: status
+          type: array
+        - collectionFormat: csv
+          description: Filtrar por tipos de transação (income, expense)
+          in: query
+          items:
+            type: string
+          name: record_types
+          type: array
+        - collectionFormat: csv
+          description: Filtrar por categorias
+          in: query
+          items:
+            type: string
+          name: category_id
+          type: array
+        - description: Valor mínimo
+          in: query
+          name: min_amount
+          type: number
+        - description: Valor máximo
+          in: query
+          name: max_amount
+          type: number
+        - description: Data inicial
+          in: query
+          name: start_date
           type: string
-        name: status
-        type: array
-      - collectionFormat: csv
-        description: Filtrar por kind
-        in: query
-        items:
+        - description: Data final
+          in: query
+          name: end_date
           type: string
-        name: kinds
-        type: array
-      - collectionFormat: csv
-        description: Filtrar por categorias
-        in: query
-        items:
+        - description: Número da página
+          in: query
+          name: page
+          type: integer
+        - description: Limite por página
+          in: query
+          name: limit
+          type: integer
+        - description: Campo de ordenação
+          in: query
+          name: order_by
           type: string
-        name: category_id
-        type: array
-      - description: Valor mínimo
-        in: query
-        name: min_amount
-        type: number
-      - description: Valor máximo
-        in: query
-        name: max_amount
-        type: number
-      - description: Data inicial
-        in: query
-        name: start_date
-        type: string
-      - description: Data final
-        in: query
-        name: end_date
-        type: string
-      - description: Número da página
-        in: query
-        name: page
-        type: integer
-      - description: Limite por página
-        in: query
-        name: limit
-        type: integer
-      - description: Campo de ordenação
-        in: query
-        name: order_by
-        type: string
-      - description: Ordem (asc, desc)
-        in: query
-        name: order
-        type: string
+        - description: Ordem (asc, desc)
+          in: query
+          name: order
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.TransactionResponse'
+              $ref: "#/definitions/dto.TransactionResponse"
             type: array
       summary: Lista transações com filtros e paginação
       tags:
-      - Transações
+        - Transações
     post:
       consumes:
-      - application/json
+        - application/json
       description: Cria uma nova transação com os dados fornecidos no corpo da requisição
       parameters:
-      - description: Dados da transação
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.TransactionRequest'
+        - description: Dados da transação
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dto.TransactionRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.TransactionResponse'
+            $ref: "#/definitions/dto.TransactionResponse"
       summary: Cria uma nova transação
       tags:
-      - Transações
+        - Transações
   /api/v1/transactions/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Exclui uma transação com base no ID fornecido
       parameters:
-      - description: ID da transação
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: ID da transação
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Sem conteúdo
       summary: Remove uma transação
       tags:
-      - Transações
+        - Transações
     get:
       consumes:
-      - application/json
+        - application/json
       description: Retorna os dados de uma transação com base no ID fornecido
       parameters:
-      - description: ID da transação
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: ID da transação
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.TransactionResponse'
+            $ref: "#/definitions/dto.TransactionResponse"
       summary: Busca uma transação por ID
       tags:
-      - Transações
+        - Transações
     put:
       consumes:
-      - application/json
-      description: Atualiza os dados de uma transação com base no ID fornecido e nos
+        - application/json
+      description:
+        Atualiza os dados de uma transação com base no ID fornecido e nos
         dados enviados no corpo da requisição
       parameters:
-      - description: ID da transação
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Dados atualizados da transação
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.TransactionRequest'
+        - description: ID da transação
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Dados atualizados da transação
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dto.TransactionRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.TransactionResponse'
+            $ref: "#/definitions/dto.TransactionResponse"
       summary: Atualiza uma transação existente
       tags:
-      - Transações
+        - Transações
   /api/v1/transactions/stats:
     get:
       consumes:
-      - application/json
-      description: Fornece dados estatísticos agregados das transações com base nos
+        - application/json
+      description:
+        Fornece dados estatísticos agregados das transações com base nos
         filtros aplicados
       parameters:
-      - description: Data inicial (YYYY-MM-DD)
-        in: query
-        name: start_date
-        type: string
-      - description: Data final (YYYY-MM-DD)
-        in: query
-        name: end_date
-        type: string
-      - collectionFormat: csv
-        description: Tipos de transação (income, expense)
-        in: query
-        items:
+        - description: Data inicial (YYYY-MM-DD)
+          in: query
+          name: start_date
           type: string
-        name: kinds
-        type: array
+        - description: Data final (YYYY-MM-DD)
+          in: query
+          name: end_date
+          type: string
+        - collectionFormat: csv
+          description: Tipos de transação (income, expense)
+          in: query
+          items:
+            type: string
+          name: record_types
+          type: array
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.TransactionStatsSummary'
+            $ref: "#/definitions/dto.TransactionStatsSummary"
       summary: Retorna estatísticas gerais das transações
       tags:
-      - Transações
+        - Transações
   /api/v1/transactions/summary:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Gera um resumo estatístico das transações baseado nos filtros fornecidos
       parameters:
-      - description: Data inicial (YYYY-MM-DD)
-        in: query
-        name: start_date
-        type: string
-      - description: Data final (YYYY-MM-DD)
-        in: query
-        name: end_date
-        type: string
-      - collectionFormat: csv
-        description: Tipos de transação (income, expense)
-        in: query
-        items:
+        - description: Data inicial (YYYY-MM-DD)
+          in: query
+          name: start_date
           type: string
-        name: kinds
-        type: array
+        - description: Data final (YYYY-MM-DD)
+          in: query
+          name: end_date
+          type: string
+        - collectionFormat: csv
+          description: Tipos de transação (income, expense)
+          in: query
+          items:
+            type: string
+          name: record_types
+          type: array
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.SummaryByDate'
+            $ref: "#/definitions/dto.SummaryByDate"
       summary: Retorna resumo de transações
       tags:
-      - Transações
+        - Transações
   /api/v1/upload:
     post:
       consumes:
-      - multipart/form-data
-      description: Recebe um arquivo e os parâmetros necessários para processamento
+        - multipart/form-data
+      description:
+        Recebe um arquivo e os parâmetros necessários para processamento
         assíncrono.
       parameters:
-      - description: 'Arquivo para importação (ex: .csv, .xlsx)'
-        in: formData
-        name: file
-        required: true
-        type: file
-      - description: 'Nome do recurso (ex: transactions)'
-        in: formData
-        name: resource
-        required: true
-        type: string
-      - description: 'Nome do modelo alvo (ex: Nubank)'
-        in: formData
-        name: model
-        required: true
-        type: string
-      - description: 'Ação desejada (ex: create)'
-        in: formData
-        name: action
-        required: true
-        type: string
+        - description: "Arquivo para importação (ex: .csv, .xlsx)"
+          in: formData
+          name: file
+          required: true
+          type: file
+        - description: "Nome do recurso (ex: transactions)"
+          in: formData
+          name: resource
+          required: true
+          type: string
+        - description: "Nome do modelo alvo (ex: Nubank)"
+          in: formData
+          name: model
+          required: true
+          type: string
+        - description: "Ação desejada (ex: create)"
+          in: formData
+          name: action
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "202":
           description: Arquivo recebido, processamento em andamento
@@ -530,5 +496,5 @@ paths:
             type: object
       summary: Processar arquivo
       tags:
-      - Upload
+        - Upload
 swagger: "2.0"

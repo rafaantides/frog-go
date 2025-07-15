@@ -66,9 +66,9 @@ func UpdatedAt(v time.Time) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
-func Kind(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldKind, v))
+// RecordType applies equality check predicate on the "record_type" field. It's identical to RecordTypeEQ.
+func RecordType(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldRecordType, v))
 }
 
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
@@ -81,14 +81,9 @@ func Title(v string) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldTitle, v))
 }
 
-// PurchaseDate applies equality check predicate on the "purchase_date" field. It's identical to PurchaseDateEQ.
-func PurchaseDate(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldPurchaseDate, v))
-}
-
-// DueDate applies equality check predicate on the "due_date" field. It's identical to DueDateEQ.
-func DueDate(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldDueDate, v))
+// RecordDate applies equality check predicate on the "record_date" field. It's identical to RecordDateEQ.
+func RecordDate(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldRecordDate, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
@@ -176,69 +171,69 @@ func UpdatedAtLTE(v time.Time) predicate.Transaction {
 	return predicate.Transaction(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// KindEQ applies the EQ predicate on the "kind" field.
-func KindEQ(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldKind, v))
+// RecordTypeEQ applies the EQ predicate on the "record_type" field.
+func RecordTypeEQ(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldRecordType, v))
 }
 
-// KindNEQ applies the NEQ predicate on the "kind" field.
-func KindNEQ(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNEQ(FieldKind, v))
+// RecordTypeNEQ applies the NEQ predicate on the "record_type" field.
+func RecordTypeNEQ(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNEQ(FieldRecordType, v))
 }
 
-// KindIn applies the In predicate on the "kind" field.
-func KindIn(vs ...string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldIn(FieldKind, vs...))
+// RecordTypeIn applies the In predicate on the "record_type" field.
+func RecordTypeIn(vs ...string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldIn(FieldRecordType, vs...))
 }
 
-// KindNotIn applies the NotIn predicate on the "kind" field.
-func KindNotIn(vs ...string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNotIn(FieldKind, vs...))
+// RecordTypeNotIn applies the NotIn predicate on the "record_type" field.
+func RecordTypeNotIn(vs ...string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNotIn(FieldRecordType, vs...))
 }
 
-// KindGT applies the GT predicate on the "kind" field.
-func KindGT(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGT(FieldKind, v))
+// RecordTypeGT applies the GT predicate on the "record_type" field.
+func RecordTypeGT(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldGT(FieldRecordType, v))
 }
 
-// KindGTE applies the GTE predicate on the "kind" field.
-func KindGTE(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGTE(FieldKind, v))
+// RecordTypeGTE applies the GTE predicate on the "record_type" field.
+func RecordTypeGTE(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldGTE(FieldRecordType, v))
 }
 
-// KindLT applies the LT predicate on the "kind" field.
-func KindLT(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLT(FieldKind, v))
+// RecordTypeLT applies the LT predicate on the "record_type" field.
+func RecordTypeLT(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldLT(FieldRecordType, v))
 }
 
-// KindLTE applies the LTE predicate on the "kind" field.
-func KindLTE(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLTE(FieldKind, v))
+// RecordTypeLTE applies the LTE predicate on the "record_type" field.
+func RecordTypeLTE(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldLTE(FieldRecordType, v))
 }
 
-// KindContains applies the Contains predicate on the "kind" field.
-func KindContains(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldContains(FieldKind, v))
+// RecordTypeContains applies the Contains predicate on the "record_type" field.
+func RecordTypeContains(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldContains(FieldRecordType, v))
 }
 
-// KindHasPrefix applies the HasPrefix predicate on the "kind" field.
-func KindHasPrefix(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldHasPrefix(FieldKind, v))
+// RecordTypeHasPrefix applies the HasPrefix predicate on the "record_type" field.
+func RecordTypeHasPrefix(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldHasPrefix(FieldRecordType, v))
 }
 
-// KindHasSuffix applies the HasSuffix predicate on the "kind" field.
-func KindHasSuffix(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldHasSuffix(FieldKind, v))
+// RecordTypeHasSuffix applies the HasSuffix predicate on the "record_type" field.
+func RecordTypeHasSuffix(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldHasSuffix(FieldRecordType, v))
 }
 
-// KindEqualFold applies the EqualFold predicate on the "kind" field.
-func KindEqualFold(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEqualFold(FieldKind, v))
+// RecordTypeEqualFold applies the EqualFold predicate on the "record_type" field.
+func RecordTypeEqualFold(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEqualFold(FieldRecordType, v))
 }
 
-// KindContainsFold applies the ContainsFold predicate on the "kind" field.
-func KindContainsFold(v string) predicate.Transaction {
-	return predicate.Transaction(sql.FieldContainsFold(FieldKind, v))
+// RecordTypeContainsFold applies the ContainsFold predicate on the "record_type" field.
+func RecordTypeContainsFold(v string) predicate.Transaction {
+	return predicate.Transaction(sql.FieldContainsFold(FieldRecordType, v))
 }
 
 // AmountEQ applies the EQ predicate on the "amount" field.
@@ -346,94 +341,44 @@ func TitleContainsFold(v string) predicate.Transaction {
 	return predicate.Transaction(sql.FieldContainsFold(FieldTitle, v))
 }
 
-// PurchaseDateEQ applies the EQ predicate on the "purchase_date" field.
-func PurchaseDateEQ(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldPurchaseDate, v))
+// RecordDateEQ applies the EQ predicate on the "record_date" field.
+func RecordDateEQ(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldRecordDate, v))
 }
 
-// PurchaseDateNEQ applies the NEQ predicate on the "purchase_date" field.
-func PurchaseDateNEQ(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNEQ(FieldPurchaseDate, v))
+// RecordDateNEQ applies the NEQ predicate on the "record_date" field.
+func RecordDateNEQ(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNEQ(FieldRecordDate, v))
 }
 
-// PurchaseDateIn applies the In predicate on the "purchase_date" field.
-func PurchaseDateIn(vs ...time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldIn(FieldPurchaseDate, vs...))
+// RecordDateIn applies the In predicate on the "record_date" field.
+func RecordDateIn(vs ...time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldIn(FieldRecordDate, vs...))
 }
 
-// PurchaseDateNotIn applies the NotIn predicate on the "purchase_date" field.
-func PurchaseDateNotIn(vs ...time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNotIn(FieldPurchaseDate, vs...))
+// RecordDateNotIn applies the NotIn predicate on the "record_date" field.
+func RecordDateNotIn(vs ...time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNotIn(FieldRecordDate, vs...))
 }
 
-// PurchaseDateGT applies the GT predicate on the "purchase_date" field.
-func PurchaseDateGT(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGT(FieldPurchaseDate, v))
+// RecordDateGT applies the GT predicate on the "record_date" field.
+func RecordDateGT(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldGT(FieldRecordDate, v))
 }
 
-// PurchaseDateGTE applies the GTE predicate on the "purchase_date" field.
-func PurchaseDateGTE(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGTE(FieldPurchaseDate, v))
+// RecordDateGTE applies the GTE predicate on the "record_date" field.
+func RecordDateGTE(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldGTE(FieldRecordDate, v))
 }
 
-// PurchaseDateLT applies the LT predicate on the "purchase_date" field.
-func PurchaseDateLT(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLT(FieldPurchaseDate, v))
+// RecordDateLT applies the LT predicate on the "record_date" field.
+func RecordDateLT(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldLT(FieldRecordDate, v))
 }
 
-// PurchaseDateLTE applies the LTE predicate on the "purchase_date" field.
-func PurchaseDateLTE(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLTE(FieldPurchaseDate, v))
-}
-
-// DueDateEQ applies the EQ predicate on the "due_date" field.
-func DueDateEQ(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldEQ(FieldDueDate, v))
-}
-
-// DueDateNEQ applies the NEQ predicate on the "due_date" field.
-func DueDateNEQ(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNEQ(FieldDueDate, v))
-}
-
-// DueDateIn applies the In predicate on the "due_date" field.
-func DueDateIn(vs ...time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldIn(FieldDueDate, vs...))
-}
-
-// DueDateNotIn applies the NotIn predicate on the "due_date" field.
-func DueDateNotIn(vs ...time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldNotIn(FieldDueDate, vs...))
-}
-
-// DueDateGT applies the GT predicate on the "due_date" field.
-func DueDateGT(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGT(FieldDueDate, v))
-}
-
-// DueDateGTE applies the GTE predicate on the "due_date" field.
-func DueDateGTE(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldGTE(FieldDueDate, v))
-}
-
-// DueDateLT applies the LT predicate on the "due_date" field.
-func DueDateLT(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLT(FieldDueDate, v))
-}
-
-// DueDateLTE applies the LTE predicate on the "due_date" field.
-func DueDateLTE(v time.Time) predicate.Transaction {
-	return predicate.Transaction(sql.FieldLTE(FieldDueDate, v))
-}
-
-// DueDateIsNil applies the IsNil predicate on the "due_date" field.
-func DueDateIsNil() predicate.Transaction {
-	return predicate.Transaction(sql.FieldIsNull(FieldDueDate))
-}
-
-// DueDateNotNil applies the NotNil predicate on the "due_date" field.
-func DueDateNotNil() predicate.Transaction {
-	return predicate.Transaction(sql.FieldNotNull(FieldDueDate))
+// RecordDateLTE applies the LTE predicate on the "record_date" field.
+func RecordDateLTE(v time.Time) predicate.Transaction {
+	return predicate.Transaction(sql.FieldLTE(FieldRecordDate, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
