@@ -21,18 +21,27 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldRecordType holds the string denoting the record_type field in the database.
 	FieldRecordType = "record_type"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
 	// FieldRecordDate holds the string denoting the record_date field in the database.
 	FieldRecordDate = "record_date"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// EdgeInvoice holds the string denoting the invoice edge name in mutations.
+	EdgeInvoice = "invoice"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
 	EdgeCategory = "category"
 	// Table holds the table name of the transaction in the database.
 	Table = "transactions"
+	// InvoiceTable is the table that holds the invoice relation/edge.
+	InvoiceTable = "transactions"
+	// InvoiceInverseTable is the table name for the Invoice entity.
+	// It exists in this package in order to avoid circular dependency with the "invoice" package.
+	InvoiceInverseTable = "invoices"
+	// InvoiceColumn is the table column denoting the invoice relation/edge.
+	InvoiceColumn = "invoice_id"
 	// CategoryTable is the table that holds the category relation/edge.
 	CategoryTable = "transactions"
 	// CategoryInverseTable is the table name for the Category entity.
@@ -48,15 +57,16 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldRecordType,
+	FieldStatus,
 	FieldAmount,
 	FieldTitle,
 	FieldRecordDate,
-	FieldStatus,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "transactions"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"invoice_id",
 	"category_id",
 }
 
@@ -86,12 +96,12 @@ var (
 	DefaultRecordType string
 	// RecordTypeValidator is a validator for the "record_type" field. It is called by the builders before save.
 	RecordTypeValidator func(string) error
-	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
-	TitleValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus string
 	// StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	StatusValidator func(string) error
+	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	TitleValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -119,6 +129,11 @@ func ByRecordType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRecordType, opts...).ToFunc()
 }
 
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
 // ByAmount orders the results by the amount field.
 func ByAmount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmount, opts...).ToFunc()
@@ -134,9 +149,11 @@ func ByRecordDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRecordDate, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+// ByInvoiceField orders the results by invoice field.
+func ByInvoiceField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInvoiceStep(), sql.OrderByField(field, opts...))
+	}
 }
 
 // ByCategoryField orders the results by category field.
@@ -144,6 +161,13 @@ func ByCategoryField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCategoryStep(), sql.OrderByField(field, opts...))
 	}
+}
+func newInvoiceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InvoiceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InvoiceTable, InvoiceColumn),
+	)
 }
 func newCategoryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

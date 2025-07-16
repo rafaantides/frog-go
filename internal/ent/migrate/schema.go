@@ -23,16 +23,33 @@ var (
 		Columns:    CategoriesColumns,
 		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
 	}
+	// InvoicesColumns holds the columns for the "invoices" table.
+	InvoicesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "status", Type: field.TypeString, Default: "pending"},
+		{Name: "amount", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
+		{Name: "title", Type: field.TypeString, Size: 255},
+		{Name: "due_date", Type: field.TypeTime},
+	}
+	// InvoicesTable holds the schema information for the "invoices" table.
+	InvoicesTable = &schema.Table{
+		Name:       "invoices",
+		Columns:    InvoicesColumns,
+		PrimaryKey: []*schema.Column{InvoicesColumns[0]},
+	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "record_type", Type: field.TypeString, Default: "expense"},
+		{Name: "status", Type: field.TypeString, Default: "pending"},
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal(10,2)"}},
 		{Name: "title", Type: field.TypeString, Size: 255},
 		{Name: "record_date", Type: field.TypeTime},
-		{Name: "status", Type: field.TypeString, Default: "pending"},
+		{Name: "invoice_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "category_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
@@ -42,8 +59,14 @@ var (
 		PrimaryKey: []*schema.Column{TransactionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "transactions_categories_category",
+				Symbol:     "transactions_invoices_invoice",
 				Columns:    []*schema.Column{TransactionsColumns[8]},
+				RefColumns: []*schema.Column{InvoicesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "transactions_categories_category",
+				Columns:    []*schema.Column{TransactionsColumns[9]},
 				RefColumns: []*schema.Column{CategoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -52,7 +75,7 @@ var (
 			{
 				Name:    "transaction_record_date",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6]},
+				Columns: []*schema.Column{TransactionsColumns[7]},
 			},
 			{
 				Name:    "transaction_record_type",
@@ -60,24 +83,31 @@ var (
 				Columns: []*schema.Column{TransactionsColumns[3]},
 			},
 			{
-				Name:    "transaction_category_id",
+				Name:    "transaction_invoice_id",
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[8]},
 			},
 			{
+				Name:    "transaction_category_id",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[9]},
+			},
+			{
 				Name:    "transaction_record_date_record_type_category_id",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[3], TransactionsColumns[8]},
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[3], TransactionsColumns[9]},
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CategoriesTable,
+		InvoicesTable,
 		TransactionsTable,
 	}
 )
 
 func init() {
-	TransactionsTable.ForeignKeys[0].RefTable = CategoriesTable
+	TransactionsTable.ForeignKeys[0].RefTable = InvoicesTable
+	TransactionsTable.ForeignKeys[1].RefTable = CategoriesTable
 }

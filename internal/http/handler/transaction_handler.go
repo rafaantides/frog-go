@@ -120,6 +120,8 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 
 	validColumns := map[string]bool{
 		"id":          true,
+		"invoice_id":  true,
+		"invoice":     true,
 		"title":       true,
 		"category_id": true,
 		"category":    true,
@@ -210,7 +212,7 @@ func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.Status(http.StatusNoContent)
 }
 
 // TransactionsSummaryHandler godoc

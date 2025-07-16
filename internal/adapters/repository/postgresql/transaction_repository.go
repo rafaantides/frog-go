@@ -8,6 +8,7 @@ import (
 	"frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	entCategory "frog-go/internal/ent/category"
+	entInvoice "frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
 	"frog-go/internal/utils"
 	"sort"
@@ -57,6 +58,7 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		SetStatus(string(input.Status)).
 		SetRecordDate(input.RecordDate).
 		SetNillableCategoryID(input.CategoryID).
+		SetNillableInvoiceID(input.InvoiceID).
 		Save(ctx)
 
 	if err != nil {
@@ -66,6 +68,7 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 	row, err := p.Client.Transaction.Query().
 		Where(transaction.ID(created.ID)).
 		WithCategory().
+		WithInvoice().
 		Only(ctx)
 
 	if err != nil {
@@ -84,6 +87,7 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 		SetStatus(string(input.Status)).
 		SetRecordDate(input.RecordDate).
 		SetNillableCategoryID(input.CategoryID).
+		SetNillableInvoiceID(input.InvoiceID).
 		Save(ctx)
 
 	if err != nil {
@@ -96,6 +100,7 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 	row, err := p.Client.Transaction.Query().
 		Where(transaction.ID(updated.ID)).
 		WithCategory().
+		WithInvoice().
 		Only(ctx)
 
 	if err != nil {
@@ -107,7 +112,8 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 
 func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
 	query := p.Client.Transaction.Query().
-		WithCategory()
+		WithCategory().
+		WithInvoice()
 
 	query = applyTransactionFilters(query, flt, pgn)
 	query = applyTransactionOrderBy(query, pgn)
@@ -148,7 +154,7 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 			COUNT(*) AS total_transactions,
 			COUNT(DISTINCT t.title) AS unique_establishments
 		FROM transactions t
-		WHERE d.record_date BETWEEN $1 AND $2
+		WHERE t.record_date BETWEEN $1 AND $2 AND t.record_type = 'expense'
 	`
 
 	var totalAmount float64
@@ -225,6 +231,7 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
 		WHERE t.record_date BETWEEN $2 AND $3
+		AND t.record_type = 'expense'
 		GROUP BY period, category
 		ORDER BY period
 	`
@@ -317,6 +324,13 @@ func mapTransactionToResponse(row *ent.Transaction) dto.TransactionResponse {
 		UpdatedAt:  utils.ToDateTimeString(row.UpdatedAt),
 	}
 
+	if row.Edges.Invoice != nil {
+		response.Invoice = &dto.TransactionInvoiceResponse{
+			ID:    row.Edges.Invoice.ID,
+			Title: row.Edges.Invoice.Title,
+		}
+	}
+
 	if row.Edges.Category != nil {
 		response.Category = &dto.TransactionCategoryResponse{
 			ID:   row.Edges.Category.ID,
@@ -356,14 +370,14 @@ func applyTransactionOrderBy(query *ent.TransactionQuery, pgn *pagination.Pagina
 	}
 
 	switch pgn.OrderBy {
+	case "invoice":
+		query.Order(
+			transaction.ByInvoiceField(entInvoice.FieldTitle, orderDirection),
+			transaction.ByID(sql.OrderAsc()),
+		)
 	case "category":
 		query.Order(
 			transaction.ByCategoryField(entCategory.FieldName, orderDirection),
-			transaction.ByID(sql.OrderAsc()),
-		)
-	case "status":
-		query.Order(
-			transaction.ByStatus(orderDirection),
 			transaction.ByID(sql.OrderAsc()),
 		)
 	default:
@@ -408,11 +422,20 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		)
 	}
 
-	if flt.CategoryIDs != nil {
-		categoryIds := utils.ToUUIDSlice(*flt.CategoryIDs)
-		if len(categoryIds) > 0 {
+	if flt.InvoiceIDs != nil {
+		invoiceIDs := utils.ToUUIDSlice(*flt.CategoryIDs)
+		if len(invoiceIDs) > 0 {
 			query = query.Where(
-				transaction.HasCategoryWith(entCategory.IDIn(categoryIds...)),
+				transaction.HasInvoiceWith(entInvoice.IDIn(invoiceIDs...)),
+			)
+		}
+	}
+
+	if flt.CategoryIDs != nil {
+		categoryIDs := utils.ToUUIDSlice(*flt.CategoryIDs)
+		if len(categoryIDs) > 0 {
+			query = query.Where(
+				transaction.HasCategoryWith(entCategory.IDIn(categoryIDs...)),
 			)
 		}
 	}

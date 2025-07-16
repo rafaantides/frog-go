@@ -28,6 +28,14 @@ type TransactionService interface {
 	TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
 }
 
+type InvoiceService interface {
+	GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error)
+	CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error)
+	UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
+	DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error
+	ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, int, error)
+	ListInvoiceDebts(ctx context.Context, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
+}
 type UploadService interface {
 	ImportFile(resource, model, action string, file multipart.File, fileHeader *multipart.FileHeader) error
 }

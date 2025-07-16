@@ -197,6 +197,319 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/invoices": {
+            "get": {
+                "description": "Lista todas as faturas aplicando filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Lista faturas com filtros e paginação",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: due_date)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por título",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor mínimo",
+                        "name": "min_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor máximo",
+                        "name": "max_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data de vencimento inicial",
+                        "name": "due_date_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data de vencimento final",
+                        "name": "due_date_end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.InvoiceResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Cria uma nova fatura com os dados fornecidos no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Cria uma nova fatura",
+                "parameters": [
+                    {
+                        "description": "Dados da fatura",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/invoices/{id}": {
+            "get": {
+                "description": "Retorna os dados de uma fatura com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Busca uma fatura por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Atualiza os dados de uma fatura com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Atualiza uma fatura existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da fatura",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Exclui uma fatura com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Remove uma fatura",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/api/v1/invoices/{id}/debts": {
+            "get": {
+                "description": "Lista todos os débitos (transações) vinculados a uma fatura específica, com filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Lista débitos associados a uma fatura",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: record_date)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por título da transação",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por status da transação",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipo da transação (income, expense)",
+                        "name": "record_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial de registro",
+                        "name": "record_date_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final de registro",
+                        "name": "record_date_end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.TransactionResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/transactions": {
             "get": {
                 "description": "Lista todas as transações aplicando filtros e paginação",
@@ -639,6 +952,46 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.InvoiceRequest": {
+            "type": "object",
+            "properties": {
+                "due_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.InvoiceResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SummaryByDate": {
             "type": "object",
             "properties": {
@@ -667,11 +1020,22 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TransactionInvoiceResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TransactionRequest": {
             "type": "object",
             "required": [
-                "status",
-                "record_type"
+                "record_type",
+                "status"
             ],
             "properties": {
                 "amount": {
@@ -680,8 +1044,18 @@ const docTemplate = `{
                 "category_id": {
                     "type": "string"
                 },
+                "invoice_id": {
+                    "type": "string"
+                },
                 "record_date": {
                     "type": "string"
+                },
+                "record_type": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense"
+                    ]
                 },
                 "status": {
                     "type": "string",
@@ -693,13 +1067,6 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
-                },
-                "record_type": {
-                    "type": "string",
-                    "enum": [
-                        "income",
-                        "expense"
-                    ]
                 }
             }
         },
@@ -718,16 +1085,19 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "invoice": {
+                    "$ref": "#/definitions/dto.TransactionInvoiceResponse"
+                },
                 "record_date": {
+                    "type": "string"
+                },
+                "record_type": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                },
-                "record_type": {
                     "type": "string"
                 },
                 "updated_at": {

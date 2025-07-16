@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
 	"time"
 
@@ -64,6 +65,20 @@ func (tc *TransactionCreate) SetNillableRecordType(s *string) *TransactionCreate
 	return tc
 }
 
+// SetStatus sets the "status" field.
+func (tc *TransactionCreate) SetStatus(s string) *TransactionCreate {
+	tc.mutation.SetStatus(s)
+	return tc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tc *TransactionCreate) SetNillableStatus(s *string) *TransactionCreate {
+	if s != nil {
+		tc.SetStatus(*s)
+	}
+	return tc
+}
+
 // SetAmount sets the "amount" field.
 func (tc *TransactionCreate) SetAmount(f float64) *TransactionCreate {
 	tc.mutation.SetAmount(f)
@@ -82,20 +97,6 @@ func (tc *TransactionCreate) SetRecordDate(t time.Time) *TransactionCreate {
 	return tc
 }
 
-// SetStatus sets the "status" field.
-func (tc *TransactionCreate) SetStatus(s string) *TransactionCreate {
-	tc.mutation.SetStatus(s)
-	return tc
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (tc *TransactionCreate) SetNillableStatus(s *string) *TransactionCreate {
-	if s != nil {
-		tc.SetStatus(*s)
-	}
-	return tc
-}
-
 // SetID sets the "id" field.
 func (tc *TransactionCreate) SetID(u uuid.UUID) *TransactionCreate {
 	tc.mutation.SetID(u)
@@ -108,6 +109,25 @@ func (tc *TransactionCreate) SetNillableID(u *uuid.UUID) *TransactionCreate {
 		tc.SetID(*u)
 	}
 	return tc
+}
+
+// SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
+func (tc *TransactionCreate) SetInvoiceID(id uuid.UUID) *TransactionCreate {
+	tc.mutation.SetInvoiceID(id)
+	return tc
+}
+
+// SetNillableInvoiceID sets the "invoice" edge to the Invoice entity by ID if the given value is not nil.
+func (tc *TransactionCreate) SetNillableInvoiceID(id *uuid.UUID) *TransactionCreate {
+	if id != nil {
+		tc = tc.SetInvoiceID(*id)
+	}
+	return tc
+}
+
+// SetInvoice sets the "invoice" edge to the Invoice entity.
+func (tc *TransactionCreate) SetInvoice(i *Invoice) *TransactionCreate {
+	return tc.SetInvoiceID(i.ID)
 }
 
 // SetCategoryID sets the "category" edge to the Category entity by ID.
@@ -202,6 +222,14 @@ func (tc *TransactionCreate) check() error {
 			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
+	if _, ok := tc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Transaction.status"`)}
+	}
+	if v, ok := tc.mutation.Status(); ok {
+		if err := transaction.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
+		}
+	}
 	if _, ok := tc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Transaction.amount"`)}
 	}
@@ -215,14 +243,6 @@ func (tc *TransactionCreate) check() error {
 	}
 	if _, ok := tc.mutation.RecordDate(); !ok {
 		return &ValidationError{Name: "record_date", err: errors.New(`ent: missing required field "Transaction.record_date"`)}
-	}
-	if _, ok := tc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Transaction.status"`)}
-	}
-	if v, ok := tc.mutation.Status(); ok {
-		if err := transaction.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
-		}
 	}
 	return nil
 }
@@ -271,6 +291,10 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
 		_node.RecordType = value
 	}
+	if value, ok := tc.mutation.Status(); ok {
+		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
+		_node.Status = value
+	}
 	if value, ok := tc.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
@@ -283,9 +307,22 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 		_node.RecordDate = value
 	}
-	if value, ok := tc.mutation.Status(); ok {
-		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
-		_node.Status = value
+	if nodes := tc.mutation.InvoiceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.InvoiceTable,
+			Columns: []string{transaction.InvoiceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.invoice_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.CategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/schemas"
 	"frog-go/internal/ent/transaction"
 	"time"
@@ -58,6 +59,73 @@ func init() {
 	categoryDescID := categoryMixinFields0[0].Descriptor()
 	// category.DefaultID holds the default value on creation for the id field.
 	category.DefaultID = categoryDescID.Default.(func() uuid.UUID)
+	invoiceMixin := schemas.Invoice{}.Mixin()
+	invoiceMixinFields0 := invoiceMixin[0].Fields()
+	_ = invoiceMixinFields0
+	invoiceMixinFields1 := invoiceMixin[1].Fields()
+	_ = invoiceMixinFields1
+	invoiceMixinFields2 := invoiceMixin[2].Fields()
+	_ = invoiceMixinFields2
+	invoiceMixinFields3 := invoiceMixin[3].Fields()
+	_ = invoiceMixinFields3
+	invoiceFields := schemas.Invoice{}.Fields()
+	_ = invoiceFields
+	// invoiceDescCreatedAt is the schema descriptor for created_at field.
+	invoiceDescCreatedAt := invoiceMixinFields1[0].Descriptor()
+	// invoice.DefaultCreatedAt holds the default value on creation for the created_at field.
+	invoice.DefaultCreatedAt = invoiceDescCreatedAt.Default.(func() time.Time)
+	// invoiceDescUpdatedAt is the schema descriptor for updated_at field.
+	invoiceDescUpdatedAt := invoiceMixinFields1[1].Descriptor()
+	// invoice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	invoice.DefaultUpdatedAt = invoiceDescUpdatedAt.Default.(func() time.Time)
+	// invoice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	invoice.UpdateDefaultUpdatedAt = invoiceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// invoiceDescStatus is the schema descriptor for status field.
+	invoiceDescStatus := invoiceMixinFields2[0].Descriptor()
+	// invoice.DefaultStatus holds the default value on creation for the status field.
+	invoice.DefaultStatus = invoiceDescStatus.Default.(string)
+	// invoice.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	invoice.StatusValidator = func() func(string) error {
+		validators := invoiceDescStatus.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(status string) error {
+			for _, fn := range fns {
+				if err := fn(status); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// invoiceDescAmount is the schema descriptor for amount field.
+	invoiceDescAmount := invoiceMixinFields3[0].Descriptor()
+	// invoice.DefaultAmount holds the default value on creation for the amount field.
+	invoice.DefaultAmount = invoiceDescAmount.Default.(float64)
+	// invoiceDescTitle is the schema descriptor for title field.
+	invoiceDescTitle := invoiceFields[0].Descriptor()
+	// invoice.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	invoice.TitleValidator = func() func(string) error {
+		validators := invoiceDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// invoiceDescID is the schema descriptor for id field.
+	invoiceDescID := invoiceMixinFields0[0].Descriptor()
+	// invoice.DefaultID holds the default value on creation for the id field.
+	invoice.DefaultID = invoiceDescID.Default.(func() uuid.UUID)
 	transactionMixin := schemas.Transaction{}.Mixin()
 	transactionMixinFields0 := transactionMixin[0].Fields()
 	_ = transactionMixinFields0
@@ -65,6 +133,8 @@ func init() {
 	_ = transactionMixinFields1
 	transactionMixinFields2 := transactionMixin[2].Fields()
 	_ = transactionMixinFields2
+	transactionMixinFields3 := transactionMixin[3].Fields()
+	_ = transactionMixinFields3
 	transactionFields := schemas.Transaction{}.Fields()
 	_ = transactionFields
 	// transactionDescCreatedAt is the schema descriptor for created_at field.
@@ -97,26 +167,8 @@ func init() {
 			return nil
 		}
 	}()
-	// transactionDescTitle is the schema descriptor for title field.
-	transactionDescTitle := transactionFields[0].Descriptor()
-	// transaction.TitleValidator is a validator for the "title" field. It is called by the builders before save.
-	transaction.TitleValidator = func() func(string) error {
-		validators := transactionDescTitle.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(title string) error {
-			for _, fn := range fns {
-				if err := fn(title); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// transactionDescStatus is the schema descriptor for status field.
-	transactionDescStatus := transactionFields[2].Descriptor()
+	transactionDescStatus := transactionMixinFields3[0].Descriptor()
 	// transaction.DefaultStatus holds the default value on creation for the status field.
 	transaction.DefaultStatus = transactionDescStatus.Default.(string)
 	// transaction.StatusValidator is a validator for the "status" field. It is called by the builders before save.
@@ -129,6 +181,24 @@ func init() {
 		return func(status string) error {
 			for _, fn := range fns {
 				if err := fn(status); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// transactionDescTitle is the schema descriptor for title field.
+	transactionDescTitle := transactionFields[0].Descriptor()
+	// transaction.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	transaction.TitleValidator = func() func(string) error {
+		validators := transactionDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
 					return err
 				}
 			}

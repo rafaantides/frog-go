@@ -8,12 +8,17 @@ import (
 
 type MoneyMixin struct {
 	mixin.Schema
-	Name string
+	Name    string
+	Default *float64
 }
 
 func (m MoneyMixin) Fields() []ent.Field {
-	return []ent.Field{
-		field.Float(m.Name).
-			SchemaType(map[string]string{"postgres": "decimal(10,2)"}),
+	f := field.Float(m.Name).
+		SchemaType(map[string]string{"postgres": "decimal(10,2)"})
+
+	if m.Default != nil {
+		f = f.Default(*m.Default)
 	}
+
+	return []ent.Field{f}
 }

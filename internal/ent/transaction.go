@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
 	"strings"
 	"time"
@@ -25,28 +26,42 @@ type Transaction struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// RecordType holds the value of the "record_type" field.
 	RecordType string `json:"record_type,omitempty"`
+	// Status holds the value of the "status" field.
+	Status string `json:"status,omitempty"`
 	// Amount holds the value of the "amount" field.
 	Amount float64 `json:"amount,omitempty"`
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// RecordDate holds the value of the "record_date" field.
 	RecordDate time.Time `json:"record_date,omitempty"`
-	// Status holds the value of the "status" field.
-	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges        TransactionEdges `json:"edges"`
+	invoice_id   *uuid.UUID
 	category_id  *uuid.UUID
 	selectValues sql.SelectValues
 }
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
 type TransactionEdges struct {
+	// Invoice holds the value of the invoice edge.
+	Invoice *Invoice `json:"invoice,omitempty"`
 	// Category holds the value of the category edge.
 	Category *Category `json:"category,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// InvoiceOrErr returns the Invoice value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TransactionEdges) InvoiceOrErr() (*Invoice, error) {
+	if e.Invoice != nil {
+		return e.Invoice, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: invoice.Label}
+	}
+	return nil, &NotLoadedError{edge: "invoice"}
 }
 
 // CategoryOrErr returns the Category value or an error if the edge
@@ -54,7 +69,7 @@ type TransactionEdges struct {
 func (e TransactionEdges) CategoryOrErr() (*Category, error) {
 	if e.Category != nil {
 		return e.Category, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: category.Label}
 	}
 	return nil, &NotLoadedError{edge: "category"}
@@ -67,13 +82,15 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transaction.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case transaction.FieldRecordType, transaction.FieldTitle, transaction.FieldStatus:
+		case transaction.FieldRecordType, transaction.FieldStatus, transaction.FieldTitle:
 			values[i] = new(sql.NullString)
 		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldRecordDate:
 			values[i] = new(sql.NullTime)
 		case transaction.FieldID:
 			values[i] = new(uuid.UUID)
-		case transaction.ForeignKeys[0]: // category_id
+		case transaction.ForeignKeys[0]: // invoice_id
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case transaction.ForeignKeys[1]: // category_id
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
@@ -114,6 +131,12 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.RecordType = value.String
 			}
+		case transaction.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				t.Status = value.String
+			}
 		case transaction.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
@@ -132,13 +155,14 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.RecordDate = value.Time
 			}
-		case transaction.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				t.Status = value.String
-			}
 		case transaction.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field invoice_id", values[i])
+			} else if value.Valid {
+				t.invoice_id = new(uuid.UUID)
+				*t.invoice_id = *value.S.(*uuid.UUID)
+			}
+		case transaction.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
@@ -156,6 +180,11 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (t *Transaction) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
+}
+
+// QueryInvoice queries the "invoice" edge of the Transaction entity.
+func (t *Transaction) QueryInvoice() *InvoiceQuery {
+	return NewTransactionClient(t.config).QueryInvoice(t)
 }
 
 // QueryCategory queries the "category" edge of the Transaction entity.
@@ -195,6 +224,9 @@ func (t *Transaction) String() string {
 	builder.WriteString("record_type=")
 	builder.WriteString(t.RecordType)
 	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(t.Status)
+	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(fmt.Sprintf("%v", t.Amount))
 	builder.WriteString(", ")
@@ -203,9 +235,6 @@ func (t *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("record_date=")
 	builder.WriteString(t.RecordDate.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(t.Status)
 	builder.WriteByte(')')
 	return builder.String()
 }

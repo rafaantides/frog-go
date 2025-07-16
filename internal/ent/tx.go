@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
+	// Invoice is the client for interacting with the Invoice builders.
+	Invoice *InvoiceClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 
@@ -148,6 +150,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Category = NewCategoryClient(tx.config)
+	tx.Invoice = NewInvoiceClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
 }
 

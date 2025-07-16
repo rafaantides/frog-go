@@ -53,6 +53,7 @@ type Transaction struct {
 	Amount     float64    `json:"amount"`
 	RecordDate time.Time  `json:"record_date"`
 	CategoryID *uuid.UUID `json:"category_id"`
+	InvoiceID  *uuid.UUID `json:"invoice_id"`
 	Status     TxnStatus  `json:"status"`
 	RecordType RecordType `json:"record_type"`
 	CreatedAt  time.Time  `json:"created_at"`
@@ -63,6 +64,7 @@ func NewTransaction(
 	title string,
 	amount float64,
 	RecordDate time.Time,
+	invoiceID *uuid.UUID,
 	categoryID *uuid.UUID,
 	status *TxnStatus,
 	recordType *RecordType,
@@ -95,6 +97,7 @@ func NewTransaction(
 		RecordDate: RecordDate,
 		Status:     statusValue,
 		RecordType: recordTypeValue,
+		InvoiceID:  invoiceID,
 		CategoryID: categoryID,
 	}, nil
 }

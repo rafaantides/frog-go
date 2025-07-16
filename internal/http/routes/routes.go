@@ -48,6 +48,10 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 	registerTransactionRoutes(v1.Group("/transactions"), transactionHandler)
 
+	invoiceService := service.NewInvoiceService(r.repo)
+	invoiceHandler := handler.NewInvoiceHandler(invoiceService)
+	registerInvoiceRoutes(v1.Group("/invoices"), invoiceHandler)
+
 	categoryService := service.NewCategoryService(r.repo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	registerCategoryRoutes(v1.Group("/categories"), categoryHandler)
@@ -85,6 +89,15 @@ func registerTransactionRoutes(router *gin.RouterGroup, handler *handler.Transac
 	router.DELETE("/:id", handler.DeleteTransactionHandler)
 	router.GET("/summary", handler.TransactionsSummaryHandler)
 	router.GET("/stats", handler.TransactionsGeneralStatsHandler)
+}
+
+func registerInvoiceRoutes(router *gin.RouterGroup, handler *handler.InvoiceHandler) {
+	router.POST("", handler.CreateInvoiceHandler)
+	router.GET("", handler.ListInvoicesHandler)
+	router.GET("/:id", handler.GetInvoiceByIDHandler)
+	router.PUT("/:id", handler.UpdateInvoiceHandler)
+	router.DELETE("/:id", handler.DeleteInvoiceHandler)
+	router.GET("/:id/debts", handler.ListInvoiceDebtsHandler)
 }
 
 func registerCategoryRoutes(router *gin.RouterGroup, handler *handler.CategoryHandler) {

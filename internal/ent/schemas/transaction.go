@@ -1,8 +1,6 @@
 package schemas
 
 import (
-	"fmt"
-	"frog-go/internal/core/domain"
 	"frog-go/internal/utils/mixins"
 
 	"entgo.io/ent"
@@ -20,6 +18,7 @@ func (Transaction) Mixin() []ent.Mixin {
 		mixins.UUIDMixin{},
 		mixins.TimestampsMixin{},
 		mixins.RecordTypeMixin{},
+		mixins.RecordStatusMixin{},
 		mixins.MoneyMixin{Name: "amount"},
 	}
 }
@@ -28,21 +27,15 @@ func (Transaction) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("title").MaxLen(255).NotEmpty(),
 		field.Time("record_date"),
-
-		field.String("status").
-			NotEmpty().
-			Default(string(domain.StatusPending)).
-			Validate(func(s string) error {
-				if !domain.TxnStatus(s).IsValid() {
-					return fmt.Errorf("invalid status: %q", s)
-				}
-				return nil
-			}),
 	}
 }
 
 func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("invoice", Invoice.Type).
+			Unique().
+			StorageKey(edge.Column("invoice_id")),
+
 		// TODO: ver se tem como deixar category obrigatorio na modelagem, acredito q talvez n de por estar usando um hook para popular no create
 		edge.To("category", Category.Type).
 			Unique().
@@ -54,6 +47,7 @@ func (Transaction) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("record_date"),
 		index.Fields("record_type"),
+		index.Edges("invoice"),
 		index.Edges("category"),
 		index.Edges("category").Fields("record_date", "record_type"),
 	}

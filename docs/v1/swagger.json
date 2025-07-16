@@ -1,657 +1,1115 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "contact": {}
-  },
-  "paths": {
-    "/api/v1/categories": {
-      "get": {
-        "description": "Lista todas as categorias aplicando filtros e paginação",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Categorias"],
-        "summary": "Lista categorias com filtros e paginação",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Número da página",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "Limite por página",
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Campo de ordenação (ex: name)",
-            "name": "order_by",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Ordem (asc, desc)",
-            "name": "order",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/dto.CategoryResponse"
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Cria uma nova categoria com os dados fornecidos no corpo da requisição",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Categorias"],
-        "summary": "Cria uma nova categoria",
-        "parameters": [
-          {
-            "description": "Dados da categoria",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.CategoryRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/dto.CategoryResponse"
-            }
-          }
-        }
-      }
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
     },
-    "/api/v1/categories/{id}": {
-      "get": {
-        "description": "Retorna os dados de uma categoria com base no ID fornecido",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Categorias"],
-        "summary": "Busca uma categoria por ID",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da categoria",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.CategoryResponse"
-            }
-          }
-        }
-      },
-      "put": {
-        "description": "Atualiza os dados de uma categoria com base no ID fornecido e nos dados enviados no corpo da requisição",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Categorias"],
-        "summary": "Atualiza uma categoria existente",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da categoria",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Dados atualizados da categoria",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.CategoryRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.CategoryResponse"
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "Exclui uma categoria com base no ID fornecido",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Categorias"],
-        "summary": "Remove uma categoria",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da categoria",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Sem conteúdo"
-          }
-        }
-      }
-    },
-    "/api/v1/transactions": {
-      "get": {
-        "description": "Lista todas as transações aplicando filtros e paginação",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Lista transações com filtros e paginação",
-        "parameters": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
+    "paths": {
+        "/api/v1/categories": {
+            "get": {
+                "description": "Lista todas as categorias aplicando filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Lista categorias com filtros e paginação",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: name)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CategoryResponse"
+                            }
+                        }
+                    }
+                }
             },
-            "collectionFormat": "csv",
-            "description": "Filtrar por status",
-            "name": "status",
-            "in": "query"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
+            "post": {
+                "description": "Cria uma nova categoria com os dados fornecidos no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Cria uma nova categoria",
+                "parameters": [
+                    {
+                        "description": "Dados da categoria",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}": {
+            "get": {
+                "description": "Retorna os dados de uma categoria com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Busca uma categoria por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
             },
-            "collectionFormat": "csv",
-            "description": "Filtrar por tipos de transação (income, expense)",
-            "name": "record_types",
-            "in": "query"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
+            "put": {
+                "description": "Atualiza os dados de uma categoria com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Atualiza uma categoria existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da categoria",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CategoryResponse"
+                        }
+                    }
+                }
             },
-            "collectionFormat": "csv",
-            "description": "Filtrar por categorias",
-            "name": "category_id",
-            "in": "query"
-          },
-          {
-            "type": "number",
-            "description": "Valor mínimo",
-            "name": "min_amount",
-            "in": "query"
-          },
-          {
-            "type": "number",
-            "description": "Valor máximo",
-            "name": "max_amount",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Data inicial",
-            "name": "start_date",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Data final",
-            "name": "end_date",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "Número da página",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "Limite por página",
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Campo de ordenação",
-            "name": "order_by",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Ordem (asc, desc)",
-            "name": "order",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/dto.TransactionResponse"
-              }
+            "delete": {
+                "description": "Exclui uma categoria com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categorias"
+                ],
+                "summary": "Remove uma categoria",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
             }
-          }
-        }
-      },
-      "post": {
-        "description": "Cria uma nova transação com os dados fornecidos no corpo da requisição",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Cria uma nova transação",
-        "parameters": [
-          {
-            "description": "Dados da transação",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/transactions/stats": {
-      "get": {
-        "description": "Fornece dados estatísticos agregados das transações com base nos filtros aplicados",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Retorna estatísticas gerais das transações",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Data inicial (YYYY-MM-DD)",
-            "name": "start_date",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Data final (YYYY-MM-DD)",
-            "name": "end_date",
-            "in": "query"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
+        },
+        "/api/v1/invoices": {
+            "get": {
+                "description": "Lista todas as faturas aplicando filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Lista faturas com filtros e paginação",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: due_date)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por título",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor mínimo",
+                        "name": "min_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor máximo",
+                        "name": "max_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data de vencimento inicial",
+                        "name": "due_date_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data de vencimento final",
+                        "name": "due_date_end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.InvoiceResponse"
+                            }
+                        }
+                    }
+                }
             },
-            "collectionFormat": "csv",
-            "description": "Tipos de transação (income, expense)",
-            "name": "record_types",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionStatsSummary"
+            "post": {
+                "description": "Cria uma nova fatura com os dados fornecidos no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Cria uma nova fatura",
+                "parameters": [
+                    {
+                        "description": "Dados da fatura",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
-    },
-    "/api/v1/transactions/summary": {
-      "get": {
-        "description": "Gera um resumo estatístico das transações baseado nos filtros fornecidos",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Retorna resumo de transações",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Data inicial (YYYY-MM-DD)",
-            "name": "start_date",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Data final (YYYY-MM-DD)",
-            "name": "end_date",
-            "in": "query"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
+        },
+        "/api/v1/invoices/{id}": {
+            "get": {
+                "description": "Retorna os dados de uma fatura com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Busca uma fatura por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
             },
-            "collectionFormat": "csv",
-            "description": "Tipos de transação (income, expense)",
-            "name": "record_types",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.SummaryByDate"
+            "put": {
+                "description": "Atualiza os dados de uma fatura com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Atualiza uma fatura existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da fatura",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.InvoiceResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Exclui uma fatura com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Remove uma fatura",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
             }
-          }
+        },
+        "/api/v1/invoices/{id}/debts": {
+            "get": {
+                "description": "Lista todos os débitos (transações) vinculados a uma fatura específica, com filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Faturas"
+                ],
+                "summary": "Lista débitos associados a uma fatura",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da fatura",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação (ex: record_date)",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por título da transação",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtro por status da transação",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipo da transação (income, expense)",
+                        "name": "record_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da categoria",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial de registro",
+                        "name": "record_date_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final de registro",
+                        "name": "record_date_end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.TransactionResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions": {
+            "get": {
+                "description": "Lista todas as transações aplicando filtros e paginação",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Lista transações com filtros e paginação",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filtrar por status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filtrar por tipos de transação (income, expense)",
+                        "name": "record_types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Filtrar por categorias",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor mínimo",
+                        "name": "min_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Valor máximo",
+                        "name": "max_amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite por página",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campo de ordenação",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ordem (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.TransactionResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Cria uma nova transação com os dados fornecidos no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Cria uma nova transação",
+                "parameters": [
+                    {
+                        "description": "Dados da transação",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions/stats": {
+            "get": {
+                "description": "Fornece dados estatísticos agregados das transações com base nos filtros aplicados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Retorna estatísticas gerais das transações",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data inicial (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Tipos de transação (income, expense)",
+                        "name": "record_types",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionStatsSummary"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions/summary": {
+            "get": {
+                "description": "Gera um resumo estatístico das transações baseado nos filtros fornecidos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Retorna resumo de transações",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data inicial (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Tipos de transação (income, expense)",
+                        "name": "record_types",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SummaryByDate"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transactions/{id}": {
+            "get": {
+                "description": "Retorna os dados de uma transação com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Busca uma transação por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da transação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Atualiza os dados de uma transação com base no ID fornecido e nos dados enviados no corpo da requisição",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Atualiza uma transação existente",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da transação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados atualizados da transação",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TransactionResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Exclui uma transação com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transações"
+                ],
+                "summary": "Remove uma transação",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da transação",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/api/v1/upload": {
+            "post": {
+                "description": "Recebe um arquivo e os parâmetros necessários para processamento assíncrono.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Processar arquivo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Arquivo para importação (ex: .csv, .xlsx)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nome do recurso (ex: transactions)",
+                        "name": "resource",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nome do modelo alvo (ex: Nubank)",
+                        "name": "model",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ação desejada (ex: create)",
+                        "name": "action",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Arquivo recebido, processamento em andamento",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro nos parâmetros ou no upload",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
     },
-    "/api/v1/transactions/{id}": {
-      "get": {
-        "description": "Retorna os dados de uma transação com base no ID fornecido",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Busca uma transação por ID",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da transação",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionResponse"
+    "definitions": {
+        "dto.CategoryRequest": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
             }
-          }
+        },
+        "dto.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CategorySummary": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                },
+                "transactions": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.InvoiceRequest": {
+            "type": "object",
+            "properties": {
+                "due_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.InvoiceResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "due_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SummaryByDate": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CategorySummary"
+                    }
+                },
+                "date": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.TransactionCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TransactionInvoiceResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TransactionRequest": {
+            "type": "object",
+            "required": [
+                "record_type",
+                "status"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "invoice_id": {
+                    "type": "string"
+                },
+                "record_date": {
+                    "type": "string"
+                },
+                "record_type": {
+                    "type": "string",
+                    "enum": [
+                        "income",
+                        "expense"
+                    ]
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "paid",
+                        "canceled"
+                    ]
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/dto.TransactionCategoryResponse"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invoice": {
+                    "$ref": "#/definitions/dto.TransactionInvoiceResponse"
+                },
+                "record_date": {
+                    "type": "string"
+                },
+                "record_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TransactionStatsSummary": {
+            "type": "object",
+            "properties": {
+                "average_per_transaction": {
+                    "type": "number"
+                },
+                "total_amount": {
+                    "type": "number"
+                },
+                "total_transactions": {
+                    "type": "integer"
+                },
+                "unique_establishments": {
+                    "type": "integer"
+                }
+            }
         }
-      },
-      "put": {
-        "description": "Atualiza os dados de uma transação com base no ID fornecido e nos dados enviados no corpo da requisição",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Atualiza uma transação existente",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da transação",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Dados atualizados da transação",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/dto.TransactionResponse"
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "Exclui uma transação com base no ID fornecido",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["Transações"],
-        "summary": "Remove uma transação",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "ID da transação",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Sem conteúdo"
-          }
-        }
-      }
-    },
-    "/api/v1/upload": {
-      "post": {
-        "description": "Recebe um arquivo e os parâmetros necessários para processamento assíncrono.",
-        "consumes": ["multipart/form-data"],
-        "produces": ["application/json"],
-        "tags": ["Upload"],
-        "summary": "Processar arquivo",
-        "parameters": [
-          {
-            "type": "file",
-            "description": "Arquivo para importação (ex: .csv, .xlsx)",
-            "name": "file",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "Nome do recurso (ex: transactions)",
-            "name": "resource",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "Nome do modelo alvo (ex: Nubank)",
-            "name": "model",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "Ação desejada (ex: create)",
-            "name": "action",
-            "in": "formData",
-            "required": true
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Arquivo recebido, processamento em andamento",
-            "schema": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          },
-          "400": {
-            "description": "Erro nos parâmetros ou no upload",
-            "schema": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          }
-        }
-      }
     }
-  },
-  "definitions": {
-    "dto.CategoryRequest": {
-      "type": "object",
-      "properties": {
-        "color": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.CategoryResponse": {
-      "type": "object",
-      "properties": {
-        "color": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.CategorySummary": {
-      "type": "object",
-      "properties": {
-        "category": {
-          "type": "string"
-        },
-        "total": {
-          "type": "number"
-        },
-        "transactions": {
-          "type": "integer"
-        }
-      }
-    },
-    "dto.SummaryByDate": {
-      "type": "object",
-      "properties": {
-        "categories": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dto.CategorySummary"
-          }
-        },
-        "date": {
-          "type": "string"
-        },
-        "total": {
-          "type": "number"
-        }
-      }
-    },
-    "dto.TransactionCategoryResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.TransactionRequest": {
-      "type": "object",
-      "required": ["status", "record_type"],
-      "properties": {
-        "amount": {
-          "type": "number"
-        },
-        "category_id": {
-          "type": "string"
-        },
-        "record_date": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["pending", "paid", "canceled"]
-        },
-        "title": {
-          "type": "string"
-        },
-        "record_type": {
-          "type": "string",
-          "enum": ["income", "expense"]
-        }
-      }
-    },
-    "dto.TransactionResponse": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "number"
-        },
-        "category": {
-          "$ref": "#/definitions/dto.TransactionCategoryResponse"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "record_date": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "record_type": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      }
-    },
-    "dto.TransactionStatsSummary": {
-      "type": "object",
-      "properties": {
-        "average_per_transaction": {
-          "type": "number"
-        },
-        "total_amount": {
-          "type": "number"
-        },
-        "total_transactions": {
-          "type": "integer"
-        },
-        "unique_establishments": {
-          "type": "integer"
-        }
-      }
-    }
-  }
 }
