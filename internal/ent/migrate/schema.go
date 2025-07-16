@@ -62,7 +62,7 @@ var (
 				Symbol:     "transactions_invoices_invoice",
 				Columns:    []*schema.Column{TransactionsColumns[8]},
 				RefColumns: []*schema.Column{InvoicesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "transactions_categories_category",

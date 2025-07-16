@@ -4,6 +4,7 @@ import (
 	"frog-go/internal/utils/mixins"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -34,7 +35,7 @@ func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("invoice", Invoice.Type).
 			Unique().
-			StorageKey(edge.Column("invoice_id")),
+			StorageKey(edge.Column("invoice_id")).Annotations(entsql.OnDelete(entsql.Cascade)),
 
 		// TODO: ver se tem como deixar category obrigatorio na modelagem, acredito q talvez n de por estar usando um hook para popular no create
 		edge.To("category", Category.Type).

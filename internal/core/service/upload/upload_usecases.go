@@ -13,7 +13,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *uploadService) processTransactions(model, action, filename string, rows [][]string, idx map[string]int) error {
+func (s *uploadService) processTransactions(
+	model, action, filename string,
+	invoiceID *uuid.UUID,
+	rows [][]string,
+	idx map[string]int,
+) error {
 	jobID := uuid.New().String()
 
 	baseName := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
@@ -24,7 +29,7 @@ func (s *uploadService) processTransactions(model, action, filename string, rows
 
 	for _, row := range rows[1:] {
 
-		transaction, err := buildTransactionRequest(model, row, idx)
+		transaction, err := buildTransactionRequest(model, invoiceID, row, idx)
 		if err != nil {
 			return fmt.Errorf("failed to build request: %w", err)
 		}
@@ -53,23 +58,29 @@ func (s *uploadService) processTransactions(model, action, filename string, rows
 	return nil
 }
 
-func buildTransactionRequest(model string, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
+func buildTransactionRequest(model string, invoiceID *uuid.UUID, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
 	switch model {
 	case config.ModelNubank:
-		return nubankToRequest(row, idx)
+		return nubankToRequest(invoiceID, row, idx)
 	default:
 		return nil, fmt.Errorf("unknown model: %s", model)
 	}
 }
 
-func nubankToRequest(row []string, idx map[string]int) (*dto.TransactionRequest, error) {
-
+func nubankToRequest(invoiceID *uuid.UUID, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
 	amount, err := strconv.ParseFloat(getValue(row, idx, "amount"), 64)
 	if err != nil {
 		return nil, errors.InvalidParam("amount", err)
 	}
 
+	var invoiceIDStr *string
+	if invoiceID != nil {
+		str := invoiceID.String()
+		invoiceIDStr = &str
+	}
+
 	return &dto.TransactionRequest{
+		InvoiceID:  invoiceIDStr,
 		RecordDate: getValue(row, idx, "date"),
 		Title:      getValue(row, idx, "title"),
 		Amount:     amount,

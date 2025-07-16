@@ -35,7 +35,7 @@ CREATE TABLE "public"."transactions" (
   "category_id" uuid NULL,
   PRIMARY KEY ("id"),
   CONSTRAINT "transactions_categories_category" FOREIGN KEY ("category_id") REFERENCES "public"."categories" ("id") ON UPDATE NO ACTION ON DELETE SET NULL,
-  CONSTRAINT "transactions_invoices_invoice" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices" ("id") ON UPDATE NO ACTION ON DELETE SET NULL
+  CONSTRAINT "transactions_invoices_invoice" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices" ("id") ON UPDATE NO ACTION ON DELETE CASCADE
 );
 -- Create index "transaction_category_id" to table: "transactions"
 CREATE INDEX "transaction_category_id" ON "public"."transactions" ("category_id");

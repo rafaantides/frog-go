@@ -97,7 +97,7 @@ func registerInvoiceRoutes(router *gin.RouterGroup, handler *handler.InvoiceHand
 	router.GET("/:id", handler.GetInvoiceByIDHandler)
 	router.PUT("/:id", handler.UpdateInvoiceHandler)
 	router.DELETE("/:id", handler.DeleteInvoiceHandler)
-	router.GET("/:id/debts", handler.ListInvoiceDebtsHandler)
+	router.GET("/:id/transactions", handler.ListInvoiceDebtsHandler)
 }
 
 func registerCategoryRoutes(router *gin.RouterGroup, handler *handler.CategoryHandler) {

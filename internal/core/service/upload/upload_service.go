@@ -3,13 +3,13 @@ package upload
 import (
 	"encoding/csv"
 	"fmt"
-	"frog-go/internal/config"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/core/ports/outbound/messagebus"
 	"io"
 	"mime/multipart"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -21,7 +21,7 @@ func NewUploadService(mb messagebus.MessageBus) inbound.UploadService {
 	return &uploadService{mb: mb}
 }
 
-func (c *uploadService) ImportFile(resource, model, action string, file multipart.File, fileHeader *multipart.FileHeader) error {
+func (c *uploadService) ImportFile(model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error {
 	fileType, err := detectFileType(file)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (c *uploadService) ImportFile(resource, model, action string, file multipar
 		return err
 	}
 
-	return c.readRows(resource, model, action, filename, rows)
+	return c.readRows(model, action, filename, invoiceID, rows)
 }
 
 func (c *uploadService) readCSV(file multipart.File) ([][]string, error) {
@@ -62,19 +62,14 @@ func (c *uploadService) readXLSX(file multipart.File) ([][]string, error) {
 	return f.GetRows(sheetName)
 }
 
-func (c *uploadService) readRows(resource, model, action, filename string, rows [][]string) error {
+func (c *uploadService) readRows(model, action, filename string, invoiceID *uuid.UUID, rows [][]string) error {
 	if len(rows) < 2 {
 		return fmt.Errorf("invalid file: no data found")
 	}
 
 	columnIndex := indexColumns(rows[0])
 
-	switch resource {
-	case config.ResourceTransactions:
-		c.processTransactions(model, action, filename, rows, columnIndex)
-	default:
-		return fmt.Errorf("unknown resource: %s", resource)
-	}
+	c.processTransactions(model, action, filename, invoiceID, rows, columnIndex)
 
 	return nil
 

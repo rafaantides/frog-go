@@ -423,7 +423,7 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 	}
 
 	if flt.InvoiceIDs != nil {
-		invoiceIDs := utils.ToUUIDSlice(*flt.CategoryIDs)
+		invoiceIDs := utils.ToUUIDSlice(*flt.InvoiceIDs)
 		if len(invoiceIDs) > 0 {
 			query = query.Where(
 				transaction.HasInvoiceWith(entInvoice.IDIn(invoiceIDs...)),

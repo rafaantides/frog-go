@@ -50,6 +50,7 @@ func NewPostgreSQL(user, password, host, port, database, SeedPath string) (repos
 
 	client.Transaction.Use(
 		hooks.SetCategoryFromTitleHook(client, categorizer),
+		hooks.UpdateInvoiceAmountHook(client),
 	)
 
 	log.Start("Host: %s:%s | User: %s | DB: %s", host, port, user, database)
