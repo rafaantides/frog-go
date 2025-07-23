@@ -6,6 +6,7 @@ CREATE TABLE "public"."categories" (
   "name" character varying NOT NULL,
   "description" character varying NULL,
   "color" character varying NULL,
+  "suggested_percentage" bigint NULL,
   PRIMARY KEY ("id")
 );
 -- Create index "categories_name_key" to table: "categories"

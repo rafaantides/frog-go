@@ -20,6 +20,10 @@ func SetCategoryFromTitleHook(client *ent.Client, categorizer *Categorizer) ent.
 				return next.Mutate(ctx, m)
 			}
 
+			if _, ok := dm.CategoryID(); ok {
+				return next.Mutate(ctx, m)
+			}
+
 			title, exists := dm.Title()
 			if !exists {
 				return nil, fmt.Errorf("title is required to categorize transaction")

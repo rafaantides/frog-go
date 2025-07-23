@@ -7,6 +7,8 @@ definitions:
         type: string
       name:
         type: string
+      suggested_percentage:
+        type: integer
     type: object
   dto.CategoryResponse:
     properties:
@@ -18,15 +20,21 @@ definitions:
         type: string
       name:
         type: string
+      suggested_percentage:
+        type: integer
     type: object
   dto.CategorySummary:
     properties:
       category:
         type: string
-      total:
-        type: number
-      transactions:
+      expense_transactions:
         type: integer
+      income_transactions:
+        type: integer
+      total_expense:
+        type: number
+      total_income:
+        type: number
     type: object
   dto.InvoiceRequest:
     properties:
@@ -62,7 +70,9 @@ definitions:
         type: array
       date:
         type: string
-      total:
+      total_expense:
+        type: number
+      total_income:
         type: number
     type: object
   dto.TransactionCategoryResponse:
@@ -706,9 +716,9 @@ paths:
         name: file
         required: true
         type: file
-      - description: 'Nome do recurso (ex: transactions)'
+      - description: ID da fatura (opcional)
         in: formData
-        name: resource
+        name: invoice_id
         required: true
         type: string
       - description: 'Nome do modelo alvo (ex: Nubank)'

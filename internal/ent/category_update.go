@@ -88,6 +88,33 @@ func (cu *CategoryUpdate) ClearColor() *CategoryUpdate {
 	return cu
 }
 
+// SetSuggestedPercentage sets the "suggested_percentage" field.
+func (cu *CategoryUpdate) SetSuggestedPercentage(i int) *CategoryUpdate {
+	cu.mutation.ResetSuggestedPercentage()
+	cu.mutation.SetSuggestedPercentage(i)
+	return cu
+}
+
+// SetNillableSuggestedPercentage sets the "suggested_percentage" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableSuggestedPercentage(i *int) *CategoryUpdate {
+	if i != nil {
+		cu.SetSuggestedPercentage(*i)
+	}
+	return cu
+}
+
+// AddSuggestedPercentage adds i to the "suggested_percentage" field.
+func (cu *CategoryUpdate) AddSuggestedPercentage(i int) *CategoryUpdate {
+	cu.mutation.AddSuggestedPercentage(i)
+	return cu
+}
+
+// ClearSuggestedPercentage clears the value of the "suggested_percentage" field.
+func (cu *CategoryUpdate) ClearSuggestedPercentage() *CategoryUpdate {
+	cu.mutation.ClearSuggestedPercentage()
+	return cu
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cu *CategoryUpdate) Mutation() *CategoryMutation {
 	return cu.mutation
@@ -174,6 +201,15 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if cu.mutation.ColorCleared() {
 		_spec.ClearField(category.FieldColor, field.TypeString)
 	}
+	if value, ok := cu.mutation.SuggestedPercentage(); ok {
+		_spec.SetField(category.FieldSuggestedPercentage, field.TypeInt, value)
+	}
+	if value, ok := cu.mutation.AddedSuggestedPercentage(); ok {
+		_spec.AddField(category.FieldSuggestedPercentage, field.TypeInt, value)
+	}
+	if cu.mutation.SuggestedPercentageCleared() {
+		_spec.ClearField(category.FieldSuggestedPercentage, field.TypeInt)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{category.Label}
@@ -251,6 +287,33 @@ func (cuo *CategoryUpdateOne) SetNillableColor(s *string) *CategoryUpdateOne {
 // ClearColor clears the value of the "color" field.
 func (cuo *CategoryUpdateOne) ClearColor() *CategoryUpdateOne {
 	cuo.mutation.ClearColor()
+	return cuo
+}
+
+// SetSuggestedPercentage sets the "suggested_percentage" field.
+func (cuo *CategoryUpdateOne) SetSuggestedPercentage(i int) *CategoryUpdateOne {
+	cuo.mutation.ResetSuggestedPercentage()
+	cuo.mutation.SetSuggestedPercentage(i)
+	return cuo
+}
+
+// SetNillableSuggestedPercentage sets the "suggested_percentage" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableSuggestedPercentage(i *int) *CategoryUpdateOne {
+	if i != nil {
+		cuo.SetSuggestedPercentage(*i)
+	}
+	return cuo
+}
+
+// AddSuggestedPercentage adds i to the "suggested_percentage" field.
+func (cuo *CategoryUpdateOne) AddSuggestedPercentage(i int) *CategoryUpdateOne {
+	cuo.mutation.AddSuggestedPercentage(i)
+	return cuo
+}
+
+// ClearSuggestedPercentage clears the value of the "suggested_percentage" field.
+func (cuo *CategoryUpdateOne) ClearSuggestedPercentage() *CategoryUpdateOne {
+	cuo.mutation.ClearSuggestedPercentage()
 	return cuo
 }
 
@@ -369,6 +432,15 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 	}
 	if cuo.mutation.ColorCleared() {
 		_spec.ClearField(category.FieldColor, field.TypeString)
+	}
+	if value, ok := cuo.mutation.SuggestedPercentage(); ok {
+		_spec.SetField(category.FieldSuggestedPercentage, field.TypeInt, value)
+	}
+	if value, ok := cuo.mutation.AddedSuggestedPercentage(); ok {
+		_spec.AddField(category.FieldSuggestedPercentage, field.TypeInt, value)
+	}
+	if cuo.mutation.SuggestedPercentageCleared() {
+		_spec.ClearField(category.FieldSuggestedPercentage, field.TypeInt)
 	}
 	_node = &Category{config: cuo.config}
 	_spec.Assign = _node.assignValues

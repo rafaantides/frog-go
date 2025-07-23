@@ -80,6 +80,11 @@ func Color(v string) predicate.Category {
 	return predicate.Category(sql.FieldEQ(FieldColor, v))
 }
 
+// SuggestedPercentage applies equality check predicate on the "suggested_percentage" field. It's identical to SuggestedPercentageEQ.
+func SuggestedPercentage(v int) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldSuggestedPercentage, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Category {
 	return predicate.Category(sql.FieldEQ(FieldCreatedAt, v))
@@ -373,6 +378,56 @@ func ColorEqualFold(v string) predicate.Category {
 // ColorContainsFold applies the ContainsFold predicate on the "color" field.
 func ColorContainsFold(v string) predicate.Category {
 	return predicate.Category(sql.FieldContainsFold(FieldColor, v))
+}
+
+// SuggestedPercentageEQ applies the EQ predicate on the "suggested_percentage" field.
+func SuggestedPercentageEQ(v int) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageNEQ applies the NEQ predicate on the "suggested_percentage" field.
+func SuggestedPercentageNEQ(v int) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageIn applies the In predicate on the "suggested_percentage" field.
+func SuggestedPercentageIn(vs ...int) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldSuggestedPercentage, vs...))
+}
+
+// SuggestedPercentageNotIn applies the NotIn predicate on the "suggested_percentage" field.
+func SuggestedPercentageNotIn(vs ...int) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldSuggestedPercentage, vs...))
+}
+
+// SuggestedPercentageGT applies the GT predicate on the "suggested_percentage" field.
+func SuggestedPercentageGT(v int) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageGTE applies the GTE predicate on the "suggested_percentage" field.
+func SuggestedPercentageGTE(v int) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageLT applies the LT predicate on the "suggested_percentage" field.
+func SuggestedPercentageLT(v int) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageLTE applies the LTE predicate on the "suggested_percentage" field.
+func SuggestedPercentageLTE(v int) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldSuggestedPercentage, v))
+}
+
+// SuggestedPercentageIsNil applies the IsNil predicate on the "suggested_percentage" field.
+func SuggestedPercentageIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldSuggestedPercentage))
+}
+
+// SuggestedPercentageNotNil applies the NotNil predicate on the "suggested_percentage" field.
+func SuggestedPercentageNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldSuggestedPercentage))
 }
 
 // And groups predicates with the AND operator between them.

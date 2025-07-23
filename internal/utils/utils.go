@@ -14,6 +14,10 @@ var acceptedLayouts = []string{
 	"2006-01-02",
 }
 
+func IntPtr(i int) *int {
+	return &i
+}
+
 func ToUint(s string) (uint, error) {
 	val, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {

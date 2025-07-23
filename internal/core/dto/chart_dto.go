@@ -7,20 +7,24 @@ type ChartFilters struct {
 }
 
 type CategorySummary struct {
-	Category     string  `json:"category"`
-	Total        float64 `json:"total"`
-	Transactions int     `json:"transactions"`
+	Category            string  `json:"category"`
+	Income              float64 `json:"income"`
+	Expense             float64 `json:"expense"`
+	IncomeTransactions  int     `json:"income_transactions"`
+	ExpenseTransactions int     `json:"expense_transactions"`
 }
 
 type SummaryByDate struct {
 	Date       string            `json:"date"`
-	Total      float64           `json:"total"`
+	Income     float64           `json:"income"`
+	Expense    float64           `json:"expense"`
 	Categories []CategorySummary `json:"categories"`
 }
 
 type TransactionStatsSummary struct {
-	TotalAmount           float64 `json:"total_amount"`
-	TotalTransactions     int     `json:"total_transactions"`
-	UniqueEstablishments  int     `json:"unique_establishments"`
-	AveragePerTransaction float64 `json:"average_per_transaction"`
+	Income              float64 `json:"income"`
+	Expense             float64 `json:"expense"`
+	Balance             float64 `json:"balance"`
+	IncomeTransactions  int     `json:"income_transactions"`
+	ExpenseTransactions int     `json:"expense_transactions"`
 }

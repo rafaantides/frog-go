@@ -23,5 +23,6 @@ func (Category) Fields() []ent.Field {
 		field.String("name").Unique().MaxLen(255).NotEmpty(),
 		field.String("description").Optional().Nillable(),
 		field.String("color").MaxLen(7).Optional().Nillable(),
+		field.Int("suggested_percentage").Optional().Nillable(),
 	}
 }

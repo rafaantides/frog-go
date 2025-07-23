@@ -83,6 +83,20 @@ func (cc *CategoryCreate) SetNillableColor(s *string) *CategoryCreate {
 	return cc
 }
 
+// SetSuggestedPercentage sets the "suggested_percentage" field.
+func (cc *CategoryCreate) SetSuggestedPercentage(i int) *CategoryCreate {
+	cc.mutation.SetSuggestedPercentage(i)
+	return cc
+}
+
+// SetNillableSuggestedPercentage sets the "suggested_percentage" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableSuggestedPercentage(i *int) *CategoryCreate {
+	if i != nil {
+		cc.SetSuggestedPercentage(*i)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CategoryCreate) SetID(u uuid.UUID) *CategoryCreate {
 	cc.mutation.SetID(u)
@@ -221,6 +235,10 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Color(); ok {
 		_spec.SetField(category.FieldColor, field.TypeString, value)
 		_node.Color = &value
+	}
+	if value, ok := cc.mutation.SuggestedPercentage(); ok {
+		_spec.SetField(category.FieldSuggestedPercentage, field.TypeInt, value)
+		_node.SuggestedPercentage = &value
 	}
 	return _node, _spec
 }

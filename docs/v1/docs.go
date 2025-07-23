@@ -863,8 +863,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Nome do recurso (ex: transactions)",
-                        "name": "resource",
+                        "description": "ID da fatura (opcional)",
+                        "name": "invoice_id",
                         "in": "formData",
                         "required": true
                     },
@@ -918,6 +918,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "suggested_percentage": {
+                    "type": "integer"
                 }
             }
         },
@@ -935,6 +938,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "suggested_percentage": {
+                    "type": "integer"
                 }
             }
         },
@@ -944,11 +950,17 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
-                "total": {
+                "expense_transactions": {
+                    "type": "integer"
+                },
+                "income_transactions": {
+                    "type": "integer"
+                },
+                "total_expense": {
                     "type": "number"
                 },
-                "transactions": {
-                    "type": "integer"
+                "total_income": {
+                    "type": "number"
                 }
             }
         },
@@ -1004,7 +1016,10 @@ const docTemplate = `{
                 "date": {
                     "type": "string"
                 },
-                "total": {
+                "total_expense": {
+                    "type": "number"
+                },
+                "total_income": {
                     "type": "number"
                 }
             }

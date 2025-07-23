@@ -16,6 +16,7 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString, Nullable: true, Size: 7},
+		{Name: "suggested_percentage", Type: field.TypeInt, Nullable: true},
 	}
 	// CategoriesTable holds the schema information for the "categories" table.
 	CategoriesTable = &schema.Table{

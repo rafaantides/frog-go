@@ -9,6 +9,7 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/ent/category"
+	"frog-go/internal/utils"
 	"frog-go/internal/utils/logger"
 	"os"
 )
@@ -67,54 +68,63 @@ func startSeed() {
 
 func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger.Logger) error {
 	categories := []struct {
-		Name        string
-		Description string
-		Color       string
+		Name                string
+		Description         string
+		Color               string
+		SuggestedPercentage *int
 	}{
 		{
 			"Assinaturas",
 			"Serviços recorrentes como streaming, apps e plataformas.",
 			"#FF6B6B",
+			utils.IntPtr(5),
 		},
 		{
-			"Alimentação e delivery",
-			"Restaurantes, delivery, cafés, padarias",
+			"Mercado e delivery",
+			"Mercado, restaurantes, delivery, cafés, padarias",
 			"#FFA94D",
-		},
-		{
-			"Mercado",
-			"Compras em supermercados, mercearias e conveniências.",
-			"#69DB7C",
+			utils.IntPtr(20),
 		},
 		{
 			"Saúde e bem-estar",
 			"Farmácia, plano de saúde, terapias e autocuidado.",
 			"#20C997",
+			utils.IntPtr(5),
 		},
 		{
 			"Compras pessoais",
 			"Produtos online, marketplaces, roupas, estética e cuidados pessoais.",
 			"#845EF7",
+			utils.IntPtr(10),
 		},
 		{
 			"Transporte",
 			"Uber, 99, combustível e transporte em geral.",
 			"#339AF0",
+			utils.IntPtr(5),
 		},
 		{
 			"Lazer",
 			"Bares, festas, eventos, shows, cinema e entretenimento.",
 			"#DA77F2",
+			utils.IntPtr(5),
 		},
 		{
 			"Moradia",
 			"Aluguel, condomínio, luz, água, gás e contas da casa.",
 			"#FFB3C1",
+			utils.IntPtr(30),
 		},
 		{
 			"Sem categoria",
 			"Gastos não classificados ou indefinidos.",
 			"#CBD5E1",
+			nil,
+		}, {
+			"Descontos",
+			"Impostos, taxas e tributos diversos.",
+			"#CBD5E1",
+			nil,
 		},
 	}
 
@@ -132,6 +142,7 @@ func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger
 			SetName(c.Name).
 			SetDescription(c.Description).
 			SetColor(c.Color).
+			SetNillableSuggestedPercentage(c.SuggestedPercentage).
 			Save(ctx)
 		if err != nil {
 			return err

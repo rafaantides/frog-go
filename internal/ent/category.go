@@ -27,8 +27,10 @@ type Category struct {
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
 	// Color holds the value of the "color" field.
-	Color        *string `json:"color,omitempty"`
-	selectValues sql.SelectValues
+	Color *string `json:"color,omitempty"`
+	// SuggestedPercentage holds the value of the "suggested_percentage" field.
+	SuggestedPercentage *int `json:"suggested_percentage,omitempty"`
+	selectValues        sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -36,6 +38,8 @@ func (*Category) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case category.FieldSuggestedPercentage:
+			values[i] = new(sql.NullInt64)
 		case category.FieldName, category.FieldDescription, category.FieldColor:
 			values[i] = new(sql.NullString)
 		case category.FieldCreatedAt, category.FieldUpdatedAt:
@@ -95,6 +99,13 @@ func (c *Category) assignValues(columns []string, values []any) error {
 				c.Color = new(string)
 				*c.Color = value.String
 			}
+		case category.FieldSuggestedPercentage:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field suggested_percentage", values[i])
+			} else if value.Valid {
+				c.SuggestedPercentage = new(int)
+				*c.SuggestedPercentage = int(value.Int64)
+			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -148,6 +159,11 @@ func (c *Category) String() string {
 	if v := c.Color; v != nil {
 		builder.WriteString("color=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := c.SuggestedPercentage; v != nil {
+		builder.WriteString("suggested_percentage=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

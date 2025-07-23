@@ -852,8 +852,8 @@
                     },
                     {
                         "type": "string",
-                        "description": "Nome do recurso (ex: transactions)",
-                        "name": "resource",
+                        "description": "ID da fatura (opcional)",
+                        "name": "invoice_id",
                         "in": "formData",
                         "required": true
                     },
@@ -907,6 +907,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "suggested_percentage": {
+                    "type": "integer"
                 }
             }
         },
@@ -924,6 +927,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "suggested_percentage": {
+                    "type": "integer"
                 }
             }
         },
@@ -933,11 +939,17 @@
                 "category": {
                     "type": "string"
                 },
-                "total": {
+                "expense_transactions": {
+                    "type": "integer"
+                },
+                "income_transactions": {
+                    "type": "integer"
+                },
+                "total_expense": {
                     "type": "number"
                 },
-                "transactions": {
-                    "type": "integer"
+                "total_income": {
+                    "type": "number"
                 }
             }
         },
@@ -993,7 +1005,10 @@
                 "date": {
                     "type": "string"
                 },
-                "total": {
+                "total_expense": {
+                    "type": "number"
+                },
+                "total_income": {
                     "type": "number"
                 }
             }

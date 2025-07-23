@@ -24,6 +24,8 @@ const (
 	FieldDescription = "description"
 	// FieldColor holds the string denoting the color field in the database.
 	FieldColor = "color"
+	// FieldSuggestedPercentage holds the string denoting the suggested_percentage field in the database.
+	FieldSuggestedPercentage = "suggested_percentage"
 	// Table holds the table name of the category in the database.
 	Table = "categories"
 )
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldColor,
+	FieldSuggestedPercentage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -94,4 +97,9 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByColor orders the results by the color field.
 func ByColor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldColor, opts...).ToFunc()
+}
+
+// BySuggestedPercentage orders the results by the suggested_percentage field.
+func BySuggestedPercentage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuggestedPercentage, opts...).ToFunc()
 }

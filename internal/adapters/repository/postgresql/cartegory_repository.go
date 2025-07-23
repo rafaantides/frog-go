@@ -23,7 +23,7 @@ func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.Ca
 		}
 		return nil, errors.FailedToFind(categoryEntity, err)
 	}
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
+	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
 }
 
 func (p *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uuid.UUID, error) {
@@ -49,13 +49,14 @@ func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) 
 		SetName(input.Name).
 		SetNillableDescription(input.Description).
 		SetNillableColor(input.Color).
+		SetNillableSuggestedPercentage(input.SuggestedPercentage).
 		Save(ctx)
 
 	if err != nil {
 		return nil, errors.FailedToSave(categoryEntity, err)
 	}
 
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
+	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
 }
 
 func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error) {
@@ -64,6 +65,7 @@ func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 		SetName(input.Name).
 		SetNillableDescription(input.Description).
 		SetNillableColor(input.Color).
+		SetNillableSuggestedPercentage(input.SuggestedPercentage).
 		Save(ctx)
 
 	if err != nil {
@@ -73,7 +75,7 @@ func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 		return nil, errors.FailedToUpdate(categoryEntity, err)
 	}
 
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color), nil
+	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
 }
 
 func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error {
@@ -106,7 +108,7 @@ func (p *PostgreSQL) ListCategories(ctx context.Context, pgn *pagination.Paginat
 
 	response := make([]dto.CategoryResponse, 0, len(rows))
 	for _, row := range rows {
-		response = append(response, *dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color))
+		response = append(response, *dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage))
 	}
 	return response, nil
 

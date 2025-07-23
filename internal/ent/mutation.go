@@ -35,18 +35,20 @@ const (
 // CategoryMutation represents an operation that mutates the Category nodes in the graph.
 type CategoryMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
-	name          *string
-	description   *string
-	color         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Category, error)
-	predicates    []predicate.Category
+	op                      Op
+	typ                     string
+	id                      *uuid.UUID
+	created_at              *time.Time
+	updated_at              *time.Time
+	name                    *string
+	description             *string
+	color                   *string
+	suggested_percentage    *int
+	addsuggested_percentage *int
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*Category, error)
+	predicates              []predicate.Category
 }
 
 var _ ent.Mutation = (*CategoryMutation)(nil)
@@ -359,6 +361,76 @@ func (m *CategoryMutation) ResetColor() {
 	delete(m.clearedFields, category.FieldColor)
 }
 
+// SetSuggestedPercentage sets the "suggested_percentage" field.
+func (m *CategoryMutation) SetSuggestedPercentage(i int) {
+	m.suggested_percentage = &i
+	m.addsuggested_percentage = nil
+}
+
+// SuggestedPercentage returns the value of the "suggested_percentage" field in the mutation.
+func (m *CategoryMutation) SuggestedPercentage() (r int, exists bool) {
+	v := m.suggested_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuggestedPercentage returns the old "suggested_percentage" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldSuggestedPercentage(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuggestedPercentage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuggestedPercentage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuggestedPercentage: %w", err)
+	}
+	return oldValue.SuggestedPercentage, nil
+}
+
+// AddSuggestedPercentage adds i to the "suggested_percentage" field.
+func (m *CategoryMutation) AddSuggestedPercentage(i int) {
+	if m.addsuggested_percentage != nil {
+		*m.addsuggested_percentage += i
+	} else {
+		m.addsuggested_percentage = &i
+	}
+}
+
+// AddedSuggestedPercentage returns the value that was added to the "suggested_percentage" field in this mutation.
+func (m *CategoryMutation) AddedSuggestedPercentage() (r int, exists bool) {
+	v := m.addsuggested_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSuggestedPercentage clears the value of the "suggested_percentage" field.
+func (m *CategoryMutation) ClearSuggestedPercentage() {
+	m.suggested_percentage = nil
+	m.addsuggested_percentage = nil
+	m.clearedFields[category.FieldSuggestedPercentage] = struct{}{}
+}
+
+// SuggestedPercentageCleared returns if the "suggested_percentage" field was cleared in this mutation.
+func (m *CategoryMutation) SuggestedPercentageCleared() bool {
+	_, ok := m.clearedFields[category.FieldSuggestedPercentage]
+	return ok
+}
+
+// ResetSuggestedPercentage resets all changes to the "suggested_percentage" field.
+func (m *CategoryMutation) ResetSuggestedPercentage() {
+	m.suggested_percentage = nil
+	m.addsuggested_percentage = nil
+	delete(m.clearedFields, category.FieldSuggestedPercentage)
+}
+
 // Where appends a list predicates to the CategoryMutation builder.
 func (m *CategoryMutation) Where(ps ...predicate.Category) {
 	m.predicates = append(m.predicates, ps...)
@@ -393,7 +465,7 @@ func (m *CategoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CategoryMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, category.FieldCreatedAt)
 	}
@@ -408,6 +480,9 @@ func (m *CategoryMutation) Fields() []string {
 	}
 	if m.color != nil {
 		fields = append(fields, category.FieldColor)
+	}
+	if m.suggested_percentage != nil {
+		fields = append(fields, category.FieldSuggestedPercentage)
 	}
 	return fields
 }
@@ -427,6 +502,8 @@ func (m *CategoryMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case category.FieldColor:
 		return m.Color()
+	case category.FieldSuggestedPercentage:
+		return m.SuggestedPercentage()
 	}
 	return nil, false
 }
@@ -446,6 +523,8 @@ func (m *CategoryMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldDescription(ctx)
 	case category.FieldColor:
 		return m.OldColor(ctx)
+	case category.FieldSuggestedPercentage:
+		return m.OldSuggestedPercentage(ctx)
 	}
 	return nil, fmt.Errorf("unknown Category field %s", name)
 }
@@ -490,6 +569,13 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetColor(v)
 		return nil
+	case category.FieldSuggestedPercentage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuggestedPercentage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)
 }
@@ -497,13 +583,21 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *CategoryMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addsuggested_percentage != nil {
+		fields = append(fields, category.FieldSuggestedPercentage)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *CategoryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case category.FieldSuggestedPercentage:
+		return m.AddedSuggestedPercentage()
+	}
 	return nil, false
 }
 
@@ -512,6 +606,13 @@ func (m *CategoryMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CategoryMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case category.FieldSuggestedPercentage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSuggestedPercentage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Category numeric field %s", name)
 }
@@ -525,6 +626,9 @@ func (m *CategoryMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(category.FieldColor) {
 		fields = append(fields, category.FieldColor)
+	}
+	if m.FieldCleared(category.FieldSuggestedPercentage) {
+		fields = append(fields, category.FieldSuggestedPercentage)
 	}
 	return fields
 }
@@ -545,6 +649,9 @@ func (m *CategoryMutation) ClearField(name string) error {
 		return nil
 	case category.FieldColor:
 		m.ClearColor()
+		return nil
+	case category.FieldSuggestedPercentage:
+		m.ClearSuggestedPercentage()
 		return nil
 	}
 	return fmt.Errorf("unknown Category nullable field %s", name)
@@ -568,6 +675,9 @@ func (m *CategoryMutation) ResetField(name string) error {
 		return nil
 	case category.FieldColor:
 		m.ResetColor()
+		return nil
+	case category.FieldSuggestedPercentage:
+		m.ResetSuggestedPercentage()
 		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)

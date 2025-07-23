@@ -19,7 +19,7 @@ type InvoiceFilters struct {
 	MaxAmount *float64  `form:"max_amount"`
 	StartDate *string   `form:"start_date"`
 	EndDate   *string   `form:"end_date"`
-	Statuses  *[]string `json:"statuses"`
+	Statuses  *[]string `form:"statuses"`
 }
 
 type InvoiceResponse struct {

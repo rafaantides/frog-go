@@ -20,8 +20,8 @@ type TransactionRequest struct {
 
 // TODO: fazer um bind que funcione com uuid.UUID o ShouldBindQuery n esta reconhecendo o *[]uuid.UUID
 type TransactionFilters struct {
-	InvoiceIDs  *[]string `json:"invoice_ids"`
-	CategoryIDs *[]string `json:"category_ids"`
+	InvoiceIDs  *[]string `form:"invoice_ids"`
+	CategoryIDs *[]string `form:"category_ids"`
 	Statuses    *[]string `form:"statuses"`
 	RecordTypes *[]string `form:"record_types"`
 	MinAmount   *float64  `form:"min_amount"`
@@ -29,7 +29,6 @@ type TransactionFilters struct {
 	StartDate   *string   `form:"start_date"`
 	EndDate     *string   `form:"end_date"`
 }
-
 type TransactionResponse struct {
 	ID         uuid.UUID                    `json:"id"`
 	Title      string                       `json:"title"`

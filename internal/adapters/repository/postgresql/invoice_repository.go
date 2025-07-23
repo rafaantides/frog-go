@@ -8,6 +8,7 @@ import (
 	"frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/invoice"
+	"frog-go/internal/ent/transaction"
 	"frog-go/internal/utils"
 	"frog-go/internal/utils/pagination"
 
@@ -76,6 +77,15 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 			return nil, errors.ErrNotFound
 		}
 		return nil, errors.FailedToSave("invoices", err)
+	}
+
+	_, err = d.Client.Transaction.
+		Update().
+		Where(transaction.HasInvoiceWith(invoice.ID(id))).
+		SetStatus(string(input.Status)).
+		Save(ctx)
+	if err != nil {
+		return nil, errors.FailedToSave("transactions", err)
 	}
 
 	row, err := d.Client.Invoice.

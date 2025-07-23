@@ -150,32 +150,29 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 
 	query := `
 		SELECT
-			COALESCE(SUM(t.amount), 0) AS total_amount,
-			COUNT(*) AS total_transactions,
-			COUNT(DISTINCT t.title) AS unique_establishments
+			SUM(CASE WHEN t.record_type = 'income' THEN t.amount ELSE 0 END) AS income,
+			SUM(CASE WHEN t.record_type = 'expense' THEN t.amount ELSE 0 END) AS expense,
+			COUNT(CASE WHEN t.record_type = 'income' THEN 1 END) AS incomeTransactions,
+	        COUNT(CASE WHEN t.record_type = 'expense' THEN 1 END) AS expenseTransactions
 		FROM transactions t
-		WHERE t.record_date BETWEEN $1 AND $2 AND t.record_type = 'expense'
+		WHERE t.record_date BETWEEN $1 AND $2
 	`
+	var income float64
+	var expense float64
+	var incomeTransactions int
+	var expenseTransactions int
 
-	var totalAmount float64
-	var totalTransactions int
-	var uniqueEstablishments int
-
-	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&totalAmount, &totalTransactions, &uniqueEstablishments)
+	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&income, &expense, &incomeTransactions, &expenseTransactions)
 	if err != nil {
 		return nil, err
 	}
 
-	var averagePerTransaction float64
-	if totalTransactions > 0 {
-		averagePerTransaction = totalAmount / float64(totalTransactions)
-	}
-
 	return &dto.TransactionStatsSummary{
-		TotalAmount:           totalAmount,
-		TotalTransactions:     totalTransactions,
-		UniqueEstablishments:  uniqueEstablishments,
-		AveragePerTransaction: averagePerTransaction,
+		Income:              income,
+		Expense:             expense,
+		Balance:             income - expense,
+		IncomeTransactions:  incomeTransactions,
+		ExpenseTransactions: expenseTransactions,
 	}, nil
 }
 
@@ -205,7 +202,7 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 	}
 
 	// Buscar todas as categorias
-	allCategories := []string{"Sem categoria"}
+	allCategories := []string{}
 	catQuery := "SELECT name FROM categories"
 	catRows, err := p.db.QueryContext(ctx, catQuery)
 	if err != nil {
@@ -221,18 +218,17 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		allCategories = append(allCategories, name)
 	}
 
-	// Buscar os dados de débitos agrupados por data e categoria
 	query := `
-		SELECT 
-			DATE_TRUNC($1, t.record_date) AS period,
-			COALESCE(c.name, 'Sem categoria') AS category,
-			SUM(t.amount) AS total,
-			COUNT(*) AS transactions
+			SELECT DATE_TRUNC($1, t.record_date) AS period,
+			c.name AS category,
+			SUM(CASE WHEN t.record_type = 'income' THEN t.amount ELSE 0 END) AS income,
+			SUM(CASE WHEN t.record_type = 'expense' THEN t.amount ELSE 0 END) AS expense,
+			COUNT(CASE WHEN t.record_type = 'income' THEN 1 END) AS incomeTransactions,
+			COUNT(CASE WHEN t.record_type = 'expense' THEN 1 END) AS expenseTransactions
 		FROM transactions t
-		LEFT JOIN categories c ON t.category_id = c.id
+				LEFT JOIN categories c ON t.category_id = c.id
 		WHERE t.record_date BETWEEN $2 AND $3
-		AND t.record_type = 'expense'
-		GROUP BY period, category
+		GROUP BY period, c.name
 		ORDER BY period
 	`
 
@@ -243,61 +239,77 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 	defer rows.Close()
 
 	type rawData struct {
-		date         string
-		category     string
-		total        float64
-		transactions int
+		period              string
+		category            string
+		income              float64
+		expense             float64
+		incomeTransactions  int
+		expenseTransactions int
 	}
 
-	dataByDate := map[string][]rawData{}
+	periodByDate := map[string][]rawData{}
 
 	for rows.Next() {
-		var date time.Time
+		var period time.Time
 		var category string
-		var total float64
-		var transactions int
+		var income float64
+		var expense float64
+		var incomeTransactions int
+		var expenseTransactions int
 
-		if err := rows.Scan(&date, &category, &total, &transactions); err != nil {
+		if err := rows.Scan(&period, &category, &income, &expense, &incomeTransactions, &expenseTransactions); err != nil {
 			return nil, err
 		}
 
 		// TODO: usar utils para formatar a data
-		key := date.Format("2006-01-02")
-		dataByDate[key] = append(dataByDate[key], rawData{
-			date:         key,
-			category:     category,
-			total:        total,
-			transactions: transactions,
+		key := period.Format("2006-01-02")
+		periodByDate[key] = append(periodByDate[key], rawData{
+			period:              key,
+			category:            category,
+			income:              income,
+			expense:             expense,
+			incomeTransactions:  incomeTransactions,
+			expenseTransactions: expenseTransactions,
 		})
 	}
 
 	// Montar resposta final
 	var result []dto.SummaryByDate
-	for date, entries := range dataByDate {
+	for date, entries := range periodByDate {
 		summary := dto.SummaryByDate{
 			Date:       date,
-			Total:      0,
+			Income:     0,
+			Expense:    0,
 			Categories: []dto.CategorySummary{},
 		}
 
 		catMap := map[string]rawData{}
 		for _, entry := range entries {
 			catMap[entry.category] = entry
-			summary.Total += entry.total
+			summary.Income += entry.income
+			summary.Expense += entry.expense
 		}
 
 		for _, category := range allCategories {
 			data, exists := catMap[category]
-			total := 0.0
-			transactions := 0
+			income := 0.0
+			expense := 0.0
+			incomeTransactions := 0
+			expenseTransactions := 0
+
 			if exists {
-				total = data.total
-				transactions = data.transactions
+				income = data.income
+				expense = data.expense
+				incomeTransactions = data.incomeTransactions
+				expenseTransactions = data.expenseTransactions
 			}
+
 			summary.Categories = append(summary.Categories, dto.CategorySummary{
-				Category:     category,
-				Total:        total,
-				Transactions: transactions,
+				Category:            category,
+				Income:              income,
+				Expense:             expense,
+				IncomeTransactions:  incomeTransactions,
+				ExpenseTransactions: expenseTransactions,
 			})
 		}
 
