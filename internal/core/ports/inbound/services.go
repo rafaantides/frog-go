@@ -6,6 +6,7 @@ import (
 	"frog-go/internal/core/dto"
 	"frog-go/internal/utils/pagination"
 	"mime/multipart"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -38,4 +39,14 @@ type InvoiceService interface {
 }
 type UploadService interface {
 	ImportFile(model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error
+}
+
+type AuthService interface {
+	GenerateToken(ctx context.Context, userID uuid.UUID, duration time.Duration) (string, error)
+	ValidateToken(tokenString string) (*domain.Claims, error)
+}
+
+type UserService interface {
+	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
 }

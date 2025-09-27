@@ -30,6 +30,7 @@ func NewCategoryHandler(service inbound.CategoryService) *CategoryHandler {
 // @Produce json
 // @Param request body dto.CategoryRequest true "Dados da categoria"
 // @Success 201 {object} dto.CategoryResponse
+// @Security BearerAuth
 // @Router /api/v1/categories [post]
 func (h *CategoryHandler) CreateCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -62,6 +63,7 @@ func (h *CategoryHandler) CreateCategoryHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da categoria"
 // @Success 200 {object} dto.CategoryResponse
+// @Security BearerAuth
 // @Router /api/v1/categories/{id} [get]
 func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -95,6 +97,7 @@ func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 // @Param order_by query string false "Campo de ordenação (ex: name)"
 // @Param order query string false "Ordem (asc, desc)"
 // @Success 200 {array} dto.CategoryResponse
+// @Security BearerAuth
 // @Router /api/v1/categories [get]
 func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -139,6 +142,7 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 // @Param id path string true "ID da categoria"
 // @Param request body dto.CategoryRequest true "Dados atualizados da categoria"
 // @Success 200 {object} dto.CategoryResponse
+// @Security BearerAuth
 // @Router /api/v1/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -177,6 +181,7 @@ func (h *CategoryHandler) UpdateCategoryHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da categoria"
 // @Success 204 "Sem conteúdo"
+// @Security BearerAuth
 // @Router /api/v1/categories/{id} [delete]
 func (h *CategoryHandler) DeleteCategoryHandler(c *gin.Context) {
 	ctx := c.Request.Context()

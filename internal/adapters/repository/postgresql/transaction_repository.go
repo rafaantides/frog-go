@@ -148,29 +148,44 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 		return nil, err
 	}
 
-	query := `
+	var dateExpr string
+	switch flt.DateField {
+	case "due_date":
+		dateExpr = "COALESCE(i.due_date, t.record_date)"
+	case "record_date":
+		dateExpr = "t.record_date"
+	default:
+		return nil, fmt.Errorf("invalid dateField: %s", flt.DateField)
+	}
+
+	query := fmt.Sprintf(`
 		SELECT
 			SUM(CASE WHEN t.record_type = 'income' THEN t.amount ELSE 0 END) AS income,
 			SUM(CASE WHEN t.record_type = 'expense' THEN t.amount ELSE 0 END) AS expense,
+			SUM(CASE WHEN t.record_type = 'tax' THEN t.amount ELSE 0 END) AS tax,
 			COUNT(CASE WHEN t.record_type = 'income' THEN 1 END) AS incomeTransactions,
 	        COUNT(CASE WHEN t.record_type = 'expense' THEN 1 END) AS expenseTransactions
-		FROM transactions t
-		WHERE t.record_date BETWEEN $1 AND $2
-	`
+		FROM transactions AS t
+			LEFT JOIN invoices AS i ON t.invoice_id = i.id
+		WHERE %s BETWEEN $1 AND $2
+	`, dateExpr)
+
 	var income float64
 	var expense float64
+	var tax float64
 	var incomeTransactions int
 	var expenseTransactions int
 
-	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&income, &expense, &incomeTransactions, &expenseTransactions)
+	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&income, &expense, &tax, &incomeTransactions, &expenseTransactions)
 	if err != nil {
 		return nil, err
 	}
 
 	return &dto.TransactionStatsSummary{
-		Income:              income,
+		Income:              income - tax,
 		Expense:             expense,
-		Balance:             income - expense,
+		Tax:                 tax,
+		Balance:             income - expense - tax,
 		IncomeTransactions:  incomeTransactions,
 		ExpenseTransactions: expenseTransactions,
 	}, nil
@@ -218,19 +233,31 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		allCategories = append(allCategories, name)
 	}
 
-	query := `
-			SELECT DATE_TRUNC($1, t.record_date) AS period,
+	var dateExpr string
+	switch flt.DateField {
+	case "due_date":
+		dateExpr = "COALESCE(i.due_date, t.record_date)"
+	case "record_date":
+		dateExpr = "t.record_date"
+	default:
+		return nil, fmt.Errorf("invalid dateField: %s", flt.DateField)
+	}
+
+	query := fmt.Sprintf(`
+		SELECT DATE_TRUNC($1, %s) AS period,
 			c.name AS category,
 			SUM(CASE WHEN t.record_type = 'income' THEN t.amount ELSE 0 END) AS income,
 			SUM(CASE WHEN t.record_type = 'expense' THEN t.amount ELSE 0 END) AS expense,
+			SUM(CASE WHEN t.record_type = 'tax' THEN t.amount ELSE 0 END) AS tax,
 			COUNT(CASE WHEN t.record_type = 'income' THEN 1 END) AS incomeTransactions,
 			COUNT(CASE WHEN t.record_type = 'expense' THEN 1 END) AS expenseTransactions
 		FROM transactions t
-				LEFT JOIN categories c ON t.category_id = c.id
-		WHERE t.record_date BETWEEN $2 AND $3
+			LEFT JOIN invoices AS i ON t.invoice_id = i.id
+			LEFT JOIN categories AS c ON t.category_id = c.id
+		WHERE %s BETWEEN $2 AND $3
 		GROUP BY period, c.name
 		ORDER BY period
-	`
+	`, dateExpr, dateExpr)
 
 	rows, err := p.db.QueryContext(ctx, query, periodTrunc, startDate, endDate)
 	if err != nil {
@@ -243,6 +270,7 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		category            string
 		income              float64
 		expense             float64
+		tax                 float64
 		incomeTransactions  int
 		expenseTransactions int
 	}
@@ -252,28 +280,25 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 	for rows.Next() {
 		var period time.Time
 		var category string
-		var income float64
-		var expense float64
-		var incomeTransactions int
-		var expenseTransactions int
+		var income, expense, tax float64
+		var incomeTransactions, expenseTransactions int
 
-		if err := rows.Scan(&period, &category, &income, &expense, &incomeTransactions, &expenseTransactions); err != nil {
+		if err := rows.Scan(&period, &category, &income, &expense, &tax, &incomeTransactions, &expenseTransactions); err != nil {
 			return nil, err
 		}
 
-		// TODO: usar utils para formatar a data
 		key := period.Format("2006-01-02")
 		periodByDate[key] = append(periodByDate[key], rawData{
 			period:              key,
 			category:            category,
 			income:              income,
 			expense:             expense,
+			tax:                 tax,
 			incomeTransactions:  incomeTransactions,
 			expenseTransactions: expenseTransactions,
 		})
 	}
 
-	// Montar resposta final
 	var result []dto.SummaryByDate
 	for date, entries := range periodByDate {
 		summary := dto.SummaryByDate{
@@ -288,18 +313,21 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 			catMap[entry.category] = entry
 			summary.Income += entry.income
 			summary.Expense += entry.expense
+			summary.Tax += entry.tax
 		}
 
 		for _, category := range allCategories {
 			data, exists := catMap[category]
 			income := 0.0
 			expense := 0.0
+			tax := 0.0
 			incomeTransactions := 0
 			expenseTransactions := 0
 
 			if exists {
 				income = data.income
 				expense = data.expense
+				tax = data.tax
 				incomeTransactions = data.incomeTransactions
 				expenseTransactions = data.expenseTransactions
 			}
@@ -308,6 +336,7 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 				Category:            category,
 				Income:              income,
 				Expense:             expense,
+				Tax:                 tax,
 				IncomeTransactions:  incomeTransactions,
 				ExpenseTransactions: expenseTransactions,
 			})
@@ -316,7 +345,6 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		result = append(result, summary)
 	}
 
-	// Ordenar por data
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].Date < result[j].Date
 	})

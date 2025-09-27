@@ -29,6 +29,7 @@ func NewInvoiceHandler(service inbound.InvoiceService) *InvoiceHandler {
 // @Produce json
 // @Param request body dto.InvoiceRequest true "Dados da fatura"
 // @Success 201 {object} dto.InvoiceResponse
+// @Security BearerAuth
 // @Router /api/v1/invoices [post]
 func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -62,6 +63,7 @@ func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da fatura"
 // @Success 200 {object} dto.InvoiceResponse
+// @Security BearerAuth
 // @Router /api/v1/invoices/{id} [get]
 func (h *InvoiceHandler) GetInvoiceByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -101,6 +103,7 @@ func (h *InvoiceHandler) GetInvoiceByIDHandler(c *gin.Context) {
 // @Param due_date_start query string false "Data de vencimento inicial"
 // @Param due_date_end query string false "Data de vencimento final"
 // @Success 200 {array} dto.InvoiceResponse
+// @Security BearerAuth
 // @Router /api/v1/invoices [get]
 func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -154,6 +157,7 @@ func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 // @Param id path string true "ID da fatura"
 // @Param request body dto.InvoiceRequest true "Dados atualizados da fatura"
 // @Success 200 {object} dto.InvoiceResponse
+// @Security BearerAuth
 // @Router /api/v1/invoices/{id} [put]
 func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -191,6 +195,7 @@ func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da fatura"
 // @Success 204 "Sem conteúdo"
+// @Security BearerAuth
 // @Router /api/v1/invoices/{id} [delete]
 func (h *InvoiceHandler) DeleteInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -227,6 +232,7 @@ func (h *InvoiceHandler) DeleteInvoiceHandler(c *gin.Context) {
 // @Param record_date_start query string false "Data inicial de registro"
 // @Param record_date_end query string false "Data final de registro"
 // @Success 200 {array} dto.TransactionResponse
+// @Security BearerAuth
 // @Router /api/v1/invoices/{id}/debts [get]
 func (h *InvoiceHandler) ListInvoiceDebtsHandler(c *gin.Context) {
 	ctx := c.Request.Context()

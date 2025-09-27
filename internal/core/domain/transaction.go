@@ -22,6 +22,7 @@ type RecordType string
 const (
 	TypeIncome  RecordType = "income"
 	TypeExpense RecordType = "expense"
+	TypeTax     RecordType = "tax"
 )
 
 func ValidTxnStatus() []string {
@@ -40,6 +41,7 @@ func ValidRecordType() []string {
 	return []string{
 		string(TypeIncome),
 		string(TypeExpense),
+		string(TypeTax),
 	}
 }
 

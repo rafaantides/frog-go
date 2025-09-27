@@ -18,6 +18,8 @@ type Tx struct {
 	Invoice *InvoiceClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
+	// User is the client for interacting with the User builders.
+	User *UserClient
 
 	// lazily loaded.
 	client     *Client
@@ -152,6 +154,7 @@ func (tx *Tx) init() {
 	tx.Category = NewCategoryClient(tx.config)
 	tx.Invoice = NewInvoiceClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
+	tx.User = NewUserClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -23,116 +23,116 @@ type InvoiceCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ic *InvoiceCreate) SetCreatedAt(t time.Time) *InvoiceCreate {
-	ic.mutation.SetCreatedAt(t)
-	return ic
+func (_c *InvoiceCreate) SetCreatedAt(v time.Time) *InvoiceCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ic *InvoiceCreate) SetNillableCreatedAt(t *time.Time) *InvoiceCreate {
-	if t != nil {
-		ic.SetCreatedAt(*t)
+func (_c *InvoiceCreate) SetNillableCreatedAt(v *time.Time) *InvoiceCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ic *InvoiceCreate) SetUpdatedAt(t time.Time) *InvoiceCreate {
-	ic.mutation.SetUpdatedAt(t)
-	return ic
+func (_c *InvoiceCreate) SetUpdatedAt(v time.Time) *InvoiceCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ic *InvoiceCreate) SetNillableUpdatedAt(t *time.Time) *InvoiceCreate {
-	if t != nil {
-		ic.SetUpdatedAt(*t)
+func (_c *InvoiceCreate) SetNillableUpdatedAt(v *time.Time) *InvoiceCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetStatus sets the "status" field.
-func (ic *InvoiceCreate) SetStatus(s string) *InvoiceCreate {
-	ic.mutation.SetStatus(s)
-	return ic
+func (_c *InvoiceCreate) SetStatus(v string) *InvoiceCreate {
+	_c.mutation.SetStatus(v)
+	return _c
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ic *InvoiceCreate) SetNillableStatus(s *string) *InvoiceCreate {
-	if s != nil {
-		ic.SetStatus(*s)
+func (_c *InvoiceCreate) SetNillableStatus(v *string) *InvoiceCreate {
+	if v != nil {
+		_c.SetStatus(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetAmount sets the "amount" field.
-func (ic *InvoiceCreate) SetAmount(f float64) *InvoiceCreate {
-	ic.mutation.SetAmount(f)
-	return ic
+func (_c *InvoiceCreate) SetAmount(v float64) *InvoiceCreate {
+	_c.mutation.SetAmount(v)
+	return _c
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (ic *InvoiceCreate) SetNillableAmount(f *float64) *InvoiceCreate {
-	if f != nil {
-		ic.SetAmount(*f)
+func (_c *InvoiceCreate) SetNillableAmount(v *float64) *InvoiceCreate {
+	if v != nil {
+		_c.SetAmount(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetTitle sets the "title" field.
-func (ic *InvoiceCreate) SetTitle(s string) *InvoiceCreate {
-	ic.mutation.SetTitle(s)
-	return ic
+func (_c *InvoiceCreate) SetTitle(v string) *InvoiceCreate {
+	_c.mutation.SetTitle(v)
+	return _c
 }
 
 // SetDueDate sets the "due_date" field.
-func (ic *InvoiceCreate) SetDueDate(t time.Time) *InvoiceCreate {
-	ic.mutation.SetDueDate(t)
-	return ic
+func (_c *InvoiceCreate) SetDueDate(v time.Time) *InvoiceCreate {
+	_c.mutation.SetDueDate(v)
+	return _c
 }
 
 // SetID sets the "id" field.
-func (ic *InvoiceCreate) SetID(u uuid.UUID) *InvoiceCreate {
-	ic.mutation.SetID(u)
-	return ic
+func (_c *InvoiceCreate) SetID(v uuid.UUID) *InvoiceCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ic *InvoiceCreate) SetNillableID(u *uuid.UUID) *InvoiceCreate {
-	if u != nil {
-		ic.SetID(*u)
+func (_c *InvoiceCreate) SetNillableID(v *uuid.UUID) *InvoiceCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return ic
+	return _c
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (ic *InvoiceCreate) AddTransactionIDs(ids ...uuid.UUID) *InvoiceCreate {
-	ic.mutation.AddTransactionIDs(ids...)
-	return ic
+func (_c *InvoiceCreate) AddTransactionIDs(ids ...uuid.UUID) *InvoiceCreate {
+	_c.mutation.AddTransactionIDs(ids...)
+	return _c
 }
 
 // AddTransactions adds the "transactions" edges to the Transaction entity.
-func (ic *InvoiceCreate) AddTransactions(t ...*Transaction) *InvoiceCreate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_c *InvoiceCreate) AddTransactions(v ...*Transaction) *InvoiceCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return ic.AddTransactionIDs(ids...)
+	return _c.AddTransactionIDs(ids...)
 }
 
 // Mutation returns the InvoiceMutation object of the builder.
-func (ic *InvoiceCreate) Mutation() *InvoiceMutation {
-	return ic.mutation
+func (_c *InvoiceCreate) Mutation() *InvoiceMutation {
+	return _c.mutation
 }
 
 // Save creates the Invoice in the database.
-func (ic *InvoiceCreate) Save(ctx context.Context) (*Invoice, error) {
-	ic.defaults()
-	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
+func (_c *InvoiceCreate) Save(ctx context.Context) (*Invoice, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ic *InvoiceCreate) SaveX(ctx context.Context) *Invoice {
-	v, err := ic.Save(ctx)
+func (_c *InvoiceCreate) SaveX(ctx context.Context) *Invoice {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -140,81 +140,81 @@ func (ic *InvoiceCreate) SaveX(ctx context.Context) *Invoice {
 }
 
 // Exec executes the query.
-func (ic *InvoiceCreate) Exec(ctx context.Context) error {
-	_, err := ic.Save(ctx)
+func (_c *InvoiceCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ic *InvoiceCreate) ExecX(ctx context.Context) {
-	if err := ic.Exec(ctx); err != nil {
+func (_c *InvoiceCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ic *InvoiceCreate) defaults() {
-	if _, ok := ic.mutation.CreatedAt(); !ok {
+func (_c *InvoiceCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := invoice.DefaultCreatedAt()
-		ic.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ic.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := invoice.DefaultUpdatedAt()
-		ic.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ic.mutation.Status(); !ok {
+	if _, ok := _c.mutation.Status(); !ok {
 		v := invoice.DefaultStatus
-		ic.mutation.SetStatus(v)
+		_c.mutation.SetStatus(v)
 	}
-	if _, ok := ic.mutation.Amount(); !ok {
+	if _, ok := _c.mutation.Amount(); !ok {
 		v := invoice.DefaultAmount
-		ic.mutation.SetAmount(v)
+		_c.mutation.SetAmount(v)
 	}
-	if _, ok := ic.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := invoice.DefaultID()
-		ic.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ic *InvoiceCreate) check() error {
-	if _, ok := ic.mutation.CreatedAt(); !ok {
+func (_c *InvoiceCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Invoice.created_at"`)}
 	}
-	if _, ok := ic.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Invoice.updated_at"`)}
 	}
-	if _, ok := ic.mutation.Status(); !ok {
+	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Invoice.status"`)}
 	}
-	if v, ok := ic.mutation.Status(); ok {
+	if v, ok := _c.mutation.Status(); ok {
 		if err := invoice.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invoice.status": %w`, err)}
 		}
 	}
-	if _, ok := ic.mutation.Amount(); !ok {
+	if _, ok := _c.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Invoice.amount"`)}
 	}
-	if _, ok := ic.mutation.Title(); !ok {
+	if _, ok := _c.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Invoice.title"`)}
 	}
-	if v, ok := ic.mutation.Title(); ok {
+	if v, ok := _c.mutation.Title(); ok {
 		if err := invoice.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Invoice.title": %w`, err)}
 		}
 	}
-	if _, ok := ic.mutation.DueDate(); !ok {
+	if _, ok := _c.mutation.DueDate(); !ok {
 		return &ValidationError{Name: "due_date", err: errors.New(`ent: missing required field "Invoice.due_date"`)}
 	}
 	return nil
 }
 
-func (ic *InvoiceCreate) sqlSave(ctx context.Context) (*Invoice, error) {
-	if err := ic.check(); err != nil {
+func (_c *InvoiceCreate) sqlSave(ctx context.Context) (*Invoice, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := ic.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ic.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -227,45 +227,45 @@ func (ic *InvoiceCreate) sqlSave(ctx context.Context) (*Invoice, error) {
 			return nil, err
 		}
 	}
-	ic.mutation.id = &_node.ID
-	ic.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (ic *InvoiceCreate) createSpec() (*Invoice, *sqlgraph.CreateSpec) {
+func (_c *InvoiceCreate) createSpec() (*Invoice, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Invoice{config: ic.config}
+		_node = &Invoice{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(invoice.Table, sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID))
 	)
-	if id, ok := ic.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := ic.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(invoice.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := ic.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(invoice.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := ic.mutation.Status(); ok {
+	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(invoice.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
-	if value, ok := ic.mutation.Amount(); ok {
+	if value, ok := _c.mutation.Amount(); ok {
 		_spec.SetField(invoice.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
 	}
-	if value, ok := ic.mutation.Title(); ok {
+	if value, ok := _c.mutation.Title(); ok {
 		_spec.SetField(invoice.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := ic.mutation.DueDate(); ok {
+	if value, ok := _c.mutation.DueDate(); ok {
 		_spec.SetField(invoice.FieldDueDate, field.TypeTime, value)
 		_node.DueDate = value
 	}
-	if nodes := ic.mutation.TransactionsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -292,16 +292,16 @@ type InvoiceCreateBulk struct {
 }
 
 // Save creates the Invoice entities in the database.
-func (icb *InvoiceCreateBulk) Save(ctx context.Context) ([]*Invoice, error) {
-	if icb.err != nil {
-		return nil, icb.err
+func (_c *InvoiceCreateBulk) Save(ctx context.Context) ([]*Invoice, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(icb.builders))
-	nodes := make([]*Invoice, len(icb.builders))
-	mutators := make([]Mutator, len(icb.builders))
-	for i := range icb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Invoice, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := icb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*InvoiceMutation)
@@ -315,11 +315,11 @@ func (icb *InvoiceCreateBulk) Save(ctx context.Context) ([]*Invoice, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, icb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, icb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -339,7 +339,7 @@ func (icb *InvoiceCreateBulk) Save(ctx context.Context) ([]*Invoice, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, icb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -347,8 +347,8 @@ func (icb *InvoiceCreateBulk) Save(ctx context.Context) ([]*Invoice, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (icb *InvoiceCreateBulk) SaveX(ctx context.Context) []*Invoice {
-	v, err := icb.Save(ctx)
+func (_c *InvoiceCreateBulk) SaveX(ctx context.Context) []*Invoice {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -356,14 +356,14 @@ func (icb *InvoiceCreateBulk) SaveX(ctx context.Context) []*Invoice {
 }
 
 // Exec executes the query.
-func (icb *InvoiceCreateBulk) Exec(ctx context.Context) error {
-	_, err := icb.Save(ctx)
+func (_c *InvoiceCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (icb *InvoiceCreateBulk) ExecX(ctx context.Context) {
-	if err := icb.Exec(ctx); err != nil {
+func (_c *InvoiceCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

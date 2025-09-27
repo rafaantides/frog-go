@@ -26,158 +26,158 @@ type TransactionUpdate struct {
 }
 
 // Where appends a list predicates to the TransactionUpdate builder.
-func (tu *TransactionUpdate) Where(ps ...predicate.Transaction) *TransactionUpdate {
-	tu.mutation.Where(ps...)
-	return tu
+func (_u *TransactionUpdate) Where(ps ...predicate.Transaction) *TransactionUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (tu *TransactionUpdate) SetUpdatedAt(t time.Time) *TransactionUpdate {
-	tu.mutation.SetUpdatedAt(t)
-	return tu
+func (_u *TransactionUpdate) SetUpdatedAt(v time.Time) *TransactionUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetRecordType sets the "record_type" field.
-func (tu *TransactionUpdate) SetRecordType(s string) *TransactionUpdate {
-	tu.mutation.SetRecordType(s)
-	return tu
+func (_u *TransactionUpdate) SetRecordType(v string) *TransactionUpdate {
+	_u.mutation.SetRecordType(v)
+	return _u
 }
 
 // SetNillableRecordType sets the "record_type" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableRecordType(s *string) *TransactionUpdate {
-	if s != nil {
-		tu.SetRecordType(*s)
+func (_u *TransactionUpdate) SetNillableRecordType(v *string) *TransactionUpdate {
+	if v != nil {
+		_u.SetRecordType(*v)
 	}
-	return tu
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (tu *TransactionUpdate) SetStatus(s string) *TransactionUpdate {
-	tu.mutation.SetStatus(s)
-	return tu
+func (_u *TransactionUpdate) SetStatus(v string) *TransactionUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableStatus(s *string) *TransactionUpdate {
-	if s != nil {
-		tu.SetStatus(*s)
+func (_u *TransactionUpdate) SetNillableStatus(v *string) *TransactionUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return tu
+	return _u
 }
 
 // SetAmount sets the "amount" field.
-func (tu *TransactionUpdate) SetAmount(f float64) *TransactionUpdate {
-	tu.mutation.ResetAmount()
-	tu.mutation.SetAmount(f)
-	return tu
+func (_u *TransactionUpdate) SetAmount(v float64) *TransactionUpdate {
+	_u.mutation.ResetAmount()
+	_u.mutation.SetAmount(v)
+	return _u
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableAmount(f *float64) *TransactionUpdate {
-	if f != nil {
-		tu.SetAmount(*f)
+func (_u *TransactionUpdate) SetNillableAmount(v *float64) *TransactionUpdate {
+	if v != nil {
+		_u.SetAmount(*v)
 	}
-	return tu
+	return _u
 }
 
-// AddAmount adds f to the "amount" field.
-func (tu *TransactionUpdate) AddAmount(f float64) *TransactionUpdate {
-	tu.mutation.AddAmount(f)
-	return tu
+// AddAmount adds value to the "amount" field.
+func (_u *TransactionUpdate) AddAmount(v float64) *TransactionUpdate {
+	_u.mutation.AddAmount(v)
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (tu *TransactionUpdate) SetTitle(s string) *TransactionUpdate {
-	tu.mutation.SetTitle(s)
-	return tu
+func (_u *TransactionUpdate) SetTitle(v string) *TransactionUpdate {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableTitle(s *string) *TransactionUpdate {
-	if s != nil {
-		tu.SetTitle(*s)
+func (_u *TransactionUpdate) SetNillableTitle(v *string) *TransactionUpdate {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return tu
+	return _u
 }
 
 // SetRecordDate sets the "record_date" field.
-func (tu *TransactionUpdate) SetRecordDate(t time.Time) *TransactionUpdate {
-	tu.mutation.SetRecordDate(t)
-	return tu
+func (_u *TransactionUpdate) SetRecordDate(v time.Time) *TransactionUpdate {
+	_u.mutation.SetRecordDate(v)
+	return _u
 }
 
 // SetNillableRecordDate sets the "record_date" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableRecordDate(t *time.Time) *TransactionUpdate {
-	if t != nil {
-		tu.SetRecordDate(*t)
+func (_u *TransactionUpdate) SetNillableRecordDate(v *time.Time) *TransactionUpdate {
+	if v != nil {
+		_u.SetRecordDate(*v)
 	}
-	return tu
+	return _u
 }
 
 // SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
-func (tu *TransactionUpdate) SetInvoiceID(id uuid.UUID) *TransactionUpdate {
-	tu.mutation.SetInvoiceID(id)
-	return tu
+func (_u *TransactionUpdate) SetInvoiceID(id uuid.UUID) *TransactionUpdate {
+	_u.mutation.SetInvoiceID(id)
+	return _u
 }
 
 // SetNillableInvoiceID sets the "invoice" edge to the Invoice entity by ID if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableInvoiceID(id *uuid.UUID) *TransactionUpdate {
+func (_u *TransactionUpdate) SetNillableInvoiceID(id *uuid.UUID) *TransactionUpdate {
 	if id != nil {
-		tu = tu.SetInvoiceID(*id)
+		_u = _u.SetInvoiceID(*id)
 	}
-	return tu
+	return _u
 }
 
 // SetInvoice sets the "invoice" edge to the Invoice entity.
-func (tu *TransactionUpdate) SetInvoice(i *Invoice) *TransactionUpdate {
-	return tu.SetInvoiceID(i.ID)
+func (_u *TransactionUpdate) SetInvoice(v *Invoice) *TransactionUpdate {
+	return _u.SetInvoiceID(v.ID)
 }
 
 // SetCategoryID sets the "category" edge to the Category entity by ID.
-func (tu *TransactionUpdate) SetCategoryID(id uuid.UUID) *TransactionUpdate {
-	tu.mutation.SetCategoryID(id)
-	return tu
+func (_u *TransactionUpdate) SetCategoryID(id uuid.UUID) *TransactionUpdate {
+	_u.mutation.SetCategoryID(id)
+	return _u
 }
 
 // SetNillableCategoryID sets the "category" edge to the Category entity by ID if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableCategoryID(id *uuid.UUID) *TransactionUpdate {
+func (_u *TransactionUpdate) SetNillableCategoryID(id *uuid.UUID) *TransactionUpdate {
 	if id != nil {
-		tu = tu.SetCategoryID(*id)
+		_u = _u.SetCategoryID(*id)
 	}
-	return tu
+	return _u
 }
 
 // SetCategory sets the "category" edge to the Category entity.
-func (tu *TransactionUpdate) SetCategory(c *Category) *TransactionUpdate {
-	return tu.SetCategoryID(c.ID)
+func (_u *TransactionUpdate) SetCategory(v *Category) *TransactionUpdate {
+	return _u.SetCategoryID(v.ID)
 }
 
 // Mutation returns the TransactionMutation object of the builder.
-func (tu *TransactionUpdate) Mutation() *TransactionMutation {
-	return tu.mutation
+func (_u *TransactionUpdate) Mutation() *TransactionMutation {
+	return _u.mutation
 }
 
 // ClearInvoice clears the "invoice" edge to the Invoice entity.
-func (tu *TransactionUpdate) ClearInvoice() *TransactionUpdate {
-	tu.mutation.ClearInvoice()
-	return tu
+func (_u *TransactionUpdate) ClearInvoice() *TransactionUpdate {
+	_u.mutation.ClearInvoice()
+	return _u
 }
 
 // ClearCategory clears the "category" edge to the Category entity.
-func (tu *TransactionUpdate) ClearCategory() *TransactionUpdate {
-	tu.mutation.ClearCategory()
-	return tu
+func (_u *TransactionUpdate) ClearCategory() *TransactionUpdate {
+	_u.mutation.ClearCategory()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (tu *TransactionUpdate) Save(ctx context.Context) (int, error) {
-	tu.defaults()
-	return withHooks(ctx, tu.sqlSave, tu.mutation, tu.hooks)
+func (_u *TransactionUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tu *TransactionUpdate) SaveX(ctx context.Context) int {
-	affected, err := tu.Save(ctx)
+func (_u *TransactionUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -185,39 +185,39 @@ func (tu *TransactionUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (tu *TransactionUpdate) Exec(ctx context.Context) error {
-	_, err := tu.Save(ctx)
+func (_u *TransactionUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tu *TransactionUpdate) ExecX(ctx context.Context) {
-	if err := tu.Exec(ctx); err != nil {
+func (_u *TransactionUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (tu *TransactionUpdate) defaults() {
-	if _, ok := tu.mutation.UpdatedAt(); !ok {
+func (_u *TransactionUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := transaction.UpdateDefaultUpdatedAt()
-		tu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tu *TransactionUpdate) check() error {
-	if v, ok := tu.mutation.RecordType(); ok {
+func (_u *TransactionUpdate) check() error {
+	if v, ok := _u.mutation.RecordType(); ok {
 		if err := transaction.RecordTypeValidator(v); err != nil {
 			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
-	if v, ok := tu.mutation.Status(); ok {
+	if v, ok := _u.mutation.Status(); ok {
 		if err := transaction.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
 		}
 	}
-	if v, ok := tu.mutation.Title(); ok {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := transaction.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Transaction.title": %w`, err)}
 		}
@@ -225,40 +225,40 @@ func (tu *TransactionUpdate) check() error {
 	return nil
 }
 
-func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := tu.check(); err != nil {
-		return n, err
+func (_u *TransactionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(transaction.Table, transaction.Columns, sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID))
-	if ps := tu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := tu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := tu.mutation.RecordType(); ok {
+	if value, ok := _u.mutation.RecordType(); ok {
 		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.Amount(); ok {
+	if value, ok := _u.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := tu.mutation.AddedAmount(); ok {
+	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(transaction.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := tu.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(transaction.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.RecordDate(); ok {
+	if value, ok := _u.mutation.RecordDate(); ok {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 	}
-	if tu.mutation.InvoiceCleared() {
+	if _u.mutation.InvoiceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -271,7 +271,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.InvoiceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.InvoiceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -287,7 +287,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if tu.mutation.CategoryCleared() {
+	if _u.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -300,7 +300,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -316,7 +316,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{transaction.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -324,8 +324,8 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	tu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // TransactionUpdateOne is the builder for updating a single Transaction entity.
@@ -337,165 +337,165 @@ type TransactionUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (tuo *TransactionUpdateOne) SetUpdatedAt(t time.Time) *TransactionUpdateOne {
-	tuo.mutation.SetUpdatedAt(t)
-	return tuo
+func (_u *TransactionUpdateOne) SetUpdatedAt(v time.Time) *TransactionUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetRecordType sets the "record_type" field.
-func (tuo *TransactionUpdateOne) SetRecordType(s string) *TransactionUpdateOne {
-	tuo.mutation.SetRecordType(s)
-	return tuo
+func (_u *TransactionUpdateOne) SetRecordType(v string) *TransactionUpdateOne {
+	_u.mutation.SetRecordType(v)
+	return _u
 }
 
 // SetNillableRecordType sets the "record_type" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableRecordType(s *string) *TransactionUpdateOne {
-	if s != nil {
-		tuo.SetRecordType(*s)
+func (_u *TransactionUpdateOne) SetNillableRecordType(v *string) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetRecordType(*v)
 	}
-	return tuo
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (tuo *TransactionUpdateOne) SetStatus(s string) *TransactionUpdateOne {
-	tuo.mutation.SetStatus(s)
-	return tuo
+func (_u *TransactionUpdateOne) SetStatus(v string) *TransactionUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableStatus(s *string) *TransactionUpdateOne {
-	if s != nil {
-		tuo.SetStatus(*s)
+func (_u *TransactionUpdateOne) SetNillableStatus(v *string) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return tuo
+	return _u
 }
 
 // SetAmount sets the "amount" field.
-func (tuo *TransactionUpdateOne) SetAmount(f float64) *TransactionUpdateOne {
-	tuo.mutation.ResetAmount()
-	tuo.mutation.SetAmount(f)
-	return tuo
+func (_u *TransactionUpdateOne) SetAmount(v float64) *TransactionUpdateOne {
+	_u.mutation.ResetAmount()
+	_u.mutation.SetAmount(v)
+	return _u
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableAmount(f *float64) *TransactionUpdateOne {
-	if f != nil {
-		tuo.SetAmount(*f)
+func (_u *TransactionUpdateOne) SetNillableAmount(v *float64) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetAmount(*v)
 	}
-	return tuo
+	return _u
 }
 
-// AddAmount adds f to the "amount" field.
-func (tuo *TransactionUpdateOne) AddAmount(f float64) *TransactionUpdateOne {
-	tuo.mutation.AddAmount(f)
-	return tuo
+// AddAmount adds value to the "amount" field.
+func (_u *TransactionUpdateOne) AddAmount(v float64) *TransactionUpdateOne {
+	_u.mutation.AddAmount(v)
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (tuo *TransactionUpdateOne) SetTitle(s string) *TransactionUpdateOne {
-	tuo.mutation.SetTitle(s)
-	return tuo
+func (_u *TransactionUpdateOne) SetTitle(v string) *TransactionUpdateOne {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableTitle(s *string) *TransactionUpdateOne {
-	if s != nil {
-		tuo.SetTitle(*s)
+func (_u *TransactionUpdateOne) SetNillableTitle(v *string) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return tuo
+	return _u
 }
 
 // SetRecordDate sets the "record_date" field.
-func (tuo *TransactionUpdateOne) SetRecordDate(t time.Time) *TransactionUpdateOne {
-	tuo.mutation.SetRecordDate(t)
-	return tuo
+func (_u *TransactionUpdateOne) SetRecordDate(v time.Time) *TransactionUpdateOne {
+	_u.mutation.SetRecordDate(v)
+	return _u
 }
 
 // SetNillableRecordDate sets the "record_date" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableRecordDate(t *time.Time) *TransactionUpdateOne {
-	if t != nil {
-		tuo.SetRecordDate(*t)
+func (_u *TransactionUpdateOne) SetNillableRecordDate(v *time.Time) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetRecordDate(*v)
 	}
-	return tuo
+	return _u
 }
 
 // SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
-func (tuo *TransactionUpdateOne) SetInvoiceID(id uuid.UUID) *TransactionUpdateOne {
-	tuo.mutation.SetInvoiceID(id)
-	return tuo
+func (_u *TransactionUpdateOne) SetInvoiceID(id uuid.UUID) *TransactionUpdateOne {
+	_u.mutation.SetInvoiceID(id)
+	return _u
 }
 
 // SetNillableInvoiceID sets the "invoice" edge to the Invoice entity by ID if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableInvoiceID(id *uuid.UUID) *TransactionUpdateOne {
+func (_u *TransactionUpdateOne) SetNillableInvoiceID(id *uuid.UUID) *TransactionUpdateOne {
 	if id != nil {
-		tuo = tuo.SetInvoiceID(*id)
+		_u = _u.SetInvoiceID(*id)
 	}
-	return tuo
+	return _u
 }
 
 // SetInvoice sets the "invoice" edge to the Invoice entity.
-func (tuo *TransactionUpdateOne) SetInvoice(i *Invoice) *TransactionUpdateOne {
-	return tuo.SetInvoiceID(i.ID)
+func (_u *TransactionUpdateOne) SetInvoice(v *Invoice) *TransactionUpdateOne {
+	return _u.SetInvoiceID(v.ID)
 }
 
 // SetCategoryID sets the "category" edge to the Category entity by ID.
-func (tuo *TransactionUpdateOne) SetCategoryID(id uuid.UUID) *TransactionUpdateOne {
-	tuo.mutation.SetCategoryID(id)
-	return tuo
+func (_u *TransactionUpdateOne) SetCategoryID(id uuid.UUID) *TransactionUpdateOne {
+	_u.mutation.SetCategoryID(id)
+	return _u
 }
 
 // SetNillableCategoryID sets the "category" edge to the Category entity by ID if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableCategoryID(id *uuid.UUID) *TransactionUpdateOne {
+func (_u *TransactionUpdateOne) SetNillableCategoryID(id *uuid.UUID) *TransactionUpdateOne {
 	if id != nil {
-		tuo = tuo.SetCategoryID(*id)
+		_u = _u.SetCategoryID(*id)
 	}
-	return tuo
+	return _u
 }
 
 // SetCategory sets the "category" edge to the Category entity.
-func (tuo *TransactionUpdateOne) SetCategory(c *Category) *TransactionUpdateOne {
-	return tuo.SetCategoryID(c.ID)
+func (_u *TransactionUpdateOne) SetCategory(v *Category) *TransactionUpdateOne {
+	return _u.SetCategoryID(v.ID)
 }
 
 // Mutation returns the TransactionMutation object of the builder.
-func (tuo *TransactionUpdateOne) Mutation() *TransactionMutation {
-	return tuo.mutation
+func (_u *TransactionUpdateOne) Mutation() *TransactionMutation {
+	return _u.mutation
 }
 
 // ClearInvoice clears the "invoice" edge to the Invoice entity.
-func (tuo *TransactionUpdateOne) ClearInvoice() *TransactionUpdateOne {
-	tuo.mutation.ClearInvoice()
-	return tuo
+func (_u *TransactionUpdateOne) ClearInvoice() *TransactionUpdateOne {
+	_u.mutation.ClearInvoice()
+	return _u
 }
 
 // ClearCategory clears the "category" edge to the Category entity.
-func (tuo *TransactionUpdateOne) ClearCategory() *TransactionUpdateOne {
-	tuo.mutation.ClearCategory()
-	return tuo
+func (_u *TransactionUpdateOne) ClearCategory() *TransactionUpdateOne {
+	_u.mutation.ClearCategory()
+	return _u
 }
 
 // Where appends a list predicates to the TransactionUpdate builder.
-func (tuo *TransactionUpdateOne) Where(ps ...predicate.Transaction) *TransactionUpdateOne {
-	tuo.mutation.Where(ps...)
-	return tuo
+func (_u *TransactionUpdateOne) Where(ps ...predicate.Transaction) *TransactionUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (tuo *TransactionUpdateOne) Select(field string, fields ...string) *TransactionUpdateOne {
-	tuo.fields = append([]string{field}, fields...)
-	return tuo
+func (_u *TransactionUpdateOne) Select(field string, fields ...string) *TransactionUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Transaction entity.
-func (tuo *TransactionUpdateOne) Save(ctx context.Context) (*Transaction, error) {
-	tuo.defaults()
-	return withHooks(ctx, tuo.sqlSave, tuo.mutation, tuo.hooks)
+func (_u *TransactionUpdateOne) Save(ctx context.Context) (*Transaction, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tuo *TransactionUpdateOne) SaveX(ctx context.Context) *Transaction {
-	node, err := tuo.Save(ctx)
+func (_u *TransactionUpdateOne) SaveX(ctx context.Context) *Transaction {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -503,39 +503,39 @@ func (tuo *TransactionUpdateOne) SaveX(ctx context.Context) *Transaction {
 }
 
 // Exec executes the query on the entity.
-func (tuo *TransactionUpdateOne) Exec(ctx context.Context) error {
-	_, err := tuo.Save(ctx)
+func (_u *TransactionUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tuo *TransactionUpdateOne) ExecX(ctx context.Context) {
-	if err := tuo.Exec(ctx); err != nil {
+func (_u *TransactionUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (tuo *TransactionUpdateOne) defaults() {
-	if _, ok := tuo.mutation.UpdatedAt(); !ok {
+func (_u *TransactionUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := transaction.UpdateDefaultUpdatedAt()
-		tuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tuo *TransactionUpdateOne) check() error {
-	if v, ok := tuo.mutation.RecordType(); ok {
+func (_u *TransactionUpdateOne) check() error {
+	if v, ok := _u.mutation.RecordType(); ok {
 		if err := transaction.RecordTypeValidator(v); err != nil {
 			return &ValidationError{Name: "record_type", err: fmt.Errorf(`ent: validator failed for field "Transaction.record_type": %w`, err)}
 		}
 	}
-	if v, ok := tuo.mutation.Status(); ok {
+	if v, ok := _u.mutation.Status(); ok {
 		if err := transaction.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Transaction.status": %w`, err)}
 		}
 	}
-	if v, ok := tuo.mutation.Title(); ok {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := transaction.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Transaction.title": %w`, err)}
 		}
@@ -543,17 +543,17 @@ func (tuo *TransactionUpdateOne) check() error {
 	return nil
 }
 
-func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction, err error) {
-	if err := tuo.check(); err != nil {
+func (_u *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(transaction.Table, transaction.Columns, sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID))
-	id, ok := tuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Transaction.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := tuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, transaction.FieldID)
 		for _, f := range fields {
@@ -565,35 +565,35 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 			}
 		}
 	}
-	if ps := tuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := tuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(transaction.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := tuo.mutation.RecordType(); ok {
+	if value, ok := _u.mutation.RecordType(); ok {
 		_spec.SetField(transaction.FieldRecordType, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(transaction.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.Amount(); ok {
+	if value, ok := _u.mutation.Amount(); ok {
 		_spec.SetField(transaction.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := tuo.mutation.AddedAmount(); ok {
+	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(transaction.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := tuo.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(transaction.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.RecordDate(); ok {
+	if value, ok := _u.mutation.RecordDate(); ok {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 	}
-	if tuo.mutation.InvoiceCleared() {
+	if _u.mutation.InvoiceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -606,7 +606,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.InvoiceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.InvoiceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -622,7 +622,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if tuo.mutation.CategoryCleared() {
+	if _u.mutation.CategoryCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -635,7 +635,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.CategoryIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -651,10 +651,10 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Transaction{config: tuo.config}
+	_node = &Transaction{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, tuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{transaction.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -662,6 +662,6 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 		}
 		return nil, err
 	}
-	tuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

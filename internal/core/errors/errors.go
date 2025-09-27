@@ -43,6 +43,10 @@ var (
 	ErrInternalServer     = errors.New(strings.ToLower(InternalServerError))
 	ErrServiceUnavailable = errors.New(strings.ToLower(ServiceUnavailable))
 	ErrEmptyField         = errors.New("empty field")
+
+	ErrUnexpectedSigningMethod = errors.New("unexpected signing method")
+	ErrTokenExpired            = errors.New("token expired")
+	ErrInvalidToken            = errors.New("invalid token")
 )
 
 type ErrorResponse struct {

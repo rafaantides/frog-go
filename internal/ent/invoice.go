@@ -76,56 +76,56 @@ func (*Invoice) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Invoice fields.
-func (i *Invoice) assignValues(columns []string, values []any) error {
+func (_m *Invoice) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
-	for j := range columns {
-		switch columns[j] {
+	for i := range columns {
+		switch columns[i] {
 		case invoice.FieldID:
-			if value, ok := values[j].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[j])
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				i.ID = *value
+				_m.ID = *value
 			}
 		case invoice.FieldCreatedAt:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[j])
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				i.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case invoice.FieldUpdatedAt:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[j])
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				i.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case invoice.FieldStatus:
-			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[j])
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				i.Status = value.String
+				_m.Status = value.String
 			}
 		case invoice.FieldAmount:
-			if value, ok := values[j].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field amount", values[j])
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				i.Amount = value.Float64
+				_m.Amount = value.Float64
 			}
 		case invoice.FieldTitle:
-			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field title", values[j])
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				i.Title = value.String
+				_m.Title = value.String
 			}
 		case invoice.FieldDueDate:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field due_date", values[j])
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field due_date", values[i])
 			} else if value.Valid {
-				i.DueDate = value.Time
+				_m.DueDate = value.Time
 			}
 		default:
-			i.selectValues.Set(columns[j], values[j])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -133,55 +133,55 @@ func (i *Invoice) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Invoice.
 // This includes values selected through modifiers, order, etc.
-func (i *Invoice) Value(name string) (ent.Value, error) {
-	return i.selectValues.Get(name)
+func (_m *Invoice) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryTransactions queries the "transactions" edge of the Invoice entity.
-func (i *Invoice) QueryTransactions() *TransactionQuery {
-	return NewInvoiceClient(i.config).QueryTransactions(i)
+func (_m *Invoice) QueryTransactions() *TransactionQuery {
+	return NewInvoiceClient(_m.config).QueryTransactions(_m)
 }
 
 // Update returns a builder for updating this Invoice.
 // Note that you need to call Invoice.Unwrap() before calling this method if this Invoice
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (i *Invoice) Update() *InvoiceUpdateOne {
-	return NewInvoiceClient(i.config).UpdateOne(i)
+func (_m *Invoice) Update() *InvoiceUpdateOne {
+	return NewInvoiceClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Invoice entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (i *Invoice) Unwrap() *Invoice {
-	_tx, ok := i.config.driver.(*txDriver)
+func (_m *Invoice) Unwrap() *Invoice {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Invoice is not a transactional entity")
 	}
-	i.config.driver = _tx.drv
-	return i
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (i *Invoice) String() string {
+func (_m *Invoice) String() string {
 	var builder strings.Builder
 	builder.WriteString("Invoice(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", i.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(i.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(i.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(i.Status)
+	builder.WriteString(_m.Status)
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
-	builder.WriteString(fmt.Sprintf("%v", i.Amount))
+	builder.WriteString(fmt.Sprintf("%v", _m.Amount))
 	builder.WriteString(", ")
 	builder.WriteString("title=")
-	builder.WriteString(i.Title)
+	builder.WriteString(_m.Title)
 	builder.WriteString(", ")
 	builder.WriteString("due_date=")
-	builder.WriteString(i.DueDate.Format(time.ANSIC))
+	builder.WriteString(_m.DueDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

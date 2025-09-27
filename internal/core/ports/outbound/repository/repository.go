@@ -35,4 +35,7 @@ type Repository interface {
 	DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error
 	ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error)
 	CountInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error)
+
+	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
 }

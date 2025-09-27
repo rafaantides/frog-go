@@ -101,7 +101,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Transaction fields.
-func (t *Transaction) assignValues(columns []string, values []any) error {
+func (_m *Transaction) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -111,66 +111,66 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				t.ID = *value
+				_m.ID = *value
 			}
 		case transaction.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				t.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case transaction.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				t.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case transaction.FieldRecordType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field record_type", values[i])
 			} else if value.Valid {
-				t.RecordType = value.String
+				_m.RecordType = value.String
 			}
 		case transaction.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				t.Status = value.String
+				_m.Status = value.String
 			}
 		case transaction.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				t.Amount = value.Float64
+				_m.Amount = value.Float64
 			}
 		case transaction.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				t.Title = value.String
+				_m.Title = value.String
 			}
 		case transaction.FieldRecordDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field record_date", values[i])
 			} else if value.Valid {
-				t.RecordDate = value.Time
+				_m.RecordDate = value.Time
 			}
 		case transaction.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field invoice_id", values[i])
 			} else if value.Valid {
-				t.invoice_id = new(uuid.UUID)
-				*t.invoice_id = *value.S.(*uuid.UUID)
+				_m.invoice_id = new(uuid.UUID)
+				*_m.invoice_id = *value.S.(*uuid.UUID)
 			}
 		case transaction.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
-				t.category_id = new(uuid.UUID)
-				*t.category_id = *value.S.(*uuid.UUID)
+				_m.category_id = new(uuid.UUID)
+				*_m.category_id = *value.S.(*uuid.UUID)
 			}
 		default:
-			t.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -178,63 +178,63 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Transaction.
 // This includes values selected through modifiers, order, etc.
-func (t *Transaction) Value(name string) (ent.Value, error) {
-	return t.selectValues.Get(name)
+func (_m *Transaction) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryInvoice queries the "invoice" edge of the Transaction entity.
-func (t *Transaction) QueryInvoice() *InvoiceQuery {
-	return NewTransactionClient(t.config).QueryInvoice(t)
+func (_m *Transaction) QueryInvoice() *InvoiceQuery {
+	return NewTransactionClient(_m.config).QueryInvoice(_m)
 }
 
 // QueryCategory queries the "category" edge of the Transaction entity.
-func (t *Transaction) QueryCategory() *CategoryQuery {
-	return NewTransactionClient(t.config).QueryCategory(t)
+func (_m *Transaction) QueryCategory() *CategoryQuery {
+	return NewTransactionClient(_m.config).QueryCategory(_m)
 }
 
 // Update returns a builder for updating this Transaction.
 // Note that you need to call Transaction.Unwrap() before calling this method if this Transaction
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Transaction) Update() *TransactionUpdateOne {
-	return NewTransactionClient(t.config).UpdateOne(t)
+func (_m *Transaction) Update() *TransactionUpdateOne {
+	return NewTransactionClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Transaction entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Transaction) Unwrap() *Transaction {
-	_tx, ok := t.config.driver.(*txDriver)
+func (_m *Transaction) Unwrap() *Transaction {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Transaction is not a transactional entity")
 	}
-	t.config.driver = _tx.drv
-	return t
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (t *Transaction) String() string {
+func (_m *Transaction) String() string {
 	var builder strings.Builder
 	builder.WriteString("Transaction(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("record_type=")
-	builder.WriteString(t.RecordType)
+	builder.WriteString(_m.RecordType)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(t.Status)
+	builder.WriteString(_m.Status)
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
-	builder.WriteString(fmt.Sprintf("%v", t.Amount))
+	builder.WriteString(fmt.Sprintf("%v", _m.Amount))
 	builder.WriteString(", ")
 	builder.WriteString("title=")
-	builder.WriteString(t.Title)
+	builder.WriteString(_m.Title)
 	builder.WriteString(", ")
 	builder.WriteString("record_date=")
-	builder.WriteString(t.RecordDate.Format(time.ANSIC))
+	builder.WriteString(_m.RecordDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -27,13 +27,15 @@ definitions:
     properties:
       category:
         type: string
+      expense:
+        type: number
       expense_transactions:
         type: integer
+      income:
+        type: number
       income_transactions:
         type: integer
-      total_expense:
-        type: number
-      total_income:
+      tax:
         type: number
     type: object
   dto.InvoiceRequest:
@@ -62,6 +64,22 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.LoginRequest:
+    properties:
+      identifier:
+        description: username or email
+        type: string
+      password:
+        type: string
+    required:
+    - identifier
+    - password
+    type: object
+  dto.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
   dto.SummaryByDate:
     properties:
       categories:
@@ -70,9 +88,11 @@ definitions:
         type: array
       date:
         type: string
-      total_expense:
+      expense:
         type: number
-      total_income:
+      income:
+        type: number
+      tax:
         type: number
     type: object
   dto.TransactionCategoryResponse:
@@ -141,18 +161,47 @@ definitions:
     type: object
   dto.TransactionStatsSummary:
     properties:
-      average_per_transaction:
+      balance:
         type: number
-      total_amount:
+      expense:
         type: number
-      total_transactions:
+      expense_transactions:
         type: integer
-      unique_establishments:
+      income:
+        type: number
+      income_transactions:
         type: integer
+      tax:
+        type: number
     type: object
 info:
   contact: {}
+  title: API Frog-Go
+  version: "1.0"
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentica o usuário pelo username **ou** email e senha, retornando
+        um token JWT
+      parameters:
+      - description: Credenciais de login (identifier = username or email)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+      summary: Login
+      tags:
+      - Auth
   /api/v1/categories:
     get:
       consumes:
@@ -184,6 +233,8 @@ paths:
             items:
               $ref: '#/definitions/dto.CategoryResponse'
             type: array
+      security:
+      - BearerAuth: []
       summary: Lista categorias com filtros e paginação
       tags:
       - Categorias
@@ -205,6 +256,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.CategoryResponse'
+      security:
+      - BearerAuth: []
       summary: Cria uma nova categoria
       tags:
       - Categorias
@@ -224,6 +277,8 @@ paths:
       responses:
         "204":
           description: Sem conteúdo
+      security:
+      - BearerAuth: []
       summary: Remove uma categoria
       tags:
       - Categorias
@@ -244,6 +299,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.CategoryResponse'
+      security:
+      - BearerAuth: []
       summary: Busca uma categoria por ID
       tags:
       - Categorias
@@ -271,6 +328,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.CategoryResponse'
+      security:
+      - BearerAuth: []
       summary: Atualiza uma categoria existente
       tags:
       - Categorias
@@ -329,6 +388,8 @@ paths:
             items:
               $ref: '#/definitions/dto.InvoiceResponse'
             type: array
+      security:
+      - BearerAuth: []
       summary: Lista faturas com filtros e paginação
       tags:
       - Faturas
@@ -350,6 +411,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.InvoiceResponse'
+      security:
+      - BearerAuth: []
       summary: Cria uma nova fatura
       tags:
       - Faturas
@@ -369,6 +432,8 @@ paths:
       responses:
         "204":
           description: Sem conteúdo
+      security:
+      - BearerAuth: []
       summary: Remove uma fatura
       tags:
       - Faturas
@@ -389,6 +454,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.InvoiceResponse'
+      security:
+      - BearerAuth: []
       summary: Busca uma fatura por ID
       tags:
       - Faturas
@@ -416,6 +483,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.InvoiceResponse'
+      security:
+      - BearerAuth: []
       summary: Atualiza uma fatura existente
       tags:
       - Faturas
@@ -480,6 +549,8 @@ paths:
             items:
               $ref: '#/definitions/dto.TransactionResponse'
             type: array
+      security:
+      - BearerAuth: []
       summary: Lista débitos associados a uma fatura
       tags:
       - Faturas
@@ -749,4 +820,10 @@ paths:
       summary: Processar arquivo
       tags:
       - Upload
+securityDefinitions:
+  BearerAuth:
+    description: 'Token JWT no formato: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

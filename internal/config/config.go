@@ -23,6 +23,8 @@ const (
 	OrderDesc = "desc"
 )
 
+var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
+
 type Config struct {
 	DBUser string
 	DBPass string

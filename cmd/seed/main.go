@@ -9,9 +9,12 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/ent/category"
+	"frog-go/internal/ent/user"
 	"frog-go/internal/utils"
 	"frog-go/internal/utils/logger"
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -57,6 +60,10 @@ func startSeed() {
 		log.Fatal("Error seeding categories: %v", err)
 	}
 
+	if err := seedAdminUser(ctx, postgresRepo, log); err != nil {
+		log.Fatal("Error create adminUser: %v", err)
+	}
+
 	if cfg.SeedPath != "" {
 		if err := seedTransactions(ctx, postgresRepo, log, cfg.SeedPath); err != nil {
 			log.Fatal("Error aseeding transactions: %v", err)
@@ -80,7 +87,7 @@ func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger
 			utils.IntPtr(5),
 		},
 		{
-			"Mercado e delivery",
+			"Alimentação e delivery",
 			"Mercado, restaurantes, delivery, cafés, padarias",
 			"#FFA94D",
 			utils.IntPtr(20),
@@ -118,11 +125,6 @@ func seedCategories(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger
 		{
 			"Sem categoria",
 			"Gastos não classificados ou indefinidos.",
-			"#CBD5E1",
-			nil,
-		}, {
-			"Descontos",
-			"Impostos, taxas e tributos diversos.",
 			"#CBD5E1",
 			nil,
 		},
@@ -175,5 +177,44 @@ func seedTransactions(ctx context.Context, db *postgresql.PostgreSQL, lg *logger
 		}
 		lg.Info("✅ Dívida criada: %s", d.Title)
 	}
+	return nil
+}
+
+func seedAdminUser(ctx context.Context, repo *postgresql.PostgreSQL, lg *logger.Logger) error {
+	const (
+		adminUsername = "admin"
+		adminEmail    = "admin@example.com"
+		adminPassword = "admin123"
+	)
+
+	exists, err := repo.Client.User.Query().Where(user.UsernameEQ(adminUsername)).Exist(ctx)
+	if err != nil {
+		return err
+	}
+	if exists {
+		lg.Info("⚠️ Admin user already exists: %s", adminUsername)
+		return nil
+	}
+
+	// Gera o hash da senha
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to hash admin password: %w", err)
+	}
+
+	// Cria o admin
+	_, err = repo.Client.User.
+		Create().
+		SetName("Administrator").
+		SetUsername(adminUsername).
+		SetEmail(adminEmail).
+		SetPasswordHash(string(hashedPassword)).
+		SetIsActive(true).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+
+	lg.Info("✅ Admin user created: %s", adminUsername)
 	return nil
 }

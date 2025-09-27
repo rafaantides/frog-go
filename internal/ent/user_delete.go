@@ -5,33 +5,33 @@ package ent
 import (
 	"context"
 	"frog-go/internal/ent/predicate"
-	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// TransactionDelete is the builder for deleting a Transaction entity.
-type TransactionDelete struct {
+// UserDelete is the builder for deleting a User entity.
+type UserDelete struct {
 	config
 	hooks    []Hook
-	mutation *TransactionMutation
+	mutation *UserMutation
 }
 
-// Where appends a list predicates to the TransactionDelete builder.
-func (_d *TransactionDelete) Where(ps ...predicate.Transaction) *TransactionDelete {
+// Where appends a list predicates to the UserDelete builder.
+func (_d *UserDelete) Where(ps ...predicate.User) *UserDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *TransactionDelete) Exec(ctx context.Context) (int, error) {
+func (_d *UserDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *TransactionDelete) ExecX(ctx context.Context) int {
+func (_d *UserDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *TransactionDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *TransactionDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(transaction.Table, sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID))
+func (_d *UserDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *TransactionDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// TransactionDeleteOne is the builder for deleting a single Transaction entity.
-type TransactionDeleteOne struct {
-	_d *TransactionDelete
+// UserDeleteOne is the builder for deleting a single User entity.
+type UserDeleteOne struct {
+	_d *UserDelete
 }
 
-// Where appends a list predicates to the TransactionDelete builder.
-func (_d *TransactionDeleteOne) Where(ps ...predicate.Transaction) *TransactionDeleteOne {
+// Where appends a list predicates to the UserDelete builder.
+func (_d *UserDeleteOne) Where(ps ...predicate.User) *UserDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *TransactionDeleteOne) Exec(ctx context.Context) error {
+func (_d *UserDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{transaction.Label}
+		return &NotFoundError{user.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *TransactionDeleteOne) ExecX(ctx context.Context) {
+func (_d *UserDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

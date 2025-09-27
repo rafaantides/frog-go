@@ -22,109 +22,109 @@ type CategoryCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (cc *CategoryCreate) SetCreatedAt(t time.Time) *CategoryCreate {
-	cc.mutation.SetCreatedAt(t)
-	return cc
+func (_c *CategoryCreate) SetCreatedAt(v time.Time) *CategoryCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableCreatedAt(t *time.Time) *CategoryCreate {
-	if t != nil {
-		cc.SetCreatedAt(*t)
+func (_c *CategoryCreate) SetNillableCreatedAt(v *time.Time) *CategoryCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return cc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (cc *CategoryCreate) SetUpdatedAt(t time.Time) *CategoryCreate {
-	cc.mutation.SetUpdatedAt(t)
-	return cc
+func (_c *CategoryCreate) SetUpdatedAt(v time.Time) *CategoryCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableUpdatedAt(t *time.Time) *CategoryCreate {
-	if t != nil {
-		cc.SetUpdatedAt(*t)
+func (_c *CategoryCreate) SetNillableUpdatedAt(v *time.Time) *CategoryCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return cc
+	return _c
 }
 
 // SetName sets the "name" field.
-func (cc *CategoryCreate) SetName(s string) *CategoryCreate {
-	cc.mutation.SetName(s)
-	return cc
+func (_c *CategoryCreate) SetName(v string) *CategoryCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // SetDescription sets the "description" field.
-func (cc *CategoryCreate) SetDescription(s string) *CategoryCreate {
-	cc.mutation.SetDescription(s)
-	return cc
+func (_c *CategoryCreate) SetDescription(v string) *CategoryCreate {
+	_c.mutation.SetDescription(v)
+	return _c
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableDescription(s *string) *CategoryCreate {
-	if s != nil {
-		cc.SetDescription(*s)
+func (_c *CategoryCreate) SetNillableDescription(v *string) *CategoryCreate {
+	if v != nil {
+		_c.SetDescription(*v)
 	}
-	return cc
+	return _c
 }
 
 // SetColor sets the "color" field.
-func (cc *CategoryCreate) SetColor(s string) *CategoryCreate {
-	cc.mutation.SetColor(s)
-	return cc
+func (_c *CategoryCreate) SetColor(v string) *CategoryCreate {
+	_c.mutation.SetColor(v)
+	return _c
 }
 
 // SetNillableColor sets the "color" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableColor(s *string) *CategoryCreate {
-	if s != nil {
-		cc.SetColor(*s)
+func (_c *CategoryCreate) SetNillableColor(v *string) *CategoryCreate {
+	if v != nil {
+		_c.SetColor(*v)
 	}
-	return cc
+	return _c
 }
 
 // SetSuggestedPercentage sets the "suggested_percentage" field.
-func (cc *CategoryCreate) SetSuggestedPercentage(i int) *CategoryCreate {
-	cc.mutation.SetSuggestedPercentage(i)
-	return cc
+func (_c *CategoryCreate) SetSuggestedPercentage(v int) *CategoryCreate {
+	_c.mutation.SetSuggestedPercentage(v)
+	return _c
 }
 
 // SetNillableSuggestedPercentage sets the "suggested_percentage" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableSuggestedPercentage(i *int) *CategoryCreate {
-	if i != nil {
-		cc.SetSuggestedPercentage(*i)
+func (_c *CategoryCreate) SetNillableSuggestedPercentage(v *int) *CategoryCreate {
+	if v != nil {
+		_c.SetSuggestedPercentage(*v)
 	}
-	return cc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (cc *CategoryCreate) SetID(u uuid.UUID) *CategoryCreate {
-	cc.mutation.SetID(u)
-	return cc
+func (_c *CategoryCreate) SetID(v uuid.UUID) *CategoryCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (cc *CategoryCreate) SetNillableID(u *uuid.UUID) *CategoryCreate {
-	if u != nil {
-		cc.SetID(*u)
+func (_c *CategoryCreate) SetNillableID(v *uuid.UUID) *CategoryCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return cc
+	return _c
 }
 
 // Mutation returns the CategoryMutation object of the builder.
-func (cc *CategoryCreate) Mutation() *CategoryMutation {
-	return cc.mutation
+func (_c *CategoryCreate) Mutation() *CategoryMutation {
+	return _c.mutation
 }
 
 // Save creates the Category in the database.
-func (cc *CategoryCreate) Save(ctx context.Context) (*Category, error) {
-	cc.defaults()
-	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
+func (_c *CategoryCreate) Save(ctx context.Context) (*Category, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (cc *CategoryCreate) SaveX(ctx context.Context) *Category {
-	v, err := cc.Save(ctx)
+func (_c *CategoryCreate) SaveX(ctx context.Context) *Category {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -132,51 +132,51 @@ func (cc *CategoryCreate) SaveX(ctx context.Context) *Category {
 }
 
 // Exec executes the query.
-func (cc *CategoryCreate) Exec(ctx context.Context) error {
-	_, err := cc.Save(ctx)
+func (_c *CategoryCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cc *CategoryCreate) ExecX(ctx context.Context) {
-	if err := cc.Exec(ctx); err != nil {
+func (_c *CategoryCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (cc *CategoryCreate) defaults() {
-	if _, ok := cc.mutation.CreatedAt(); !ok {
+func (_c *CategoryCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := category.DefaultCreatedAt()
-		cc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := cc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := category.DefaultUpdatedAt()
-		cc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := cc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := category.DefaultID()
-		cc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cc *CategoryCreate) check() error {
-	if _, ok := cc.mutation.CreatedAt(); !ok {
+func (_c *CategoryCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Category.created_at"`)}
 	}
-	if _, ok := cc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Category.updated_at"`)}
 	}
-	if _, ok := cc.mutation.Name(); !ok {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Category.name"`)}
 	}
-	if v, ok := cc.mutation.Name(); ok {
+	if v, ok := _c.mutation.Name(); ok {
 		if err := category.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Category.name": %w`, err)}
 		}
 	}
-	if v, ok := cc.mutation.Color(); ok {
+	if v, ok := _c.mutation.Color(); ok {
 		if err := category.ColorValidator(v); err != nil {
 			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Category.color": %w`, err)}
 		}
@@ -184,12 +184,12 @@ func (cc *CategoryCreate) check() error {
 	return nil
 }
 
-func (cc *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
-	if err := cc.check(); err != nil {
+func (_c *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := cc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -202,41 +202,41 @@ func (cc *CategoryCreate) sqlSave(ctx context.Context) (*Category, error) {
 			return nil, err
 		}
 	}
-	cc.mutation.id = &_node.ID
-	cc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
+func (_c *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Category{config: cc.config}
+		_node = &Category{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(category.Table, sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID))
 	)
-	if id, ok := cc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := cc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(category.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := cc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(category.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := cc.mutation.Name(); ok {
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(category.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := cc.mutation.Description(); ok {
+	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(category.FieldDescription, field.TypeString, value)
 		_node.Description = &value
 	}
-	if value, ok := cc.mutation.Color(); ok {
+	if value, ok := _c.mutation.Color(); ok {
 		_spec.SetField(category.FieldColor, field.TypeString, value)
 		_node.Color = &value
 	}
-	if value, ok := cc.mutation.SuggestedPercentage(); ok {
+	if value, ok := _c.mutation.SuggestedPercentage(); ok {
 		_spec.SetField(category.FieldSuggestedPercentage, field.TypeInt, value)
 		_node.SuggestedPercentage = &value
 	}
@@ -251,16 +251,16 @@ type CategoryCreateBulk struct {
 }
 
 // Save creates the Category entities in the database.
-func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
-	if ccb.err != nil {
-		return nil, ccb.err
+func (_c *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
-	nodes := make([]*Category, len(ccb.builders))
-	mutators := make([]Mutator, len(ccb.builders))
-	for i := range ccb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Category, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := ccb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CategoryMutation)
@@ -274,11 +274,11 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -298,7 +298,7 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, ccb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -306,8 +306,8 @@ func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccb *CategoryCreateBulk) SaveX(ctx context.Context) []*Category {
-	v, err := ccb.Save(ctx)
+func (_c *CategoryCreateBulk) SaveX(ctx context.Context) []*Category {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -315,14 +315,14 @@ func (ccb *CategoryCreateBulk) SaveX(ctx context.Context) []*Category {
 }
 
 // Exec executes the query.
-func (ccb *CategoryCreateBulk) Exec(ctx context.Context) error {
-	_, err := ccb.Save(ctx)
+func (_c *CategoryCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccb *CategoryCreateBulk) ExecX(ctx context.Context) {
-	if err := ccb.Exec(ctx); err != nil {
+func (_c *CategoryCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -9,6 +9,7 @@ import (
 	"frog-go/internal/ent/category"
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"reflect"
 	"sync"
 
@@ -72,15 +73,16 @@ var (
 )
 
 // checkColumn checks if the column exists in the given table.
-func checkColumn(table, column string) error {
+func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			category.Table:    category.ValidColumn,
 			invoice.Table:     invoice.ValidColumn,
 			transaction.Table: transaction.ValidColumn,
+			user.Table:        user.ValidColumn,
 		})
 	})
-	return columnCheck(table, column)
+	return columnCheck(t, c)
 }
 
 // Asc applies the given fields in ASC order.

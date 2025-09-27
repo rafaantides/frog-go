@@ -35,11 +35,20 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	}
 
 	engine := gin.Default()
+
 	v1 := engine.Group("/api/v1")
 
 	v1.Use(middlewares.ErrorMiddleware(r.log))
 	// v1.Use(middlewares.CORSMiddleware())
 	v1.Use(middlewares.UUIDMiddleware(r.log))
+
+	authService := service.NewAuthService(r.repo)
+	userService := service.NewUserService(r.repo)
+	authHandler := handler.NewAuthHandler(authService, userService)
+
+	registerAuthRoutes(engine.Group("/api/auth"), authHandler)
+
+	v1.Use(middlewares.AuthMiddleware(r.log, authService.ValidateToken))
 
 	engine.StaticFile("/favicon.ico", "./static/favicon.ico")
 	registerDocsRoutes(engine.Group("/docs/v1"))
@@ -79,6 +88,10 @@ func registerDocsRoutes(router *gin.RouterGroup) {
 		c.File("./docs/v1/swagger.html")
 	})
 
+}
+
+func registerAuthRoutes(router *gin.RouterGroup, handler *handler.AuthHandler) {
+	router.POST("/login", handler.Login)
 }
 
 func registerTransactionRoutes(router *gin.RouterGroup, handler *handler.TransactionHandler) {

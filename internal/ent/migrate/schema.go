@@ -100,11 +100,29 @@ var (
 			},
 		},
 	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "username", Type: field.TypeString, Unique: true, Size: 255},
+		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true, Size: 255},
+		{Name: "password_hash", Type: field.TypeString, Size: 255},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CategoriesTable,
 		InvoicesTable,
 		TransactionsTable,
+		UsersTable,
 	}
 )
 

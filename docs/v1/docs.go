@@ -15,8 +15,47 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "Autentica o usuário pelo username **ou** email e senha, retornando um token JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Credenciais de login (identifier = username or email)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/categories": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todas as categorias aplicando filtros e paginação",
                 "consumes": [
                     "application/json"
@@ -67,6 +106,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cria uma nova categoria com os dados fornecidos no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -101,6 +145,11 @@ const docTemplate = `{
         },
         "/api/v1/categories/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma categoria com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -131,6 +180,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Atualiza os dados de uma categoria com base no ID fornecido e nos dados enviados no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -170,6 +224,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Exclui uma categoria com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -199,6 +258,11 @@ const docTemplate = `{
         },
         "/api/v1/invoices": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todas as faturas aplicando filtros e paginação",
                 "consumes": [
                     "application/json"
@@ -285,6 +349,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cria uma nova fatura com os dados fornecidos no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -319,6 +388,11 @@ const docTemplate = `{
         },
         "/api/v1/invoices/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma fatura com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -349,6 +423,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Atualiza os dados de uma fatura com base no ID fornecido e nos dados enviados no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -388,6 +467,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Exclui uma fatura com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -417,6 +501,11 @@ const docTemplate = `{
         },
         "/api/v1/invoices/{id}/debts": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todos os débitos (transações) vinculados a uma fatura específica, com filtros e paginação",
                 "consumes": [
                     "application/json"
@@ -950,16 +1039,19 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
+                "expense": {
+                    "type": "number"
+                },
                 "expense_transactions": {
                     "type": "integer"
+                },
+                "income": {
+                    "type": "number"
                 },
                 "income_transactions": {
                     "type": "integer"
                 },
-                "total_expense": {
-                    "type": "number"
-                },
-                "total_income": {
+                "tax": {
                     "type": "number"
                 }
             }
@@ -1004,6 +1096,30 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.LoginRequest": {
+            "type": "object",
+            "required": [
+                "identifier",
+                "password"
+            ],
+            "properties": {
+                "identifier": {
+                    "description": "username or email",
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SummaryByDate": {
             "type": "object",
             "properties": {
@@ -1016,10 +1132,13 @@ const docTemplate = `{
                 "date": {
                     "type": "string"
                 },
-                "total_expense": {
+                "expense": {
                     "type": "number"
                 },
-                "total_income": {
+                "income": {
+                    "type": "number"
+                },
+                "tax": {
                     "type": "number"
                 }
             }
@@ -1123,30 +1242,44 @@ const docTemplate = `{
         "dto.TransactionStatsSummary": {
             "type": "object",
             "properties": {
-                "average_per_transaction": {
+                "balance": {
                     "type": "number"
                 },
-                "total_amount": {
+                "expense": {
                     "type": "number"
                 },
-                "total_transactions": {
+                "expense_transactions": {
                     "type": "integer"
                 },
-                "unique_establishments": {
+                "income": {
+                    "type": "number"
+                },
+                "income_transactions": {
                     "type": "integer"
+                },
+                "tax": {
+                    "type": "number"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Token JWT no formato: Bearer \u003ctoken\u003e",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
+	Title:            "API Frog-Go",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

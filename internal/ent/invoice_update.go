@@ -25,130 +25,130 @@ type InvoiceUpdate struct {
 }
 
 // Where appends a list predicates to the InvoiceUpdate builder.
-func (iu *InvoiceUpdate) Where(ps ...predicate.Invoice) *InvoiceUpdate {
-	iu.mutation.Where(ps...)
-	return iu
+func (_u *InvoiceUpdate) Where(ps ...predicate.Invoice) *InvoiceUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (iu *InvoiceUpdate) SetUpdatedAt(t time.Time) *InvoiceUpdate {
-	iu.mutation.SetUpdatedAt(t)
-	return iu
+func (_u *InvoiceUpdate) SetUpdatedAt(v time.Time) *InvoiceUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (iu *InvoiceUpdate) SetStatus(s string) *InvoiceUpdate {
-	iu.mutation.SetStatus(s)
-	return iu
+func (_u *InvoiceUpdate) SetStatus(v string) *InvoiceUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (iu *InvoiceUpdate) SetNillableStatus(s *string) *InvoiceUpdate {
-	if s != nil {
-		iu.SetStatus(*s)
+func (_u *InvoiceUpdate) SetNillableStatus(v *string) *InvoiceUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return iu
+	return _u
 }
 
 // SetAmount sets the "amount" field.
-func (iu *InvoiceUpdate) SetAmount(f float64) *InvoiceUpdate {
-	iu.mutation.ResetAmount()
-	iu.mutation.SetAmount(f)
-	return iu
+func (_u *InvoiceUpdate) SetAmount(v float64) *InvoiceUpdate {
+	_u.mutation.ResetAmount()
+	_u.mutation.SetAmount(v)
+	return _u
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (iu *InvoiceUpdate) SetNillableAmount(f *float64) *InvoiceUpdate {
-	if f != nil {
-		iu.SetAmount(*f)
+func (_u *InvoiceUpdate) SetNillableAmount(v *float64) *InvoiceUpdate {
+	if v != nil {
+		_u.SetAmount(*v)
 	}
-	return iu
+	return _u
 }
 
-// AddAmount adds f to the "amount" field.
-func (iu *InvoiceUpdate) AddAmount(f float64) *InvoiceUpdate {
-	iu.mutation.AddAmount(f)
-	return iu
+// AddAmount adds value to the "amount" field.
+func (_u *InvoiceUpdate) AddAmount(v float64) *InvoiceUpdate {
+	_u.mutation.AddAmount(v)
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (iu *InvoiceUpdate) SetTitle(s string) *InvoiceUpdate {
-	iu.mutation.SetTitle(s)
-	return iu
+func (_u *InvoiceUpdate) SetTitle(v string) *InvoiceUpdate {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (iu *InvoiceUpdate) SetNillableTitle(s *string) *InvoiceUpdate {
-	if s != nil {
-		iu.SetTitle(*s)
+func (_u *InvoiceUpdate) SetNillableTitle(v *string) *InvoiceUpdate {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return iu
+	return _u
 }
 
 // SetDueDate sets the "due_date" field.
-func (iu *InvoiceUpdate) SetDueDate(t time.Time) *InvoiceUpdate {
-	iu.mutation.SetDueDate(t)
-	return iu
+func (_u *InvoiceUpdate) SetDueDate(v time.Time) *InvoiceUpdate {
+	_u.mutation.SetDueDate(v)
+	return _u
 }
 
 // SetNillableDueDate sets the "due_date" field if the given value is not nil.
-func (iu *InvoiceUpdate) SetNillableDueDate(t *time.Time) *InvoiceUpdate {
-	if t != nil {
-		iu.SetDueDate(*t)
+func (_u *InvoiceUpdate) SetNillableDueDate(v *time.Time) *InvoiceUpdate {
+	if v != nil {
+		_u.SetDueDate(*v)
 	}
-	return iu
+	return _u
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (iu *InvoiceUpdate) AddTransactionIDs(ids ...uuid.UUID) *InvoiceUpdate {
-	iu.mutation.AddTransactionIDs(ids...)
-	return iu
+func (_u *InvoiceUpdate) AddTransactionIDs(ids ...uuid.UUID) *InvoiceUpdate {
+	_u.mutation.AddTransactionIDs(ids...)
+	return _u
 }
 
 // AddTransactions adds the "transactions" edges to the Transaction entity.
-func (iu *InvoiceUpdate) AddTransactions(t ...*Transaction) *InvoiceUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *InvoiceUpdate) AddTransactions(v ...*Transaction) *InvoiceUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iu.AddTransactionIDs(ids...)
+	return _u.AddTransactionIDs(ids...)
 }
 
 // Mutation returns the InvoiceMutation object of the builder.
-func (iu *InvoiceUpdate) Mutation() *InvoiceMutation {
-	return iu.mutation
+func (_u *InvoiceUpdate) Mutation() *InvoiceMutation {
+	return _u.mutation
 }
 
 // ClearTransactions clears all "transactions" edges to the Transaction entity.
-func (iu *InvoiceUpdate) ClearTransactions() *InvoiceUpdate {
-	iu.mutation.ClearTransactions()
-	return iu
+func (_u *InvoiceUpdate) ClearTransactions() *InvoiceUpdate {
+	_u.mutation.ClearTransactions()
+	return _u
 }
 
 // RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
-func (iu *InvoiceUpdate) RemoveTransactionIDs(ids ...uuid.UUID) *InvoiceUpdate {
-	iu.mutation.RemoveTransactionIDs(ids...)
-	return iu
+func (_u *InvoiceUpdate) RemoveTransactionIDs(ids ...uuid.UUID) *InvoiceUpdate {
+	_u.mutation.RemoveTransactionIDs(ids...)
+	return _u
 }
 
 // RemoveTransactions removes "transactions" edges to Transaction entities.
-func (iu *InvoiceUpdate) RemoveTransactions(t ...*Transaction) *InvoiceUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *InvoiceUpdate) RemoveTransactions(v ...*Transaction) *InvoiceUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iu.RemoveTransactionIDs(ids...)
+	return _u.RemoveTransactionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (iu *InvoiceUpdate) Save(ctx context.Context) (int, error) {
-	iu.defaults()
-	return withHooks(ctx, iu.sqlSave, iu.mutation, iu.hooks)
+func (_u *InvoiceUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (iu *InvoiceUpdate) SaveX(ctx context.Context) int {
-	affected, err := iu.Save(ctx)
+func (_u *InvoiceUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -156,34 +156,34 @@ func (iu *InvoiceUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (iu *InvoiceUpdate) Exec(ctx context.Context) error {
-	_, err := iu.Save(ctx)
+func (_u *InvoiceUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (iu *InvoiceUpdate) ExecX(ctx context.Context) {
-	if err := iu.Exec(ctx); err != nil {
+func (_u *InvoiceUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (iu *InvoiceUpdate) defaults() {
-	if _, ok := iu.mutation.UpdatedAt(); !ok {
+func (_u *InvoiceUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := invoice.UpdateDefaultUpdatedAt()
-		iu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (iu *InvoiceUpdate) check() error {
-	if v, ok := iu.mutation.Status(); ok {
+func (_u *InvoiceUpdate) check() error {
+	if v, ok := _u.mutation.Status(); ok {
 		if err := invoice.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invoice.status": %w`, err)}
 		}
 	}
-	if v, ok := iu.mutation.Title(); ok {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := invoice.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Invoice.title": %w`, err)}
 		}
@@ -191,37 +191,37 @@ func (iu *InvoiceUpdate) check() error {
 	return nil
 }
 
-func (iu *InvoiceUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := iu.check(); err != nil {
-		return n, err
+func (_u *InvoiceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(invoice.Table, invoice.Columns, sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID))
-	if ps := iu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := iu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(invoice.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := iu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(invoice.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := iu.mutation.Amount(); ok {
+	if value, ok := _u.mutation.Amount(); ok {
 		_spec.SetField(invoice.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.AddedAmount(); ok {
+	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(invoice.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(invoice.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := iu.mutation.DueDate(); ok {
+	if value, ok := _u.mutation.DueDate(); ok {
 		_spec.SetField(invoice.FieldDueDate, field.TypeTime, value)
 	}
-	if iu.mutation.TransactionsCleared() {
+	if _u.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -234,7 +234,7 @@ func (iu *InvoiceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !iu.mutation.TransactionsCleared() {
+	if nodes := _u.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -250,7 +250,7 @@ func (iu *InvoiceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.TransactionsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -266,7 +266,7 @@ func (iu *InvoiceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{invoice.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -274,8 +274,8 @@ func (iu *InvoiceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	iu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // InvoiceUpdateOne is the builder for updating a single Invoice entity.
@@ -287,137 +287,137 @@ type InvoiceUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (iuo *InvoiceUpdateOne) SetUpdatedAt(t time.Time) *InvoiceUpdateOne {
-	iuo.mutation.SetUpdatedAt(t)
-	return iuo
+func (_u *InvoiceUpdateOne) SetUpdatedAt(v time.Time) *InvoiceUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (iuo *InvoiceUpdateOne) SetStatus(s string) *InvoiceUpdateOne {
-	iuo.mutation.SetStatus(s)
-	return iuo
+func (_u *InvoiceUpdateOne) SetStatus(v string) *InvoiceUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (iuo *InvoiceUpdateOne) SetNillableStatus(s *string) *InvoiceUpdateOne {
-	if s != nil {
-		iuo.SetStatus(*s)
+func (_u *InvoiceUpdateOne) SetNillableStatus(v *string) *InvoiceUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return iuo
+	return _u
 }
 
 // SetAmount sets the "amount" field.
-func (iuo *InvoiceUpdateOne) SetAmount(f float64) *InvoiceUpdateOne {
-	iuo.mutation.ResetAmount()
-	iuo.mutation.SetAmount(f)
-	return iuo
+func (_u *InvoiceUpdateOne) SetAmount(v float64) *InvoiceUpdateOne {
+	_u.mutation.ResetAmount()
+	_u.mutation.SetAmount(v)
+	return _u
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (iuo *InvoiceUpdateOne) SetNillableAmount(f *float64) *InvoiceUpdateOne {
-	if f != nil {
-		iuo.SetAmount(*f)
+func (_u *InvoiceUpdateOne) SetNillableAmount(v *float64) *InvoiceUpdateOne {
+	if v != nil {
+		_u.SetAmount(*v)
 	}
-	return iuo
+	return _u
 }
 
-// AddAmount adds f to the "amount" field.
-func (iuo *InvoiceUpdateOne) AddAmount(f float64) *InvoiceUpdateOne {
-	iuo.mutation.AddAmount(f)
-	return iuo
+// AddAmount adds value to the "amount" field.
+func (_u *InvoiceUpdateOne) AddAmount(v float64) *InvoiceUpdateOne {
+	_u.mutation.AddAmount(v)
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (iuo *InvoiceUpdateOne) SetTitle(s string) *InvoiceUpdateOne {
-	iuo.mutation.SetTitle(s)
-	return iuo
+func (_u *InvoiceUpdateOne) SetTitle(v string) *InvoiceUpdateOne {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (iuo *InvoiceUpdateOne) SetNillableTitle(s *string) *InvoiceUpdateOne {
-	if s != nil {
-		iuo.SetTitle(*s)
+func (_u *InvoiceUpdateOne) SetNillableTitle(v *string) *InvoiceUpdateOne {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return iuo
+	return _u
 }
 
 // SetDueDate sets the "due_date" field.
-func (iuo *InvoiceUpdateOne) SetDueDate(t time.Time) *InvoiceUpdateOne {
-	iuo.mutation.SetDueDate(t)
-	return iuo
+func (_u *InvoiceUpdateOne) SetDueDate(v time.Time) *InvoiceUpdateOne {
+	_u.mutation.SetDueDate(v)
+	return _u
 }
 
 // SetNillableDueDate sets the "due_date" field if the given value is not nil.
-func (iuo *InvoiceUpdateOne) SetNillableDueDate(t *time.Time) *InvoiceUpdateOne {
-	if t != nil {
-		iuo.SetDueDate(*t)
+func (_u *InvoiceUpdateOne) SetNillableDueDate(v *time.Time) *InvoiceUpdateOne {
+	if v != nil {
+		_u.SetDueDate(*v)
 	}
-	return iuo
+	return _u
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (iuo *InvoiceUpdateOne) AddTransactionIDs(ids ...uuid.UUID) *InvoiceUpdateOne {
-	iuo.mutation.AddTransactionIDs(ids...)
-	return iuo
+func (_u *InvoiceUpdateOne) AddTransactionIDs(ids ...uuid.UUID) *InvoiceUpdateOne {
+	_u.mutation.AddTransactionIDs(ids...)
+	return _u
 }
 
 // AddTransactions adds the "transactions" edges to the Transaction entity.
-func (iuo *InvoiceUpdateOne) AddTransactions(t ...*Transaction) *InvoiceUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *InvoiceUpdateOne) AddTransactions(v ...*Transaction) *InvoiceUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iuo.AddTransactionIDs(ids...)
+	return _u.AddTransactionIDs(ids...)
 }
 
 // Mutation returns the InvoiceMutation object of the builder.
-func (iuo *InvoiceUpdateOne) Mutation() *InvoiceMutation {
-	return iuo.mutation
+func (_u *InvoiceUpdateOne) Mutation() *InvoiceMutation {
+	return _u.mutation
 }
 
 // ClearTransactions clears all "transactions" edges to the Transaction entity.
-func (iuo *InvoiceUpdateOne) ClearTransactions() *InvoiceUpdateOne {
-	iuo.mutation.ClearTransactions()
-	return iuo
+func (_u *InvoiceUpdateOne) ClearTransactions() *InvoiceUpdateOne {
+	_u.mutation.ClearTransactions()
+	return _u
 }
 
 // RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
-func (iuo *InvoiceUpdateOne) RemoveTransactionIDs(ids ...uuid.UUID) *InvoiceUpdateOne {
-	iuo.mutation.RemoveTransactionIDs(ids...)
-	return iuo
+func (_u *InvoiceUpdateOne) RemoveTransactionIDs(ids ...uuid.UUID) *InvoiceUpdateOne {
+	_u.mutation.RemoveTransactionIDs(ids...)
+	return _u
 }
 
 // RemoveTransactions removes "transactions" edges to Transaction entities.
-func (iuo *InvoiceUpdateOne) RemoveTransactions(t ...*Transaction) *InvoiceUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *InvoiceUpdateOne) RemoveTransactions(v ...*Transaction) *InvoiceUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iuo.RemoveTransactionIDs(ids...)
+	return _u.RemoveTransactionIDs(ids...)
 }
 
 // Where appends a list predicates to the InvoiceUpdate builder.
-func (iuo *InvoiceUpdateOne) Where(ps ...predicate.Invoice) *InvoiceUpdateOne {
-	iuo.mutation.Where(ps...)
-	return iuo
+func (_u *InvoiceUpdateOne) Where(ps ...predicate.Invoice) *InvoiceUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (iuo *InvoiceUpdateOne) Select(field string, fields ...string) *InvoiceUpdateOne {
-	iuo.fields = append([]string{field}, fields...)
-	return iuo
+func (_u *InvoiceUpdateOne) Select(field string, fields ...string) *InvoiceUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Invoice entity.
-func (iuo *InvoiceUpdateOne) Save(ctx context.Context) (*Invoice, error) {
-	iuo.defaults()
-	return withHooks(ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
+func (_u *InvoiceUpdateOne) Save(ctx context.Context) (*Invoice, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (iuo *InvoiceUpdateOne) SaveX(ctx context.Context) *Invoice {
-	node, err := iuo.Save(ctx)
+func (_u *InvoiceUpdateOne) SaveX(ctx context.Context) *Invoice {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -425,34 +425,34 @@ func (iuo *InvoiceUpdateOne) SaveX(ctx context.Context) *Invoice {
 }
 
 // Exec executes the query on the entity.
-func (iuo *InvoiceUpdateOne) Exec(ctx context.Context) error {
-	_, err := iuo.Save(ctx)
+func (_u *InvoiceUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (iuo *InvoiceUpdateOne) ExecX(ctx context.Context) {
-	if err := iuo.Exec(ctx); err != nil {
+func (_u *InvoiceUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (iuo *InvoiceUpdateOne) defaults() {
-	if _, ok := iuo.mutation.UpdatedAt(); !ok {
+func (_u *InvoiceUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := invoice.UpdateDefaultUpdatedAt()
-		iuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (iuo *InvoiceUpdateOne) check() error {
-	if v, ok := iuo.mutation.Status(); ok {
+func (_u *InvoiceUpdateOne) check() error {
+	if v, ok := _u.mutation.Status(); ok {
 		if err := invoice.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Invoice.status": %w`, err)}
 		}
 	}
-	if v, ok := iuo.mutation.Title(); ok {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := invoice.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Invoice.title": %w`, err)}
 		}
@@ -460,17 +460,17 @@ func (iuo *InvoiceUpdateOne) check() error {
 	return nil
 }
 
-func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err error) {
-	if err := iuo.check(); err != nil {
+func (_u *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(invoice.Table, invoice.Columns, sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID))
-	id, ok := iuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Invoice.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := iuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, invoice.FieldID)
 		for _, f := range fields {
@@ -482,32 +482,32 @@ func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err e
 			}
 		}
 	}
-	if ps := iuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := iuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(invoice.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := iuo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(invoice.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := iuo.mutation.Amount(); ok {
+	if value, ok := _u.mutation.Amount(); ok {
 		_spec.SetField(invoice.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.AddedAmount(); ok {
+	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(invoice.FieldAmount, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(invoice.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := iuo.mutation.DueDate(); ok {
+	if value, ok := _u.mutation.DueDate(); ok {
 		_spec.SetField(invoice.FieldDueDate, field.TypeTime, value)
 	}
-	if iuo.mutation.TransactionsCleared() {
+	if _u.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -520,7 +520,7 @@ func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !iuo.mutation.TransactionsCleared() {
+	if nodes := _u.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -536,7 +536,7 @@ func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.TransactionsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -552,10 +552,10 @@ func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Invoice{config: iuo.config}
+	_node = &Invoice{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, iuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{invoice.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -563,6 +563,6 @@ func (iuo *InvoiceUpdateOne) sqlSave(ctx context.Context) (_node *Invoice, err e
 		}
 		return nil, err
 	}
-	iuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

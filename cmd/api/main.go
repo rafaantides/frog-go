@@ -14,6 +14,13 @@ var (
 	debug   bool
 )
 
+// @title API Frog-Go
+// @version 1.0
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Token JWT no formato: Bearer <token>
 func main() {
 	flag.StringVar(&port, "port", "8080", "Port to run API server on")
 	flag.StringVar(&envPath, "env", ".env", "Path to .env file")
