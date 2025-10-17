@@ -601,6 +601,11 @@ const docTemplate = `{
         },
         "/api/v1/transactions": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todas as transações aplicando filtros e paginação",
                 "consumes": [
                     "application/json"
@@ -705,6 +710,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cria uma nova transação com os dados fornecidos no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -739,6 +749,11 @@ const docTemplate = `{
         },
         "/api/v1/transactions/stats": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Fornece dados estatísticos agregados das transações com base nos filtros aplicados",
                 "consumes": [
                     "application/json"
@@ -786,6 +801,11 @@ const docTemplate = `{
         },
         "/api/v1/transactions/summary": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Gera um resumo estatístico das transações baseado nos filtros fornecidos",
                 "consumes": [
                     "application/json"
@@ -833,6 +853,11 @@ const docTemplate = `{
         },
         "/api/v1/transactions/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma transação com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -863,6 +888,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Atualiza os dados de uma transação com base no ID fornecido e nos dados enviados no corpo da requisição",
                 "consumes": [
                     "application/json"
@@ -902,6 +932,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Exclui uma transação com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -931,6 +966,11 @@ const docTemplate = `{
         },
         "/api/v1/upload": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Recebe um arquivo e os parâmetros necessários para processamento assíncrono.",
                 "consumes": [
                     "multipart/form-data"

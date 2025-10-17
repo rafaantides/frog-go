@@ -26,7 +26,7 @@ type UploadHandler struct {
 // @Param model formData  string true   "Nome do modelo alvo (ex: Nubank)"
 // @Param action formData  string true   "Ação desejada (ex: create)"
 // @Success 202 {object} map[string]string "Arquivo recebido, processamento em andamento"
-// @Failure 400{object} map[string]string "Erro nos parâmetros ou no upload"
+// @Failure 400 {object} map[string]string "Erro nos parâmetros ou no upload"
 // @Security BearerAuth
 // @Router /api/v1/upload [post]
 func NewUploadHandler(service inbound.UploadService) *UploadHandler {

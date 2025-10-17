@@ -622,6 +622,8 @@ paths:
             items:
               $ref: '#/definitions/dto.TransactionResponse'
             type: array
+      security:
+      - BearerAuth: []
       summary: Lista transações com filtros e paginação
       tags:
       - Transações
@@ -643,6 +645,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.TransactionResponse'
+      security:
+      - BearerAuth: []
       summary: Cria uma nova transação
       tags:
       - Transações
@@ -662,6 +666,8 @@ paths:
       responses:
         "204":
           description: Sem conteúdo
+      security:
+      - BearerAuth: []
       summary: Remove uma transação
       tags:
       - Transações
@@ -682,6 +688,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.TransactionResponse'
+      security:
+      - BearerAuth: []
       summary: Busca uma transação por ID
       tags:
       - Transações
@@ -709,6 +717,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.TransactionResponse'
+      security:
+      - BearerAuth: []
       summary: Atualiza uma transação existente
       tags:
       - Transações
@@ -741,6 +751,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.TransactionStatsSummary'
+      security:
+      - BearerAuth: []
       summary: Retorna estatísticas gerais das transações
       tags:
       - Transações
@@ -772,6 +784,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.SummaryByDate'
+      security:
+      - BearerAuth: []
       summary: Retorna resumo de transações
       tags:
       - Transações
@@ -817,6 +831,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Processar arquivo
       tags:
       - Upload
