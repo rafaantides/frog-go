@@ -30,6 +30,7 @@ func NewTransactionHandler(service inbound.TransactionService) *TransactionHandl
 // @Produce json
 // @Param request body dto.TransactionRequest true "Dados da transação"
 // @Success 201 {object} dto.TransactionResponse
+// @Security BearerAuth
 // @Router /api/v1/transactions [post]
 func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -68,6 +69,7 @@ func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da transação"
 // @Success 200 {object} dto.TransactionResponse
+// @Security BearerAuth
 // @Router /api/v1/transactions/{id} [get]
 func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -108,6 +110,7 @@ func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 // @Param order_by query string false "Campo de ordenação"
 // @Param order query string false "Ordem (asc, desc)"
 // @Success 200 {array} dto.TransactionResponse
+// @Security BearerAuth
 // @Router /api/v1/transactions [get]
 func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -165,6 +168,7 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 // @Param id path string true "ID da transação"
 // @Param request body dto.TransactionRequest true "Dados atualizados da transação"
 // @Success 200 {object} dto.TransactionResponse
+// @Security BearerAuth
 // @Router /api/v1/transactions/{id} [put]
 func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -210,6 +214,7 @@ func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 // @Produce json
 // @Param id path string true "ID da transação"
 // @Success 204 "Sem conteúdo"
+// @Security BearerAuth
 // @Router /api/v1/transactions/{id} [delete]
 func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -238,6 +243,7 @@ func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 // @Param end_date query string false "Data final (YYYY-MM-DD)"
 // @Param record_types query []string false "Tipos de transação (income, expense)"
 // @Success 200 {object} dto.SummaryByDate
+// @Security BearerAuth
 // @Router /api/v1/transactions/summary [get]
 func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -267,6 +273,7 @@ func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 // @Param end_date query string false "Data final (YYYY-MM-DD)"
 // @Param record_types query []string false "Tipos de transação (income, expense)"
 // @Success 200 {object} dto.TransactionStatsSummary
+// @Security BearerAuth
 // @Router /api/v1/transactions/stats [get]
 func (h *TransactionHandler) TransactionsGeneralStatsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
