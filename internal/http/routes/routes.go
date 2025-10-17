@@ -46,7 +46,7 @@ func (r *Router) Setup(enableDebug bool) *gin.Engine {
 	userService := service.NewUserService(r.repo)
 	authHandler := handler.NewAuthHandler(authService, userService)
 
-	registerAuthRoutes(engine.Group("/api/auth"), authHandler)
+	registerAuthRoutes(engine.Group("/api/v1/auth"), authHandler)
 
 	v1.Use(middlewares.AuthMiddleware(r.log, authService.ValidateToken))
 

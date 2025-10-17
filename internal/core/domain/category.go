@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 
 	"github.com/google/uuid"
 )
@@ -18,7 +18,7 @@ type Category struct {
 
 func NewCategory(name string, description, color *string, suggestedPercentage *int) (*Category, error) {
 	if name == "" {
-		return nil, errors.EmptyField("name")
+		return nil, appError.EmptyField("name")
 	}
 
 	return &Category{

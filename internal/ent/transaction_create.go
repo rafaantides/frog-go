@@ -9,6 +9,7 @@ import (
 	"frog-go/internal/ent/category"
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -109,6 +110,17 @@ func (_c *TransactionCreate) SetNillableID(v *uuid.UUID) *TransactionCreate {
 		_c.SetID(*v)
 	}
 	return _c
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_c *TransactionCreate) SetUserID(id uuid.UUID) *TransactionCreate {
+	_c.mutation.SetUserID(id)
+	return _c
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_c *TransactionCreate) SetUser(v *User) *TransactionCreate {
+	return _c.SetUserID(v.ID)
 }
 
 // SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
@@ -244,6 +256,9 @@ func (_c *TransactionCreate) check() error {
 	if _, ok := _c.mutation.RecordDate(); !ok {
 		return &ValidationError{Name: "record_date", err: errors.New(`ent: missing required field "Transaction.record_date"`)}
 	}
+	if len(_c.mutation.UserIDs()) == 0 {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Transaction.user"`)}
+	}
 	return nil
 }
 
@@ -306,6 +321,23 @@ func (_c *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.RecordDate(); ok {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
 		_node.RecordDate = value
+	}
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.UserTable,
+			Columns: []string{transaction.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.InvoiceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

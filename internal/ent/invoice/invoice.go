@@ -29,6 +29,8 @@ const (
 	FieldDueDate = "due_date"
 	// EdgeTransactions holds the string denoting the transactions edge name in mutations.
 	EdgeTransactions = "transactions"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// Table holds the table name of the invoice in the database.
 	Table = "invoices"
 	// TransactionsTable is the table that holds the transactions relation/edge.
@@ -38,6 +40,13 @@ const (
 	TransactionsInverseTable = "transactions"
 	// TransactionsColumn is the table column denoting the transactions relation/edge.
 	TransactionsColumn = "invoice_id"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "invoices"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
 )
 
 // Columns holds all SQL columns for invoice fields.
@@ -51,10 +60,21 @@ var Columns = []string{
 	FieldDueDate,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "invoices"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_id",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -131,10 +151,24 @@ func ByTransactions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTransactionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newTransactionsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TransactionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+	)
+}
+func newUserStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
 	)
 }

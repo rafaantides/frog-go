@@ -7,6 +7,7 @@ import (
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
+	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
 	"net/http"
 
@@ -32,14 +33,19 @@ func NewTransactionHandler(service inbound.TransactionService) *TransactionHandl
 // @Router /api/v1/transactions [post]
 func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	var req dto.TransactionRequest
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
 
+	var req dto.TransactionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	input, err := req.ToDomain()
+	input, err := req.ToDomain(userID)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -162,6 +168,13 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 // @Router /api/v1/transactions/{id} [put]
 func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -174,7 +187,7 @@ func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	input, err := req.ToDomain()
+	input, err := req.ToDomain(userID)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return

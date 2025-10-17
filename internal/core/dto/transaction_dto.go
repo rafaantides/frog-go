@@ -2,7 +2,7 @@ package dto
 
 import (
 	"frog-go/internal/core/domain"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/utils"
 
 	"github.com/google/uuid"
@@ -52,17 +52,17 @@ type TransactionCategoryResponse struct {
 	Name string    `json:"name"`
 }
 
-func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
+func (r *TransactionRequest) ToDomain(userID uuid.UUID) (*domain.Transaction, error) {
 	RecordDate, err := utils.ToDateTime(r.RecordDate)
 	if err != nil {
-		return nil, errors.InvalidParam("record_date", err)
+		return nil, appError.InvalidParam("record_date", err)
 	}
 
 	var invoiceID *uuid.UUID
 	if r.InvoiceID != nil {
 		invoiceID, err = utils.ToNillableUUID(*r.InvoiceID)
 		if err != nil {
-			return nil, errors.InvalidParam("invoice_id", err)
+			return nil, appError.InvalidParam("invoice_id", err)
 		}
 	}
 
@@ -70,7 +70,7 @@ func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 	if r.CategoryID != nil {
 		categoryID, err = utils.ToNillableUUID(*r.CategoryID)
 		if err != nil {
-			return nil, errors.InvalidParam("category_id", err)
+			return nil, appError.InvalidParam("category_id", err)
 		}
 	}
 
@@ -78,6 +78,7 @@ func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 	recordType := domain.RecordType(r.RecordType)
 
 	return domain.NewTransaction(
+		userID,
 		r.Title,
 		r.Amount,
 		RecordDate,

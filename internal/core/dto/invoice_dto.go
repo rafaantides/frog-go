@@ -2,16 +2,16 @@ package dto
 
 import (
 	"frog-go/internal/core/domain"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/utils"
 
 	"github.com/google/uuid"
 )
 
 type InvoiceRequest struct {
-	Title   string  `json:"title"`
-	DueDate string  `json:"due_date"`
-	Status  string  `json:"status"`
+	Title   string `json:"title"`
+	DueDate string `json:"due_date"`
+	Status  string `json:"status"`
 }
 
 type InvoiceFilters struct {
@@ -32,16 +32,17 @@ type InvoiceResponse struct {
 	UpdatedAt string    `json:"updated_at"`
 }
 
-func (r *InvoiceRequest) ToDomain() (*domain.Invoice, error) {
+func (r *InvoiceRequest) ToDomain(userID uuid.UUID) (*domain.Invoice, error) {
 
 	dueDate, err := utils.ToDateTime(r.DueDate)
 	if err != nil {
-		return nil, errors.InvalidParam("due_date", err)
+		return nil, appError.InvalidParam("due_date", err)
 	}
 
 	status := domain.TxnStatus(r.Status)
 
 	return domain.NewInvoice(
+		userID,
 		r.Title,
 		dueDate,
 		&status,

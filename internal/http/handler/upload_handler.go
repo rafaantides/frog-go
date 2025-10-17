@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
+	"frog-go/internal/utils/authctx"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,28 +33,51 @@ func NewUploadHandler(service inbound.UploadService) *UploadHandler {
 }
 
 func (h *UploadHandler) ProcessFileHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
+
 	action := c.PostForm("action")
 	model := c.PostForm("model")
 
 	invoiceID, err := utils.ToNillableUUID(c.PostForm("invoice_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, errors.InvalidParam("invoice_id", err))
+		c.Error(
+			appError.NewAppError(
+				http.StatusBadRequest,
+				appError.InvalidParam("invoice_id", err),
+			),
+		)
+		return
 	}
 
 	if action == "" || model == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parâmetros 'model' e 'action' são obrigatórios"})
+		c.Error(
+			appError.NewAppError(
+				http.StatusBadRequest,
+				appError.EmptyField("model and action"),
+			),
+		)
 		return
 	}
 
 	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Falha ao obter o arquivo"})
+		c.Error(
+			appError.NewAppError(
+				http.StatusBadRequest,
+				appError.FailedToFind("flile", err),
+			),
+		)
 		return
 	}
 	defer file.Close()
 
-	if err := h.service.ImportFile(model, action, invoiceID, file, fileHeader); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao processar o arquivo"})
+	if err := h.service.ImportFile(userID, model, action, invoiceID, file, fileHeader); err != nil {
+		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
 	}
 

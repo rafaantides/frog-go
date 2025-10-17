@@ -7,6 +7,7 @@ import (
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
+	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
 	"net/http"
 
@@ -33,14 +34,19 @@ func NewInvoiceHandler(service inbound.InvoiceService) *InvoiceHandler {
 // @Router /api/v1/invoices [post]
 func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	var req dto.InvoiceRequest
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
 
+	var req dto.InvoiceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	input, err := req.ToDomain()
+	input, err := req.ToDomain(userID)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -161,6 +167,12 @@ func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 // @Router /api/v1/invoices/{id} [put]
 func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -172,7 +184,7 @@ func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
-	input, err := req.ToDomain()
+	input, err := req.ToDomain(userID)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return

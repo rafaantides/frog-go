@@ -10,6 +10,7 @@ import (
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/predicate"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -114,6 +115,17 @@ func (_u *TransactionUpdate) SetNillableRecordDate(v *time.Time) *TransactionUpd
 	return _u
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_u *TransactionUpdate) SetUserID(id uuid.UUID) *TransactionUpdate {
+	_u.mutation.SetUserID(id)
+	return _u
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_u *TransactionUpdate) SetUser(v *User) *TransactionUpdate {
+	return _u.SetUserID(v.ID)
+}
+
 // SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
 func (_u *TransactionUpdate) SetInvoiceID(id uuid.UUID) *TransactionUpdate {
 	_u.mutation.SetInvoiceID(id)
@@ -155,6 +167,12 @@ func (_u *TransactionUpdate) SetCategory(v *Category) *TransactionUpdate {
 // Mutation returns the TransactionMutation object of the builder.
 func (_u *TransactionUpdate) Mutation() *TransactionMutation {
 	return _u.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (_u *TransactionUpdate) ClearUser() *TransactionUpdate {
+	_u.mutation.ClearUser()
+	return _u
 }
 
 // ClearInvoice clears the "invoice" edge to the Invoice entity.
@@ -222,6 +240,9 @@ func (_u *TransactionUpdate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Transaction.title": %w`, err)}
 		}
 	}
+	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Transaction.user"`)
+	}
 	return nil
 }
 
@@ -257,6 +278,35 @@ func (_u *TransactionUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if value, ok := _u.mutation.RecordDate(); ok {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
+	}
+	if _u.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.UserTable,
+			Columns: []string{transaction.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.UserTable,
+			Columns: []string{transaction.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.InvoiceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -419,6 +469,17 @@ func (_u *TransactionUpdateOne) SetNillableRecordDate(v *time.Time) *Transaction
 	return _u
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_u *TransactionUpdateOne) SetUserID(id uuid.UUID) *TransactionUpdateOne {
+	_u.mutation.SetUserID(id)
+	return _u
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_u *TransactionUpdateOne) SetUser(v *User) *TransactionUpdateOne {
+	return _u.SetUserID(v.ID)
+}
+
 // SetInvoiceID sets the "invoice" edge to the Invoice entity by ID.
 func (_u *TransactionUpdateOne) SetInvoiceID(id uuid.UUID) *TransactionUpdateOne {
 	_u.mutation.SetInvoiceID(id)
@@ -460,6 +521,12 @@ func (_u *TransactionUpdateOne) SetCategory(v *Category) *TransactionUpdateOne {
 // Mutation returns the TransactionMutation object of the builder.
 func (_u *TransactionUpdateOne) Mutation() *TransactionMutation {
 	return _u.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (_u *TransactionUpdateOne) ClearUser() *TransactionUpdateOne {
+	_u.mutation.ClearUser()
+	return _u
 }
 
 // ClearInvoice clears the "invoice" edge to the Invoice entity.
@@ -540,6 +607,9 @@ func (_u *TransactionUpdateOne) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Transaction.title": %w`, err)}
 		}
 	}
+	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Transaction.user"`)
+	}
 	return nil
 }
 
@@ -592,6 +662,35 @@ func (_u *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction
 	}
 	if value, ok := _u.mutation.RecordDate(); ok {
 		_spec.SetField(transaction.FieldRecordDate, field.TypeTime, value)
+	}
+	if _u.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.UserTable,
+			Columns: []string{transaction.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.UserTable,
+			Columns: []string{transaction.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.InvoiceCleared() {
 		edge := &sqlgraph.EdgeSpec{

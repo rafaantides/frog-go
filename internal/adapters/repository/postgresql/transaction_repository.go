@@ -5,16 +5,18 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	entCategory "frog-go/internal/ent/category"
 	entInvoice "frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"frog-go/internal/utils"
 	"sort"
 	"time"
 
 	"context"
+	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
 
 	"entgo.io/ent/dialect/sql"
@@ -24,14 +26,20 @@ import (
 const transactionEntity = "transactions"
 
 func (p *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	row, err := p.Client.Transaction.Query().
 		Where(transaction.IDEQ(id)).
+		Where(transaction.HasUserWith(user.IDEQ(userID))).
 		WithCategory().
 		Only(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
 		return nil, err
 	}
@@ -39,10 +47,18 @@ func (p *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto
 }
 
 func (p *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) error {
-	err := p.Client.Transaction.DeleteOneID(id).Exec(ctx)
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = p.Client.Transaction.DeleteOneID(id).
+		Where(transaction.HasUserWith(user.IDEQ(userID))).
+		Exec(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return errors.ErrNotFound
+			return appError.ErrNotFound
 		}
 		return err
 	}
@@ -52,6 +68,7 @@ func (p *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) er
 func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error) {
 	created, err := p.Client.Transaction.
 		Create().
+		SetUserID(input.UserID).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
 		SetRecordType(string(input.RecordType)).
@@ -62,7 +79,7 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		Save(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToSave(transactionEntity, err)
+		return nil, appError.FailedToSave(transactionEntity, err)
 	}
 
 	row, err := p.Client.Transaction.Query().
@@ -72,15 +89,21 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind(transactionEntity, err)
+		return nil, appError.FailedToFind(transactionEntity, err)
 	}
 
 	return newTransactionResponse(row)
 }
 
 func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	updated, err := p.Client.Transaction.
 		UpdateOneID(id).
+		Where(transaction.HasUserWith(user.IDEQ(userID))).
 		SetTitle(input.Title).
 		SetAmount(input.Amount).
 		SetRecordType(string(input.RecordType)).
@@ -92,9 +115,9 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToSave(transactionEntity, err)
+		return nil, appError.FailedToSave(transactionEntity, err)
 	}
 
 	row, err := p.Client.Transaction.Query().
@@ -104,14 +127,20 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind(transactionEntity, err)
+		return nil, appError.FailedToFind(transactionEntity, err)
 	}
 
 	return newTransactionResponse(row)
 }
 
 func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	query := p.Client.Transaction.Query().
+		Where(transaction.HasUserWith(user.IDEQ(userID))).
 		WithCategory().
 		WithInvoice()
 
@@ -128,7 +157,14 @@ func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFi
 }
 
 func (p *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error) {
-	query := p.Client.Transaction.Query()
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	query := p.Client.Transaction.Query().
+		Where(transaction.HasUserWith(user.IDEQ(userID)))
+
 	query = applyTransactionFilters(query, flt, pgn)
 
 	total, err := query.Count(ctx)
@@ -139,6 +175,11 @@ func (p *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionF
 }
 
 func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	startDate, err := utils.ToDateTime(flt.StartDate)
 	if err != nil {
 		return nil, err
@@ -167,7 +208,8 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 	        COUNT(CASE WHEN t.record_type = 'expense' THEN 1 END) AS expenseTransactions
 		FROM transactions AS t
 			LEFT JOIN invoices AS i ON t.invoice_id = i.id
-		WHERE %s BETWEEN $1 AND $2
+		WHERE t.user_id = $1
+		AND %s BETWEEN $2 AND $3
 	`, dateExpr)
 
 	var income float64
@@ -176,7 +218,9 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 	var incomeTransactions int
 	var expenseTransactions int
 
-	err = p.db.QueryRowContext(ctx, query, startDate, endDate).Scan(&income, &expense, &tax, &incomeTransactions, &expenseTransactions)
+	err = p.db.QueryRowContext(ctx, query, userID, startDate, endDate).
+		Scan(&income, &expense, &tax, &incomeTransactions, &expenseTransactions)
+
 	if err != nil {
 		return nil, err
 	}
@@ -192,6 +236,11 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 }
 
 func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	var periodTrunc string
 
 	switch flt.Period {
@@ -254,12 +303,13 @@ func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilte
 		FROM transactions t
 			LEFT JOIN invoices AS i ON t.invoice_id = i.id
 			LEFT JOIN categories AS c ON t.category_id = c.id
-		WHERE %s BETWEEN $2 AND $3
+		WHERE t.user_id = $2
+		AND %s BETWEEN $3 AND $4
 		GROUP BY period, c.name
 		ORDER BY period
 	`, dateExpr, dateExpr)
 
-	rows, err := p.db.QueryContext(ctx, query, periodTrunc, startDate, endDate)
+	rows, err := p.db.QueryContext(ctx, query, periodTrunc, userID, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -485,11 +535,13 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 			transaction.AmountGTE(*flt.MinAmount),
 		)
 	}
+
 	if flt.MaxAmount != nil {
 		query = query.Where(
 			transaction.AmountLTE(*flt.MaxAmount),
 		)
 	}
+
 	if t := utils.ToDateTimeUnsafe(flt.StartDate); t != nil {
 		query = query.Where(transaction.RecordDateGTE(*t))
 	}

@@ -7,6 +7,7 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/dto"
 	"frog-go/internal/core/ports/inbound"
+	"frog-go/internal/utils"
 	"frog-go/internal/utils/logger"
 	"strings"
 	"time"
@@ -46,10 +47,15 @@ func (c *TransactionConsumer) ProcessMessage(
 		return fmt.Errorf("failed to unmarshal ImportTxnMessage: %w", err)
 	}
 
+	userID, err := utils.ToUUID(msg.UserID)
+	if err != nil {
+		return fmt.Errorf("invalid user ID: %w", err)
+	}
+
 	c.log.Info("Processing message: %+v", msg)
 	switch msg.Action {
 	case config.ActionCreate:
-		input, err := msg.Data.Transaction.ToDomain()
+		input, err := msg.Data.Transaction.ToDomain(userID)
 		if err != nil {
 			return fmt.Errorf("failed to parse debt: %w", err)
 		}

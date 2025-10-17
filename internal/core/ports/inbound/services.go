@@ -38,7 +38,7 @@ type InvoiceService interface {
 	ListInvoiceDebts(ctx context.Context, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
 }
 type UploadService interface {
-	ImportFile(model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error
+	ImportFile(userID uuid.UUID, model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error
 }
 
 type AuthService interface {

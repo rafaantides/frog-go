@@ -3,7 +3,7 @@ package postgresql
 import (
 	"context"
 	"frog-go/internal/core/domain"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/user"
 )
@@ -14,9 +14,9 @@ func (p *PostgreSQL) GetUserByEmail(ctx context.Context, email string) (*domain.
 	row, err := p.Client.User.Query().Where(user.EmailEQ(email)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToFind(userEntity, err)
+		return nil, appError.FailedToFind(userEntity, err)
 	}
 
 	return &domain.User{
@@ -35,9 +35,9 @@ func (p *PostgreSQL) GetUserByUsername(ctx context.Context, username string) (*d
 	row, err := p.Client.User.Query().Where(user.UsernameEQ(username)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToFind(userEntity, err)
+		return nil, appError.FailedToFind(userEntity, err)
 	}
 
 	return &domain.User{

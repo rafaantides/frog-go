@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -458,6 +459,52 @@ func IsActiveEQ(v bool) predicate.User {
 // IsActiveNEQ applies the NEQ predicate on the "is_active" field.
 func IsActiveNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// HasTransactions applies the HasEdge predicate on the "transactions" edge.
+func HasTransactions() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTransactionsWith applies the HasEdge predicate on the "transactions" edge with a given conditions (other predicates).
+func HasTransactionsWith(preds ...predicate.Transaction) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newTransactionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInvoices applies the HasEdge predicate on the "invoices" edge.
+func HasInvoices() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, InvoicesTable, InvoicesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInvoicesWith applies the HasEdge predicate on the "invoices" edge with a given conditions (other predicates).
+func HasInvoicesWith(preds ...predicate.Invoice) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newInvoicesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

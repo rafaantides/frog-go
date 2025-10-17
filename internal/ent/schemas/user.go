@@ -4,6 +4,7 @@ import (
 	"frog-go/internal/utils/mixins"
 
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
@@ -25,5 +26,12 @@ func (User) Fields() []ent.Field {
 		field.String("email").Unique().Optional().MaxLen(255),
 		field.String("password_hash").Sensitive().NotEmpty().MaxLen(255),
 		field.Bool("is_active").Default(true),
+	}
+}
+
+func (User) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("transactions", Transaction.Type).Ref("user"),
+		edge.From("invoices", Invoice.Type).Ref("user"),
 	}
 }

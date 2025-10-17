@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/utils/logger"
 	"net/http"
 
@@ -23,16 +23,16 @@ func handleError(c *gin.Context, log *logger.Logger) {
 
 		err := c.Errors.Last().Err
 
-		if appErr, ok := err.(*errors.AppError); ok {
+		if appErr, ok := err.(*appError.AppError); ok {
 			statusCode := appErr.StatusCode
 
-			c.JSON(statusCode, errors.ErrorResponse{
+			c.JSON(statusCode, appError.ErrorResponse{
 				Message: appErr.Message,
 				Detail:  appErr.Error(),
 			})
 		} else {
-			c.JSON(http.StatusInternalServerError, errors.ErrorResponse{
-				Message: errors.ErrorMessages[http.StatusInternalServerError],
+			c.JSON(http.StatusInternalServerError, appError.ErrorResponse{
+				Message: appError.ErrorMessages[http.StatusInternalServerError],
 				Detail:  err.Error(),
 			})
 		}

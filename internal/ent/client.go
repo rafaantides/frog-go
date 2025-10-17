@@ -486,6 +486,22 @@ func (c *InvoiceClient) QueryTransactions(_m *Invoice) *TransactionQuery {
 	return query
 }
 
+// QueryUser queries the user edge of a Invoice.
+func (c *InvoiceClient) QueryUser(_m *Invoice) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(invoice.Table, invoice.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, invoice.UserTable, invoice.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *InvoiceClient) Hooks() []Hook {
 	return c.hooks.Invoice
@@ -617,6 +633,22 @@ func (c *TransactionClient) GetX(ctx context.Context, id uuid.UUID) *Transaction
 		panic(err)
 	}
 	return obj
+}
+
+// QueryUser queries the user edge of a Transaction.
+func (c *TransactionClient) QueryUser(_m *Transaction) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transaction.Table, transaction.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.UserTable, transaction.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryInvoice queries the invoice edge of a Transaction.
@@ -782,6 +814,38 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryTransactions queries the transactions edge of a User.
+func (c *UserClient) QueryTransactions(_m *User) *TransactionQuery {
+	query := (&TransactionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(transaction.Table, transaction.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.TransactionsTable, user.TransactionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInvoices queries the invoices edge of a User.
+func (c *UserClient) QueryInvoices(_m *User) *InvoiceQuery {
+	query := (&InvoiceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(invoice.Table, invoice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.InvoicesTable, user.InvoicesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"frog-go/internal/config"
 	"frog-go/internal/core/dto"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -14,6 +14,7 @@ import (
 )
 
 func (s *uploadService) processTransactions(
+	userID uuid.UUID,
 	model, action, filename string,
 	invoiceID *uuid.UUID,
 	rows [][]string,
@@ -36,6 +37,7 @@ func (s *uploadService) processTransactions(
 
 		msg := dto.ImportTxnMessage{
 			JobID:    jobID,
+			UserID:   userID.String(),
 			Filename: filename,
 			Action:   action,
 			Data: struct {
@@ -70,7 +72,7 @@ func buildTransactionRequest(model string, invoiceID *uuid.UUID, row []string, i
 func nubankToRequest(invoiceID *uuid.UUID, row []string, idx map[string]int) (*dto.TransactionRequest, error) {
 	amount, err := strconv.ParseFloat(getValue(row, idx, "amount"), 64)
 	if err != nil {
-		return nil, errors.InvalidParam("amount", err)
+		return nil, appError.InvalidParam("amount", err)
 	}
 
 	var invoiceIDStr *string

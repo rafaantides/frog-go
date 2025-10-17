@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -26,10 +26,10 @@ type Claims struct {
 
 func NewUser(name, username, email, passwordHash string) (*User, error) {
 	if username == "" {
-		return nil, errors.EmptyField("username")
+		return nil, appError.EmptyField("username")
 	}
 	if passwordHash == "" {
-		return nil, errors.EmptyField("password_hash")
+		return nil, appError.EmptyField("password_hash")
 	}
 
 	return &User{

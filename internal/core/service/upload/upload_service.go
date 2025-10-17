@@ -21,7 +21,7 @@ func NewUploadService(mb messagebus.MessageBus) inbound.UploadService {
 	return &uploadService{mb: mb}
 }
 
-func (c *uploadService) ImportFile(model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error {
+func (c *uploadService) ImportFile(userID uuid.UUID, model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error {
 	fileType, err := detectFileType(file)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (c *uploadService) ImportFile(model, action string, invoiceID *uuid.UUID, f
 		return err
 	}
 
-	return c.readRows(model, action, filename, invoiceID, rows)
+	return c.readRows(userID, model, action, filename, invoiceID, rows)
 }
 
 func (c *uploadService) readCSV(file multipart.File) ([][]string, error) {
@@ -62,14 +62,14 @@ func (c *uploadService) readXLSX(file multipart.File) ([][]string, error) {
 	return f.GetRows(sheetName)
 }
 
-func (c *uploadService) readRows(model, action, filename string, invoiceID *uuid.UUID, rows [][]string) error {
+func (c *uploadService) readRows(userID uuid.UUID, model, action, filename string, invoiceID *uuid.UUID, rows [][]string) error {
 	if len(rows) < 2 {
 		return fmt.Errorf("invalid file: no data found")
 	}
 
 	columnIndex := indexColumns(rows[0])
 
-	c.processTransactions(model, action, filename, invoiceID, rows, columnIndex)
+	c.processTransactions(userID, model, action, filename, invoiceID, rows, columnIndex)
 
 	return nil
 

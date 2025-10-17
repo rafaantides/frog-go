@@ -33,14 +33,10 @@ func (Transaction) Fields() []ent.Field {
 
 func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("invoice", Invoice.Type).
-			Unique().
-			StorageKey(edge.Column("invoice_id")).Annotations(entsql.OnDelete(entsql.Cascade)),
-
+		edge.To("user", User.Type).Unique().Required().StorageKey(edge.Column("user_id")).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("invoice", Invoice.Type).Unique().StorageKey(edge.Column("invoice_id")).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("category", Category.Type).Unique().StorageKey(edge.Column("category_id")),
 		// TODO: ver se tem como deixar category obrigatorio na modelagem, acredito q talvez n de por estar usando um hook para popular no create
-		edge.To("category", Category.Type).
-			Unique().
-			StorageKey(edge.Column("category_id")),
 	}
 }
 

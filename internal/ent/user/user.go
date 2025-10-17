@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -28,8 +29,26 @@ const (
 	FieldPasswordHash = "password_hash"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
+	// EdgeTransactions holds the string denoting the transactions edge name in mutations.
+	EdgeTransactions = "transactions"
+	// EdgeInvoices holds the string denoting the invoices edge name in mutations.
+	EdgeInvoices = "invoices"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// TransactionsTable is the table that holds the transactions relation/edge.
+	TransactionsTable = "transactions"
+	// TransactionsInverseTable is the table name for the Transaction entity.
+	// It exists in this package in order to avoid circular dependency with the "transaction" package.
+	TransactionsInverseTable = "transactions"
+	// TransactionsColumn is the table column denoting the transactions relation/edge.
+	TransactionsColumn = "user_id"
+	// InvoicesTable is the table that holds the invoices relation/edge.
+	InvoicesTable = "invoices"
+	// InvoicesInverseTable is the table name for the Invoice entity.
+	// It exists in this package in order to avoid circular dependency with the "invoice" package.
+	InvoicesInverseTable = "invoices"
+	// InvoicesColumn is the table column denoting the invoices relation/edge.
+	InvoicesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -116,4 +135,46 @@ func ByPasswordHash(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByTransactionsCount orders the results by transactions count.
+func ByTransactionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTransactionsStep(), opts...)
+	}
+}
+
+// ByTransactions orders the results by transactions terms.
+func ByTransactions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTransactionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByInvoicesCount orders the results by invoices count.
+func ByInvoicesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newInvoicesStep(), opts...)
+	}
+}
+
+// ByInvoices orders the results by invoices terms.
+func ByInvoices(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInvoicesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newTransactionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TransactionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+	)
+}
+func newInvoicesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InvoicesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, InvoicesTable, InvoicesColumn),
+	)
 }

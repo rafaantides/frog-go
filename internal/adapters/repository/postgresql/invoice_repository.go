@@ -5,24 +5,33 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"frog-go/internal/utils"
+	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
 
 	"github.com/google/uuid"
 )
 
 func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
 	row, err := d.Client.Invoice.Query().
 		Where(invoice.IDEQ(id)).
+		Where(invoice.HasUserWith(user.IDEQ(userID))).
 		Only(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
 		return nil, err
 	}
@@ -30,10 +39,18 @@ func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.Inv
 }
 
 func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error {
-	err := d.Client.Invoice.DeleteOneID(id).Exec(ctx)
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = d.Client.Invoice.DeleteOneID(id).
+		Where(invoice.HasUserWith(user.IDEQ(userID))).
+		Exec(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return errors.ErrNotFound
+			return appError.ErrNotFound
 		}
 		return err
 	}
@@ -41,15 +58,21 @@ func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error 
 }
 
 func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	created, err := d.Client.Invoice.
 		Create().
+		SetUserID(userID).
 		SetTitle(input.Title).
 		SetDueDate(input.DueDate).
 		SetStatus(string(input.Status)).
 		Save(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToSave("invoices", err)
+		return nil, appError.FailedToSave("invoices", err)
 	}
 
 	row, err := d.Client.Invoice.
@@ -58,15 +81,21 @@ func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind("invoice", err)
+		return nil, appError.FailedToFind("invoice", err)
 	}
 
 	return newInvoiceResponse(row)
 }
 
 func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	updated, err := d.Client.Invoice.
 		UpdateOneID(id).
+		Where(invoice.HasUserWith(user.IDEQ(userID))).
 		SetTitle(input.Title).
 		SetDueDate(input.DueDate).
 		SetStatus(string(input.Status)).
@@ -74,9 +103,9 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToSave("invoices", err)
+		return nil, appError.FailedToSave("invoices", err)
 	}
 
 	_, err = d.Client.Transaction.
@@ -85,7 +114,7 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 		SetStatus(string(input.Status)).
 		Save(ctx)
 	if err != nil {
-		return nil, errors.FailedToSave("transactions", err)
+		return nil, appError.FailedToSave("transactions", err)
 	}
 
 	row, err := d.Client.Invoice.
@@ -94,14 +123,21 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 		Only(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToFind("invoice", err)
+		return nil, appError.FailedToFind("invoice", err)
 	}
 
 	return newInvoiceResponse(row)
 }
 
 func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error) {
-	query := d.Client.Invoice.Query()
+	userID, err := authctx.GetUserID(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	query := d.Client.Invoice.Query().
+		Where(invoice.HasUserWith(user.IDEQ(userID)))
 
 	query = applyInvoiceFilters(query, flt, pgn)
 	query = apllyInvoiceOrderBy(query, pgn)
@@ -116,7 +152,14 @@ func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, p
 }
 
 func (d *PostgreSQL) CountInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error) {
-	query := d.Client.Invoice.Query()
+	userID, err := authctx.GetUserID(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	query := d.Client.Invoice.Query().
+		Where(invoice.HasUserWith(user.IDEQ(userID)))
+
 	query = applyInvoiceFilters(query, flt, pgn)
 
 	total, err := query.Count(ctx)

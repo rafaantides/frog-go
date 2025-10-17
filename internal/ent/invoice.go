@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"frog-go/internal/ent/invoice"
+	"frog-go/internal/ent/user"
 	"strings"
 	"time"
 
@@ -33,6 +34,7 @@ type Invoice struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InvoiceQuery when eager-loading is set.
 	Edges        InvoiceEdges `json:"edges"`
+	user_id      *uuid.UUID
 	selectValues sql.SelectValues
 }
 
@@ -40,9 +42,11 @@ type Invoice struct {
 type InvoiceEdges struct {
 	// Transactions holds the value of the transactions edge.
 	Transactions []*Transaction `json:"transactions,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // TransactionsOrErr returns the Transactions value or an error if the edge
@@ -52,6 +56,17 @@ func (e InvoiceEdges) TransactionsOrErr() ([]*Transaction, error) {
 		return e.Transactions, nil
 	}
 	return nil, &NotLoadedError{edge: "transactions"}
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e InvoiceEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -67,6 +82,8 @@ func (*Invoice) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case invoice.FieldID:
 			values[i] = new(uuid.UUID)
+		case invoice.ForeignKeys[0]: // user_id
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -124,6 +141,13 @@ func (_m *Invoice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.DueDate = value.Time
 			}
+		case invoice.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				_m.user_id = new(uuid.UUID)
+				*_m.user_id = *value.S.(*uuid.UUID)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -140,6 +164,11 @@ func (_m *Invoice) Value(name string) (ent.Value, error) {
 // QueryTransactions queries the "transactions" edge of the Invoice entity.
 func (_m *Invoice) QueryTransactions() *TransactionQuery {
 	return NewInvoiceClient(_m.config).QueryTransactions(_m)
+}
+
+// QueryUser queries the "user" edge of the Invoice entity.
+func (_m *Invoice) QueryUser() *UserQuery {
+	return NewInvoiceClient(_m.config).QueryUser(_m)
 }
 
 // Update returns a builder for updating this Invoice.

@@ -7,6 +7,7 @@ import (
 	"frog-go/internal/ent/category"
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"strings"
 	"time"
 
@@ -37,6 +38,7 @@ type Transaction struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges        TransactionEdges `json:"edges"`
+	user_id      *uuid.UUID
 	invoice_id   *uuid.UUID
 	category_id  *uuid.UUID
 	selectValues sql.SelectValues
@@ -44,13 +46,26 @@ type Transaction struct {
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
 type TransactionEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// Invoice holds the value of the invoice edge.
 	Invoice *Invoice `json:"invoice,omitempty"`
 	// Category holds the value of the category edge.
 	Category *Category `json:"category,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TransactionEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // InvoiceOrErr returns the Invoice value or an error if the edge
@@ -58,7 +73,7 @@ type TransactionEdges struct {
 func (e TransactionEdges) InvoiceOrErr() (*Invoice, error) {
 	if e.Invoice != nil {
 		return e.Invoice, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: invoice.Label}
 	}
 	return nil, &NotLoadedError{edge: "invoice"}
@@ -69,7 +84,7 @@ func (e TransactionEdges) InvoiceOrErr() (*Invoice, error) {
 func (e TransactionEdges) CategoryOrErr() (*Category, error) {
 	if e.Category != nil {
 		return e.Category, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: category.Label}
 	}
 	return nil, &NotLoadedError{edge: "category"}
@@ -88,9 +103,11 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case transaction.FieldID:
 			values[i] = new(uuid.UUID)
-		case transaction.ForeignKeys[0]: // invoice_id
+		case transaction.ForeignKeys[0]: // user_id
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case transaction.ForeignKeys[1]: // category_id
+		case transaction.ForeignKeys[1]: // invoice_id
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case transaction.ForeignKeys[2]: // category_id
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
@@ -157,12 +174,19 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 			}
 		case transaction.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				_m.user_id = new(uuid.UUID)
+				*_m.user_id = *value.S.(*uuid.UUID)
+			}
+		case transaction.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field invoice_id", values[i])
 			} else if value.Valid {
 				_m.invoice_id = new(uuid.UUID)
 				*_m.invoice_id = *value.S.(*uuid.UUID)
 			}
-		case transaction.ForeignKeys[1]:
+		case transaction.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
@@ -180,6 +204,11 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Transaction) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryUser queries the "user" edge of the Transaction entity.
+func (_m *Transaction) QueryUser() *UserQuery {
+	return NewTransactionClient(_m.config).QueryUser(_m)
 }
 
 // QueryInvoice queries the "invoice" edge of the Transaction entity.

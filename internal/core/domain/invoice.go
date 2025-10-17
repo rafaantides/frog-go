@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,6 +10,7 @@ import (
 
 type Invoice struct {
 	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"user_id"`
 	Title     string    `json:"title"`
 	Amount    float64   `json:"amount"`
 	DueDate   time.Time `json:"due_date"`
@@ -19,12 +20,13 @@ type Invoice struct {
 }
 
 func NewInvoice(
+	userID uuid.UUID,
 	title string,
 	dueDate time.Time,
 	status *TxnStatus,
 ) (*Invoice, error) {
 	if title == "" {
-		return nil, errors.EmptyField("name")
+		return nil, appError.EmptyField("name")
 	}
 
 	statusValue := StatusPending
@@ -33,10 +35,11 @@ func NewInvoice(
 	}
 
 	if !statusValue.IsValid() {
-		return nil, errors.InvalidParam("status", fmt.Errorf("invalid value"))
+		return nil, appError.InvalidParam("status", fmt.Errorf("invalid value"))
 	}
 
 	return &Invoice{
+		UserID:  userID,
 		Title:   title,
 		DueDate: dueDate,
 		Status:  statusValue,

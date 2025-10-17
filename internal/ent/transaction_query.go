@@ -9,6 +9,7 @@ import (
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/predicate"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"math"
 
 	"entgo.io/ent"
@@ -25,6 +26,7 @@ type TransactionQuery struct {
 	order        []transaction.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Transaction
+	withUser     *UserQuery
 	withInvoice  *InvoiceQuery
 	withCategory *CategoryQuery
 	withFKs      bool
@@ -62,6 +64,28 @@ func (_q *TransactionQuery) Unique(unique bool) *TransactionQuery {
 func (_q *TransactionQuery) Order(o ...transaction.OrderOption) *TransactionQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (_q *TransactionQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.UserTable, transaction.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryInvoice chains the current query on the "invoice" edge.
@@ -300,12 +324,24 @@ func (_q *TransactionQuery) Clone() *TransactionQuery {
 		order:        append([]transaction.OrderOption{}, _q.order...),
 		inters:       append([]Interceptor{}, _q.inters...),
 		predicates:   append([]predicate.Transaction{}, _q.predicates...),
+		withUser:     _q.withUser.Clone(),
 		withInvoice:  _q.withInvoice.Clone(),
 		withCategory: _q.withCategory.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TransactionQuery) WithUser(opts ...func(*UserQuery)) *TransactionQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUser = query
+	return _q
 }
 
 // WithInvoice tells the query-builder to eager-load the nodes that are connected to
@@ -409,12 +445,13 @@ func (_q *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*Transaction{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			_q.withUser != nil,
 			_q.withInvoice != nil,
 			_q.withCategory != nil,
 		}
 	)
-	if _q.withInvoice != nil || _q.withCategory != nil {
+	if _q.withUser != nil || _q.withInvoice != nil || _q.withCategory != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -438,6 +475,12 @@ func (_q *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := _q.withUser; query != nil {
+		if err := _q.loadUser(ctx, query, nodes, nil,
+			func(n *Transaction, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withInvoice; query != nil {
 		if err := _q.loadInvoice(ctx, query, nodes, nil,
 			func(n *Transaction, e *Invoice) { n.Edges.Invoice = e }); err != nil {
@@ -453,6 +496,38 @@ func (_q *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	return nodes, nil
 }
 
+func (_q *TransactionQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Transaction, init func(*Transaction), assign func(*Transaction, *User)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Transaction)
+	for i := range nodes {
+		if nodes[i].user_id == nil {
+			continue
+		}
+		fk := *nodes[i].user_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (_q *TransactionQuery) loadInvoice(ctx context.Context, query *InvoiceQuery, nodes []*Transaction, init func(*Transaction), assign func(*Transaction, *Invoice)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Transaction)

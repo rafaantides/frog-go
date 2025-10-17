@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"slices"
 	"time"
 
@@ -51,6 +51,7 @@ func (a RecordType) IsValid() bool {
 
 type Transaction struct {
 	ID         uuid.UUID  `json:"id"`
+	UserID     uuid.UUID  `json:"user_id"`
 	Title      string     `json:"title"`
 	Amount     float64    `json:"amount"`
 	RecordDate time.Time  `json:"record_date"`
@@ -63,6 +64,7 @@ type Transaction struct {
 }
 
 func NewTransaction(
+	userID uuid.UUID,
 	title string,
 	amount float64,
 	RecordDate time.Time,
@@ -72,11 +74,11 @@ func NewTransaction(
 	recordType *RecordType,
 ) (*Transaction, error) {
 	if title == "" {
-		return nil, errors.EmptyField("name")
+		return nil, appError.EmptyField("name")
 	}
 
 	if amount == 0 {
-		return nil, errors.EmptyField("amount")
+		return nil, appError.EmptyField("amount")
 	}
 
 	statusValue := StatusPending
@@ -90,10 +92,11 @@ func NewTransaction(
 	}
 
 	if !statusValue.IsValid() {
-		return nil, errors.InvalidParam("status", fmt.Errorf("invalid value"))
+		return nil, appError.InvalidParam("status", fmt.Errorf("invalid value"))
 	}
 
 	return &Transaction{
+		UserID:     userID,
 		Title:      title,
 		Amount:     amount,
 		RecordDate: RecordDate,

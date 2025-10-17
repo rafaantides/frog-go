@@ -446,6 +446,29 @@ func RecordDateLTE(v time.Time) predicate.Transaction {
 	return predicate.Transaction(sql.FieldLTE(FieldRecordDate, v))
 }
 
+// HasUser applies the HasEdge predicate on the "user" edge.
+func HasUser() predicate.Transaction {
+	return predicate.Transaction(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
+func HasUserWith(preds ...predicate.User) predicate.Transaction {
+	return predicate.Transaction(func(s *sql.Selector) {
+		step := newUserStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasInvoice applies the HasEdge predicate on the "invoice" edge.
 func HasInvoice() predicate.Transaction {
 	return predicate.Transaction(func(s *sql.Selector) {

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/utils/logger"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,7 @@ func UUIDMiddleware(lg *logger.Logger) gin.HandlerFunc {
 			if strings.HasSuffix(strings.ToLower(key), "id") {
 				for _, value := range values {
 					if _, err := uuid.Parse(value); err != nil {
-						abortWithError(c, lg, http.StatusBadRequest, errors.InvalidParam(key, err))
+						abortWithError(c, lg, http.StatusBadRequest, appError.InvalidParam(key, err))
 						return
 					}
 				}
@@ -62,7 +62,7 @@ func validateUUIDsRecursive(data map[string]interface{}) error {
 		case string:
 			if strings.HasSuffix(strings.ToLower(key), "id") {
 				if _, err := uuid.Parse(v); err != nil {
-					return errors.InvalidParam(key, err)
+					return appError.InvalidParam(key, err)
 				}
 			}
 		case []interface{}:
@@ -70,7 +70,7 @@ func validateUUIDsRecursive(data map[string]interface{}) error {
 				switch el := item.(type) {
 				case string:
 					if _, err := uuid.Parse(el); err != nil {
-						return errors.InvalidParam(key, err)
+						return appError.InvalidParam(key, err)
 					}
 				case map[string]interface{}:
 					if err := validateUUIDsRecursive(el); err != nil {
@@ -88,7 +88,7 @@ func validateUUIDsRecursive(data map[string]interface{}) error {
 }
 
 func abortWithError(c *gin.Context, lg *logger.Logger, status int, err error) {
-	c.Error(errors.NewAppError(status, err))
+	c.Error(appError.NewAppError(status, err))
 	handleError(c, lg)
 	c.Abort()
 }

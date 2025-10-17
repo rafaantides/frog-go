@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"strconv"
 	"time"
 
@@ -28,7 +28,7 @@ func ToUint(s string) (uint, error) {
 
 func ToUUID(str string) (uuid.UUID, error) {
 	if str == "" {
-		return uuid.UUID{}, errors.ErrEmptyField
+		return uuid.UUID{}, appError.ErrEmptyField
 	}
 
 	parsedUUID, err := uuid.Parse(str)
@@ -75,7 +75,7 @@ func parseDate(dateStr string) (time.Time, error) {
 // ToDateTime: retorna time.Time, erro se string for vazia ou inválida
 func ToDateTime(dateStr string) (time.Time, error) {
 	if dateStr == "" {
-		return time.Time{}, errors.ErrEmptyField
+		return time.Time{}, appError.ErrEmptyField
 	}
 	return parseDate(dateStr)
 }

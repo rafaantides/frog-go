@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/transaction"
+	"frog-go/internal/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -119,6 +120,17 @@ func (_c *InvoiceCreate) AddTransactions(v ...*Transaction) *InvoiceCreate {
 	return _c.AddTransactionIDs(ids...)
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (_c *InvoiceCreate) SetUserID(id uuid.UUID) *InvoiceCreate {
+	_c.mutation.SetUserID(id)
+	return _c
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_c *InvoiceCreate) SetUser(v *User) *InvoiceCreate {
+	return _c.SetUserID(v.ID)
+}
+
 // Mutation returns the InvoiceMutation object of the builder.
 func (_c *InvoiceCreate) Mutation() *InvoiceMutation {
 	return _c.mutation
@@ -206,6 +218,9 @@ func (_c *InvoiceCreate) check() error {
 	if _, ok := _c.mutation.DueDate(); !ok {
 		return &ValidationError{Name: "due_date", err: errors.New(`ent: missing required field "Invoice.due_date"`)}
 	}
+	if len(_c.mutation.UserIDs()) == 0 {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Invoice.user"`)}
+	}
 	return nil
 }
 
@@ -279,6 +294,23 @@ func (_c *InvoiceCreate) createSpec() (*Invoice, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   invoice.UserTable,
+			Columns: []string{invoice.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

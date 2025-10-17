@@ -4,6 +4,7 @@ import (
 	"frog-go/internal/utils/mixins"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -32,5 +33,6 @@ func (Invoice) Fields() []ent.Field {
 func (Invoice) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("transactions", Transaction.Type).Ref("invoice"),
+		edge.To("user", User.Type).Unique().Required().StorageKey(edge.Column("user_id")).Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

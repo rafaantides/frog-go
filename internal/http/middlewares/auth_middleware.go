@@ -1,8 +1,10 @@
 package middlewares
 
 import (
+	"context"
 	"frog-go/internal/core/domain"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
+	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/logger"
 	"net/http"
 	"strings"
@@ -15,8 +17,8 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			log.Warn("Authorization header missing")
-			c.JSON(http.StatusUnauthorized, errors.ErrorResponse{
-				Message: errors.ErrorMessages[http.StatusUnauthorized],
+			c.JSON(http.StatusUnauthorized, appError.ErrorResponse{
+				Message: appError.ErrorMessages[http.StatusUnauthorized],
 				Detail:  "Authorization header is required",
 			})
 			c.Abort()
@@ -26,8 +28,8 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		parts := strings.SplitN(authHeader, " ", 2)
 		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 			log.Warn("Invalid Authorization header format")
-			c.JSON(http.StatusUnauthorized, errors.ErrorResponse{
-				Message: errors.ErrorMessages[http.StatusUnauthorized],
+			c.JSON(http.StatusUnauthorized, appError.ErrorResponse{
+				Message: appError.ErrorMessages[http.StatusUnauthorized],
 				Detail:  "Authorization header must be in the format 'Bearer <token>'",
 			})
 			c.Abort()
@@ -38,8 +40,8 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		claims, err := validateToken(token)
 		if err != nil || claims == nil {
 			log.Warn("Invalid token: %v", err)
-			c.JSON(http.StatusUnauthorized, errors.ErrorResponse{
-				Message: errors.ErrorMessages[http.StatusUnauthorized],
+			c.JSON(http.StatusUnauthorized, appError.ErrorResponse{
+				Message: appError.ErrorMessages[http.StatusUnauthorized],
 				Detail:  "Invalid or expired token",
 			})
 			c.Abort()
@@ -47,7 +49,8 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		}
 
 		// adiciona o userID no contexto
-		c.Set("userID", claims.UserID)
+		ctx := context.WithValue(c.Request.Context(), authctx.UserIDKey, claims.UserID)
+		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()
 	}

@@ -5,7 +5,7 @@ import (
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
-	"frog-go/internal/core/errors"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/category"
 	"frog-go/internal/utils/pagination"
@@ -19,9 +19,9 @@ func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.Ca
 	row, err := p.Client.Category.Get(ctx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToFind(categoryEntity, err)
+		return nil, appError.FailedToFind(categoryEntity, err)
 	}
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
 }
@@ -34,9 +34,9 @@ func (p *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uu
 	data, err := p.Client.Category.Query().Where(category.NameEQ(*name)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToFind(categoryEntity, err)
+		return nil, appError.FailedToFind(categoryEntity, err)
 	}
 
 	id := data.ID
@@ -53,7 +53,7 @@ func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) 
 		Save(ctx)
 
 	if err != nil {
-		return nil, errors.FailedToSave(categoryEntity, err)
+		return nil, appError.FailedToSave(categoryEntity, err)
 	}
 
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
@@ -70,9 +70,9 @@ func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, errors.ErrNotFound
+			return nil, appError.ErrNotFound
 		}
-		return nil, errors.FailedToUpdate(categoryEntity, err)
+		return nil, appError.FailedToUpdate(categoryEntity, err)
 	}
 
 	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
@@ -82,9 +82,9 @@ func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
 	err := p.Client.Category.DeleteOneID(id).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return errors.ErrNotFound
+			return appError.ErrNotFound
 		}
-		return errors.FailedToDelete(categoryEntity, err)
+		return appError.FailedToDelete(categoryEntity, err)
 	}
 	return nil
 }

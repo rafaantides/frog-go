@@ -6,13 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"frog-go/internal/ent/invoice"
 	"frog-go/internal/ent/predicate"
+	"frog-go/internal/ent/transaction"
 	"frog-go/internal/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -116,9 +119,81 @@ func (_u *UserUpdate) SetNillableIsActive(v *bool) *UserUpdate {
 	return _u
 }
 
+// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
+func (_u *UserUpdate) AddTransactionIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.AddTransactionIDs(ids...)
+	return _u
+}
+
+// AddTransactions adds the "transactions" edges to the Transaction entity.
+func (_u *UserUpdate) AddTransactions(v ...*Transaction) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTransactionIDs(ids...)
+}
+
+// AddInvoiceIDs adds the "invoices" edge to the Invoice entity by IDs.
+func (_u *UserUpdate) AddInvoiceIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.AddInvoiceIDs(ids...)
+	return _u
+}
+
+// AddInvoices adds the "invoices" edges to the Invoice entity.
+func (_u *UserUpdate) AddInvoices(v ...*Invoice) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddInvoiceIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearTransactions clears all "transactions" edges to the Transaction entity.
+func (_u *UserUpdate) ClearTransactions() *UserUpdate {
+	_u.mutation.ClearTransactions()
+	return _u
+}
+
+// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
+func (_u *UserUpdate) RemoveTransactionIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.RemoveTransactionIDs(ids...)
+	return _u
+}
+
+// RemoveTransactions removes "transactions" edges to Transaction entities.
+func (_u *UserUpdate) RemoveTransactions(v ...*Transaction) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTransactionIDs(ids...)
+}
+
+// ClearInvoices clears all "invoices" edges to the Invoice entity.
+func (_u *UserUpdate) ClearInvoices() *UserUpdate {
+	_u.mutation.ClearInvoices()
+	return _u
+}
+
+// RemoveInvoiceIDs removes the "invoices" edge to Invoice entities by IDs.
+func (_u *UserUpdate) RemoveInvoiceIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.RemoveInvoiceIDs(ids...)
+	return _u
+}
+
+// RemoveInvoices removes "invoices" edges to Invoice entities.
+func (_u *UserUpdate) RemoveInvoices(v ...*Invoice) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveInvoiceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -217,6 +292,96 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
+	}
+	if _u.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TransactionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !_u.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -326,9 +491,81 @@ func (_u *UserUpdateOne) SetNillableIsActive(v *bool) *UserUpdateOne {
 	return _u
 }
 
+// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
+func (_u *UserUpdateOne) AddTransactionIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.AddTransactionIDs(ids...)
+	return _u
+}
+
+// AddTransactions adds the "transactions" edges to the Transaction entity.
+func (_u *UserUpdateOne) AddTransactions(v ...*Transaction) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTransactionIDs(ids...)
+}
+
+// AddInvoiceIDs adds the "invoices" edge to the Invoice entity by IDs.
+func (_u *UserUpdateOne) AddInvoiceIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.AddInvoiceIDs(ids...)
+	return _u
+}
+
+// AddInvoices adds the "invoices" edges to the Invoice entity.
+func (_u *UserUpdateOne) AddInvoices(v ...*Invoice) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddInvoiceIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
+}
+
+// ClearTransactions clears all "transactions" edges to the Transaction entity.
+func (_u *UserUpdateOne) ClearTransactions() *UserUpdateOne {
+	_u.mutation.ClearTransactions()
+	return _u
+}
+
+// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
+func (_u *UserUpdateOne) RemoveTransactionIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.RemoveTransactionIDs(ids...)
+	return _u
+}
+
+// RemoveTransactions removes "transactions" edges to Transaction entities.
+func (_u *UserUpdateOne) RemoveTransactions(v ...*Transaction) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTransactionIDs(ids...)
+}
+
+// ClearInvoices clears all "invoices" edges to the Invoice entity.
+func (_u *UserUpdateOne) ClearInvoices() *UserUpdateOne {
+	_u.mutation.ClearInvoices()
+	return _u
+}
+
+// RemoveInvoiceIDs removes the "invoices" edge to Invoice entities by IDs.
+func (_u *UserUpdateOne) RemoveInvoiceIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.RemoveInvoiceIDs(ids...)
+	return _u
+}
+
+// RemoveInvoices removes "invoices" edges to Invoice entities.
+func (_u *UserUpdateOne) RemoveInvoices(v ...*Invoice) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveInvoiceIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -457,6 +694,96 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
+	}
+	if _u.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TransactionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.TransactionsTable,
+			Columns: []string{user.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transaction.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !_u.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.InvoicesTable,
+			Columns: []string{user.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invoice.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: _u.config}
 	_spec.Assign = _node.assignValues

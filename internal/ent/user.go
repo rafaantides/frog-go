@@ -31,8 +31,40 @@ type User struct {
 	// PasswordHash holds the value of the "password_hash" field.
 	PasswordHash string `json:"-"`
 	// IsActive holds the value of the "is_active" field.
-	IsActive     bool `json:"is_active,omitempty"`
+	IsActive bool `json:"is_active,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Transactions holds the value of the transactions edge.
+	Transactions []*Transaction `json:"transactions,omitempty"`
+	// Invoices holds the value of the invoices edge.
+	Invoices []*Invoice `json:"invoices,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// TransactionsOrErr returns the Transactions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TransactionsOrErr() ([]*Transaction, error) {
+	if e.loadedTypes[0] {
+		return e.Transactions, nil
+	}
+	return nil, &NotLoadedError{edge: "transactions"}
+}
+
+// InvoicesOrErr returns the Invoices value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) InvoicesOrErr() ([]*Invoice, error) {
+	if e.loadedTypes[1] {
+		return e.Invoices, nil
+	}
+	return nil, &NotLoadedError{edge: "invoices"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -122,6 +154,16 @@ func (_m *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *User) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryTransactions queries the "transactions" edge of the User entity.
+func (_m *User) QueryTransactions() *TransactionQuery {
+	return NewUserClient(_m.config).QueryTransactions(_m)
+}
+
+// QueryInvoices queries the "invoices" edge of the User entity.
+func (_m *User) QueryInvoices() *InvoiceQuery {
+	return NewUserClient(_m.config).QueryInvoices(_m)
 }
 
 // Update returns a builder for updating this User.
