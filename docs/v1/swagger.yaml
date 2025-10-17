@@ -179,7 +179,7 @@ info:
   title: API Frog-Go
   version: "1.0"
 paths:
-  /api/auth/login:
+  /api/v1/auth/login:
     post:
       consumes:
       - application/json

@@ -29,7 +29,7 @@ func NewAuthHandler(authService inbound.AuthService, userService inbound.UserSer
 // @Produce json
 // @Param request body dto.LoginRequest true "Credenciais de login (identifier = username or email)"
 // @Success 200 {object} dto.LoginResponse
-// @Router /api/auth/login [post]
+// @Router /api/v1/auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
