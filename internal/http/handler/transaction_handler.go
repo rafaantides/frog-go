@@ -7,8 +7,8 @@ import (
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
-	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
+	"frog-go/internal/utils/utilsctx"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +34,7 @@ func NewTransactionHandler(service inbound.TransactionService) *TransactionHandl
 // @Router /api/v1/transactions [post]
 func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -173,7 +173,7 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return

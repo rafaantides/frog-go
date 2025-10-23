@@ -4,8 +4,8 @@ import (
 	"context"
 	"frog-go/internal/core/domain"
 	appError "frog-go/internal/core/errors"
-	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/logger"
+	"frog-go/internal/utils/utilsctx"
 	"net/http"
 	"strings"
 
@@ -49,7 +49,7 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		}
 
 		// adiciona o userID no contexto
-		ctx := context.WithValue(c.Request.Context(), authctx.UserIDKey, claims.UserID)
+		ctx := context.WithValue(c.Request.Context(), utilsctx.UserIDKey, claims.UserID)
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()

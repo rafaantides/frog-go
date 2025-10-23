@@ -7,8 +7,8 @@ import (
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
-	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
+	"frog-go/internal/utils/utilsctx"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +34,7 @@ func NewInvoiceHandler(service inbound.InvoiceService) *InvoiceHandler {
 // @Router /api/v1/invoices [post]
 func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
@@ -167,7 +167,7 @@ func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 // @Router /api/v1/invoices/{id} [put]
 func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return

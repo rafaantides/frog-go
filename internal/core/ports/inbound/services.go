@@ -49,4 +49,5 @@ type AuthService interface {
 type UserService interface {
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
+	CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error)
 }

@@ -11,14 +11,14 @@ import (
 	"frog-go/internal/ent/transaction"
 	"frog-go/internal/ent/user"
 	"frog-go/internal/utils"
-	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
+	"frog-go/internal/utils/utilsctx"
 
 	"github.com/google/uuid"
 )
 
 func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.Inv
 }
 
 func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error 
 }
 
 func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*
 }
 
 func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 }
 
 func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, p
 }
 
 func (d *PostgreSQL) CountInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return 0, err
 	}

@@ -92,6 +92,7 @@ func registerDocsRoutes(router *gin.RouterGroup) {
 
 func registerAuthRoutes(router *gin.RouterGroup, handler *handler.AuthHandler) {
 	router.POST("/login", handler.Login)
+	router.POST("/signup", handler.Signup)
 }
 
 func registerTransactionRoutes(router *gin.RouterGroup, handler *handler.TransactionHandler) {

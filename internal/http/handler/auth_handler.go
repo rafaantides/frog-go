@@ -3,6 +3,7 @@ package handler
 import (
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
+	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"net/http"
 	"net/mail"
@@ -39,10 +40,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	// Determinar se identifier é um email (determinístico)
 	isEmail := func(s string) bool {
-		// net/mail Accepts addresses like "user@example.com"
-		// returns nil error if syntactically valid
 		_, err := mail.ParseAddress(s)
 		return err == nil
 	}
@@ -73,4 +71,27 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.LoginResponse{Token: token})
+}
+
+func (h *AuthHandler) Signup(c *gin.Context) {
+	ctx := c.Request.Context()
+	var req dto.UserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
+
+	input, err := req.ToDomain()
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		return
+	}
+
+	data, err := h.userService.CreateUser(ctx, *input)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
+		return
+	}
+
+	c.JSON(http.StatusCreated, data)
 }

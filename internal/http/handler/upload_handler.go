@@ -4,7 +4,7 @@ import (
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"frog-go/internal/utils"
-	"frog-go/internal/utils/authctx"
+	"frog-go/internal/utils/utilsctx"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +35,7 @@ func NewUploadHandler(service inbound.UploadService) *UploadHandler {
 
 func (h *UploadHandler) ProcessFileHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return

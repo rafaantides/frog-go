@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"context"
-	"frog-go/internal/utils/authctx"
 	"frog-go/internal/utils/pagination"
+	"frog-go/internal/utils/utilsctx"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
@@ -26,7 +26,7 @@ import (
 const transactionEntity = "transactions"
 
 func (p *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (p *PostgreSQL) GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto
 }
 
 func (p *PostgreSQL) DeleteTransactionByID(ctx context.Context, id uuid.UUID) error {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (p *PostgreSQL) CreateTransaction(ctx context.Context, input domain.Transac
 }
 
 func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (p *PostgreSQL) UpdateTransaction(ctx context.Context, id uuid.UUID, input 
 }
 
 func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +157,7 @@ func (p *PostgreSQL) ListTransactions(ctx context.Context, flt dto.TransactionFi
 }
 
 func (p *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -175,7 +175,7 @@ func (p *PostgreSQL) CountTransactions(ctx context.Context, flt dto.TransactionF
 }
 
 func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func (p *PostgreSQL) TransactionsGeneralStats(ctx context.Context, flt dto.Chart
 }
 
 func (p *PostgreSQL) TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error) {
-	userID, err := authctx.GetUserID(ctx)
+	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
