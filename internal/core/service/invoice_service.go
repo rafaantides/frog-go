@@ -19,29 +19,30 @@ type invoiceService struct {
 func NewInvoiceService(repo repository.Repository) inbound.InvoiceService {
 	return &invoiceService{repo: repo}
 }
-func (s *invoiceService) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error) {
-	return s.repo.GetInvoiceByID(ctx, id)
+
+func (s *invoiceService) GetInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.InvoiceResponse, error) {
+	return s.repo.GetInvoiceByID(ctx, userID, id)
 }
 
-func (s *invoiceService) CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	return s.repo.CreateInvoice(ctx, input)
+func (s *invoiceService) CreateInvoice(ctx context.Context, userID uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
+	return s.repo.CreateInvoice(ctx, userID, input)
 }
 
-func (s *invoiceService) UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	return s.repo.UpdateInvoice(ctx, id, input)
+func (s *invoiceService) UpdateInvoice(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
+	return s.repo.UpdateInvoice(ctx, userID, id, input)
 }
 
-func (s *invoiceService) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error {
-	return s.repo.DeleteInvoiceByID(ctx, id)
+func (s *invoiceService) DeleteInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error {
+	return s.repo.DeleteInvoiceByID(ctx, userID, id)
 }
 
-func (s *invoiceService) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, int, error) {
-	data, err := s.repo.ListInvoices(ctx, flt, pgn)
+func (s *invoiceService) ListInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, int, error) {
+	data, err := s.repo.ListInvoices(ctx, userID, flt, pgn)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, err := s.repo.CountInvoices(ctx, flt, pgn)
+	total, err := s.repo.CountInvoices(ctx, userID, flt, pgn)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -49,20 +50,18 @@ func (s *invoiceService) ListInvoices(ctx context.Context, flt dto.InvoiceFilter
 	return data, total, nil
 }
 
-func (s *invoiceService) ListInvoiceDebts(ctx context.Context, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error) {
-
+func (s *invoiceService) ListInvoiceDebts(ctx context.Context, userID uuid.UUID, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error) {
 	flt.InvoiceIDs = &[]string{id.String()}
 
-	data, err := s.repo.ListTransactions(ctx, flt, pgn)
+	data, err := s.repo.ListTransactions(ctx, userID, flt, pgn)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, err := s.repo.CountTransactions(ctx, flt, pgn)
+	total, err := s.repo.CountTransactions(ctx, userID, flt, pgn)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	return data, total, nil
-
 }

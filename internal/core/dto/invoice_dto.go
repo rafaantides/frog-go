@@ -32,7 +32,7 @@ type InvoiceResponse struct {
 	UpdatedAt string    `json:"updated_at"`
 }
 
-func (r *InvoiceRequest) ToDomain(userID uuid.UUID) (*domain.Invoice, error) {
+func (r *InvoiceRequest) ToDomain() (*domain.Invoice, error) {
 
 	dueDate, err := utils.ToDateTime(r.DueDate)
 	if err != nil {
@@ -42,7 +42,6 @@ func (r *InvoiceRequest) ToDomain(userID uuid.UUID) (*domain.Invoice, error) {
 	status := domain.TxnStatus(r.Status)
 
 	return domain.NewInvoice(
-		userID,
 		r.Title,
 		dueDate,
 		&status,

@@ -20,7 +20,6 @@ type Invoice struct {
 }
 
 func NewInvoice(
-	userID uuid.UUID,
 	title string,
 	dueDate time.Time,
 	status *TxnStatus,
@@ -39,7 +38,6 @@ func NewInvoice(
 	}
 
 	return &Invoice{
-		UserID:  userID,
 		Title:   title,
 		DueDate: dueDate,
 		Status:  statusValue,

@@ -12,18 +12,11 @@ import (
 	"frog-go/internal/ent/user"
 	"frog-go/internal/utils"
 	"frog-go/internal/utils/pagination"
-	"frog-go/internal/utils/utilsctx"
 
 	"github.com/google/uuid"
 )
 
-func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error) {
-	userID, err := utilsctx.GetUserID(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
+func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.InvoiceResponse, error) {
 	row, err := d.Client.Invoice.Query().
 		Where(invoice.IDEQ(id)).
 		Where(invoice.HasUserWith(user.IDEQ(userID))).
@@ -38,13 +31,8 @@ func (d *PostgreSQL) GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.Inv
 	return newInvoiceResponse(row)
 }
 
-func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error {
-	userID, err := utilsctx.GetUserID(ctx)
-	if err != nil {
-		return err
-	}
-
-	err = d.Client.Invoice.DeleteOneID(id).
+func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error {
+	err := d.Client.Invoice.DeleteOneID(id).
 		Where(invoice.HasUserWith(user.IDEQ(userID))).
 		Exec(ctx)
 
@@ -57,12 +45,7 @@ func (d *PostgreSQL) DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error 
 	return nil
 }
 
-func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	userID, err := utilsctx.GetUserID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func (d *PostgreSQL) CreateInvoice(ctx context.Context, userID uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
 	created, err := d.Client.Invoice.
 		Create().
 		SetUserID(userID).
@@ -87,12 +70,7 @@ func (d *PostgreSQL) CreateInvoice(ctx context.Context, input domain.Invoice) (*
 	return newInvoiceResponse(row)
 }
 
-func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
-	userID, err := utilsctx.GetUserID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func (d *PostgreSQL) UpdateInvoice(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error) {
 	updated, err := d.Client.Invoice.
 		UpdateOneID(id).
 		Where(invoice.HasUserWith(user.IDEQ(userID))).
@@ -129,13 +107,7 @@ func (d *PostgreSQL) UpdateInvoice(ctx context.Context, id uuid.UUID, input doma
 	return newInvoiceResponse(row)
 }
 
-func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error) {
-	userID, err := utilsctx.GetUserID(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
+func (d *PostgreSQL) ListInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error) {
 	query := d.Client.Invoice.Query().
 		Where(invoice.HasUserWith(user.IDEQ(userID)))
 
@@ -151,12 +123,7 @@ func (d *PostgreSQL) ListInvoices(ctx context.Context, flt dto.InvoiceFilters, p
 	return newInvoiceResponseList(data)
 }
 
-func (d *PostgreSQL) CountInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error) {
-	userID, err := utilsctx.GetUserID(ctx)
-	if err != nil {
-		return 0, err
-	}
-
+func (d *PostgreSQL) CountInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error) {
 	query := d.Client.Invoice.Query().
 		Where(invoice.HasUserWith(user.IDEQ(userID)))
 

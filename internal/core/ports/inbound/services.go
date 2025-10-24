@@ -20,22 +20,22 @@ type CategoryService interface {
 }
 
 type TransactionService interface {
-	GetTransactionByID(ctx context.Context, id uuid.UUID) (*dto.TransactionResponse, error)
-	CreateTransaction(ctx context.Context, input domain.Transaction) (*dto.TransactionResponse, error)
-	UpdateTransaction(ctx context.Context, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
-	DeleteTransactionByID(ctx context.Context, id uuid.UUID) error
-	ListTransactions(ctx context.Context, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
-	TransactionsSummary(ctx context.Context, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
-	TransactionsGeneralStats(ctx context.Context, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
+	GetTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.TransactionResponse, error)
+	CreateTransaction(ctx context.Context, userID uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
+	UpdateTransaction(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
+	DeleteTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error
+	ListTransactions(ctx context.Context, userID uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
+	TransactionsSummary(ctx context.Context, userID uuid.UUID, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
+	TransactionsGeneralStats(ctx context.Context, userID uuid.UUID, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
 }
 
 type InvoiceService interface {
-	GetInvoiceByID(ctx context.Context, id uuid.UUID) (*dto.InvoiceResponse, error)
-	CreateInvoice(ctx context.Context, input domain.Invoice) (*dto.InvoiceResponse, error)
-	UpdateInvoice(ctx context.Context, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
-	DeleteInvoiceByID(ctx context.Context, id uuid.UUID) error
-	ListInvoices(ctx context.Context, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, int, error)
-	ListInvoiceDebts(ctx context.Context, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
+	GetInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.InvoiceResponse, error)
+	CreateInvoice(ctx context.Context, userID uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
+	UpdateInvoice(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
+	DeleteInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error
+	ListInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, int, error)
+	ListInvoiceDebts(ctx context.Context, userID uuid.UUID, id uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, int, error)
 }
 type UploadService interface {
 	ImportFile(userID uuid.UUID, model, action string, invoiceID *uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) error
@@ -49,5 +49,8 @@ type AuthService interface {
 type UserService interface {
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
+
 	CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error)
+	UpdateUserPassword(ctx context.Context, userID uuid.UUID, oldPassword string, newPassword string) error
 }

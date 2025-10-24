@@ -36,8 +36,7 @@ func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
-		return
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
 	}
 
 	var req dto.InvoiceRequest
@@ -46,13 +45,13 @@ func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 		return
 	}
 
-	input, err := req.ToDomain(userID)
+	input, err := req.ToDomain()
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.CreateInvoice(ctx, *input)
+	data, err := h.service.CreateInvoice(ctx, userID, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -73,13 +72,18 @@ func (h *InvoiceHandler) CreateInvoiceHandler(c *gin.Context) {
 // @Router /api/v1/invoices/{id} [get]
 func (h *InvoiceHandler) GetInvoiceByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.GetInvoiceByID(ctx, id)
+	data, err := h.service.GetInvoiceByID(ctx, userID, id)
 	if err != nil {
 		if errors.Is(err, appError.ErrNotFound) {
 			c.Error(appError.NewAppError(http.StatusNotFound, err))
@@ -113,6 +117,11 @@ func (h *InvoiceHandler) GetInvoiceByIDHandler(c *gin.Context) {
 // @Router /api/v1/invoices [get]
 func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	var flt dto.InvoiceFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -142,7 +151,7 @@ func (h *InvoiceHandler) ListInvoicesHandler(c *gin.Context) {
 		return
 	}
 
-	response, total, err := h.service.ListInvoices(ctx, flt, pgn)
+	response, total, err := h.service.ListInvoices(ctx, userID, flt, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -169,8 +178,7 @@ func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
-		return
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
 	}
 
 	id, err := utils.ToUUID(c.Param("id"))
@@ -184,13 +192,13 @@ func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
-	input, err := req.ToDomain(userID)
+	input, err := req.ToDomain()
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.UpdateInvoice(ctx, id, *input)
+	data, err := h.service.UpdateInvoice(ctx, userID, id, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -211,13 +219,18 @@ func (h *InvoiceHandler) UpdateInvoiceHandler(c *gin.Context) {
 // @Router /api/v1/invoices/{id} [delete]
 func (h *InvoiceHandler) DeleteInvoiceHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	err = h.service.DeleteInvoiceByID(ctx, id)
+	err = h.service.DeleteInvoiceByID(ctx, userID, id)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -248,6 +261,11 @@ func (h *InvoiceHandler) DeleteInvoiceHandler(c *gin.Context) {
 // @Router /api/v1/invoices/{id}/debts [get]
 func (h *InvoiceHandler) ListInvoiceDebtsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -283,7 +301,7 @@ func (h *InvoiceHandler) ListInvoiceDebtsHandler(c *gin.Context) {
 		return
 	}
 
-	response, total, err := h.service.ListInvoiceDebts(ctx, id, flt, pgn)
+	response, total, err := h.service.ListInvoiceDebts(ctx, userID, id, flt, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))

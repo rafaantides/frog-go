@@ -64,7 +64,6 @@ type Transaction struct {
 }
 
 func NewTransaction(
-	userID uuid.UUID,
 	title string,
 	amount float64,
 	RecordDate time.Time,
@@ -96,7 +95,6 @@ func NewTransaction(
 	}
 
 	return &Transaction{
-		UserID:     userID,
 		Title:      title,
 		Amount:     amount,
 		RecordDate: RecordDate,

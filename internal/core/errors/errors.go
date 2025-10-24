@@ -47,6 +47,7 @@ var (
 	ErrUnexpectedSigningMethod = errors.New("unexpected signing method")
 	ErrTokenExpired            = errors.New("token expired")
 	ErrInvalidToken            = errors.New("invalid token")
+	ErrInvalidPassword         = errors.New("invalid password")
 	ErrUserNotFoundInCtx       = errors.New("user not found in context")
 )
 

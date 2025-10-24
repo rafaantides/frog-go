@@ -55,7 +55,7 @@ func (c *TransactionConsumer) ProcessMessage(
 	c.log.Info("Processing message: %+v", msg)
 	switch msg.Action {
 	case config.ActionCreate:
-		input, err := msg.Data.Transaction.ToDomain(userID)
+		input, err := msg.Data.Transaction.ToDomain()
 		if err != nil {
 			return fmt.Errorf("failed to parse debt: %w", err)
 		}
@@ -65,7 +65,7 @@ func (c *TransactionConsumer) ProcessMessage(
 			return nil
 		}
 
-		if _, err := c.service.CreateTransaction(ctx, *input); err != nil {
+		if _, err := c.service.CreateTransaction(ctx, userID, *input); err != nil {
 			return fmt.Errorf("failed to create transaction: %w", err)
 		}
 

@@ -52,7 +52,7 @@ type TransactionCategoryResponse struct {
 	Name string    `json:"name"`
 }
 
-func (r *TransactionRequest) ToDomain(userID uuid.UUID) (*domain.Transaction, error) {
+func (r *TransactionRequest) ToDomain() (*domain.Transaction, error) {
 	RecordDate, err := utils.ToDateTime(r.RecordDate)
 	if err != nil {
 		return nil, appError.InvalidParam("record_date", err)
@@ -78,7 +78,6 @@ func (r *TransactionRequest) ToDomain(userID uuid.UUID) (*domain.Transaction, er
 	recordType := domain.RecordType(r.RecordType)
 
 	return domain.NewTransaction(
-		userID,
 		r.Title,
 		r.Amount,
 		RecordDate,

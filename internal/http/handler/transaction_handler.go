@@ -36,8 +36,7 @@ func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
-		return
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
 	}
 
 	var req dto.TransactionRequest
@@ -46,13 +45,13 @@ func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	input, err := req.ToDomain(userID)
+	input, err := req.ToDomain()
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.CreateTransaction(ctx, *input)
+	data, err := h.service.CreateTransaction(ctx, userID, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -73,13 +72,18 @@ func (h *TransactionHandler) CreateTransactionHandler(c *gin.Context) {
 // @Router /api/v1/transactions/{id} [get]
 func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.GetTransactionByID(ctx, id)
+	data, err := h.service.GetTransactionByID(ctx, userID, id)
 	if err != nil {
 		if errors.Is(err, appError.ErrNotFound) {
 			c.Error(appError.NewAppError(http.StatusNotFound, err))
@@ -114,6 +118,11 @@ func (h *TransactionHandler) GetTransactionByIDHandler(c *gin.Context) {
 // @Router /api/v1/transactions [get]
 func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	var flt dto.TransactionFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
@@ -147,7 +156,7 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 		return
 	}
 
-	response, total, err := h.service.ListTransactions(ctx, flt, pgn)
+	response, total, err := h.service.ListTransactions(ctx, userID, flt, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -172,11 +181,9 @@ func (h *TransactionHandler) ListTransactionsHandler(c *gin.Context) {
 // @Router /api/v1/transactions/{id} [put]
 func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
-
 	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
-		return
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
 	}
 
 	id, err := utils.ToUUID(c.Param("id"))
@@ -191,13 +198,13 @@ func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	input, err := req.ToDomain(userID)
+	input, err := req.ToDomain()
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	data, err := h.service.UpdateTransaction(ctx, id, *input)
+	data, err := h.service.UpdateTransaction(ctx, userID, id, *input)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -218,13 +225,18 @@ func (h *TransactionHandler) UpdateTransactionHandler(c *gin.Context) {
 // @Router /api/v1/transactions/{id} [delete]
 func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	id, err := utils.ToUUID(c.Param("id"))
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	err = h.service.DeleteTransactionByID(ctx, id)
+	err = h.service.DeleteTransactionByID(ctx, userID, id)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -247,13 +259,18 @@ func (h *TransactionHandler) DeleteTransactionHandler(c *gin.Context) {
 // @Router /api/v1/transactions/summary [get]
 func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	var flt dto.ChartFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	response, err := h.service.TransactionsSummary(ctx, flt)
+	response, err := h.service.TransactionsSummary(ctx, userID, flt)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -277,13 +294,18 @@ func (h *TransactionHandler) TransactionsSummaryHandler(c *gin.Context) {
 // @Router /api/v1/transactions/stats [get]
 func (h *TransactionHandler) TransactionsGeneralStatsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
+	userID, err := utilsctx.GetUserID(ctx)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
+	}
+
 	var flt dto.ChartFilters
 	if err := c.ShouldBindQuery(&flt); err != nil {
 		c.Error(appError.NewAppError(http.StatusBadRequest, err))
 		return
 	}
 
-	response, err := h.service.TransactionsGeneralStats(ctx, flt)
+	response, err := h.service.TransactionsGeneralStats(ctx, userID, flt)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
