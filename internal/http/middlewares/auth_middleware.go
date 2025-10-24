@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Claims, error)) gin.HandlerFunc {
+func AuthMiddleware(log *logger.Logger, validateToken func(context.Context, string) (*domain.Claims, error)) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -36,8 +36,10 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 			return
 		}
 
+		ctx := c.Request.Context()
+
 		token := parts[1]
-		claims, err := validateToken(token)
+		claims, err := validateToken(ctx, token)
 		if err != nil || claims == nil {
 			log.Warn("Invalid token: %v", err)
 			c.JSON(http.StatusUnauthorized, appError.ErrorResponse{
@@ -49,7 +51,7 @@ func AuthMiddleware(log *logger.Logger, validateToken func(string) (*domain.Clai
 		}
 
 		// adiciona o userID no contexto
-		ctx := context.WithValue(c.Request.Context(), utilsctx.UserIDKey, claims.UserID)
+		ctx = context.WithValue(ctx, utilsctx.UserIDKey, claims.UserID)
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()

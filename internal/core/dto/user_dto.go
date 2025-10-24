@@ -17,6 +17,7 @@ type UserRequest struct {
 
 type UserResponse struct {
 	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	IsActive  bool      `json:"is_active"`
@@ -37,6 +38,16 @@ func (r *UserRequest) ToDomain() (*domain.User, error) {
 		r.Username,
 		r.Email,
 		string(passwordHash),
+		r.IsActive,
+	)
+}
+
+func (r *UserResponse) ToDomain() (*domain.User, error) {
+	return domain.NewUser(
+		r.Name,
+		r.Username,
+		r.Email,
+		"unknown", // PasswordHash is not included in the response
 		r.IsActive,
 	)
 }

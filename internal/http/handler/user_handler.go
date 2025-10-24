@@ -54,13 +54,22 @@ func (h *UserHandler) UpdateProfileHandler(c *gin.Context) {
 		return
 	}
 
-	updatedUser, err := h.service.UpdateUserProfile(ctx, userID, req.Name, req.Username)
+	data, err := h.service.GetUser(ctx, userID)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedUser)
+	user, _ := data.ToDomain()
+	user.Name = req.Name
+
+	newData, err := h.service.UpdateUser(ctx, userID, *user)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
+		return
+	}
+
+	c.JSON(http.StatusOK, newData)
 }
 
 // PATCH /api/v1/users/me/password
@@ -115,7 +124,16 @@ func (h *UserHandler) UpdateEmailHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.service.UpdateUserEmail(ctx, userID, req.NewEmail)
+	data, err := h.service.GetUser(ctx, userID)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
+		return
+	}
+
+	user, _ := data.ToDomain()
+	user.Email = req.NewEmail
+
+	_, err = h.service.UpdateUser(ctx, userID, *user)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
@@ -127,7 +145,7 @@ func (h *UserHandler) UpdateEmailHandler(c *gin.Context) {
 }
 
 // DELETE /api/v1/users/me
-func (h *UserHandler) DeactivateAccountHandler(c *gin.Context) {
+func (h *UserHandler) DeactivateUserHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	userID, err := utilsctx.GetUserID(ctx)
 	if err != nil {
@@ -135,33 +153,22 @@ func (h *UserHandler) DeactivateAccountHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeactivateUserAccount(ctx, userID)
+	data, err := h.service.GetUser(ctx, userID)
+	if err != nil {
+		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
+		return
+	}
+
+	user, _ := data.ToDomain()
+	user.IsActive = false
+
+	_, err = h.service.UpdateUser(ctx, userID, *user)
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Account deactivated successfully",
-	})
-}
-
-// POST /api/v1/users/logout
-func (h *UserHandler) LogoutHandler(c *gin.Context) {
-	ctx := c.Request.Context()
-	userID, err := utilsctx.GetUserID(ctx)
-	if err != nil {
-		c.Error(appError.NewAppError(http.StatusUnauthorized, err))
-		return
-	}
-
-	err = h.service.LogoutUser(ctx, userID)
-	if err != nil {
-		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User logged out successfully",
+		"message": "User deactivated successfully",
 	})
 }

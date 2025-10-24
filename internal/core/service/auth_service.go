@@ -38,7 +38,7 @@ func (s *authService) GenerateToken(ctx context.Context, userID uuid.UUID, durat
 	return token.SignedString(config.JwtSecret)
 }
 
-func (s *authService) ValidateToken(tokenString string) (*domain.Claims, error) {
+func (s *authService) ValidateToken(ctx context.Context, tokenString string) (*domain.Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &domain.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Garante que está usando HS256
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -51,13 +51,31 @@ func (s *authService) ValidateToken(tokenString string) (*domain.Claims, error) 
 		return nil, err
 	}
 
-	// Valida claims
-	if claims, ok := token.Claims.(*domain.Claims); ok && token.Valid {
-		if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
-			return nil, appError.ErrTokenExpired
-		}
-		return claims, nil
+	claims, ok := token.Claims.(*domain.Claims)
+	if !ok || !token.Valid {
+		return nil, appError.ErrInvalidToken
 	}
 
-	return nil, appError.ErrInvalidToken
+	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now().UTC()) {
+		return nil, appError.ErrTokenExpired
+	}
+
+	session, err := s.repo.GetUserSessionByToken(ctx, tokenString)
+	if err != nil {
+		return nil, appError.ErrInvalidToken
+	}
+
+	if session == nil || !session.IsActive {
+		return nil, appError.ErrInvalidToken
+	}
+
+	return claims, nil
+}
+
+func (s *authService) CreateUserSession(ctx context.Context, session domain.UserSession) error {
+	return s.repo.CreateUserSession(ctx, session)
+}
+
+func (s *authService) DeleteUserSession(ctx context.Context, session domain.UserSession) error {
+	return s.repo.DeleteUserSession(ctx, session)
 }

@@ -1,15 +1,17 @@
 package handler
 
 import (
+	"context"
+	"fmt"
 	"frog-go/internal/core/domain"
 	"frog-go/internal/core/dto"
-	appError "frog-go/internal/core/errors"
 	"frog-go/internal/core/ports/inbound"
 	"net/http"
 	"net/mail"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -64,34 +66,60 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(ctx, user.ID, time.Hour*1)
+	token, err := h.createTokenAndSession(ctx, user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.LoginResponse{Token: token})
+	c.JSON(http.StatusCreated, *token)
 }
 
 func (h *AuthHandler) Signup(c *gin.Context) {
 	ctx := c.Request.Context()
 	var req dto.UserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	input, err := req.ToDomain()
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusBadRequest, err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	data, err := h.userService.CreateUser(ctx, *input)
+	user, err := h.userService.CreateUser(ctx, *input)
 	if err != nil {
-		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, data)
+	token, err := h.createTokenAndSession(ctx, user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, *token)
+}
+
+func (h *AuthHandler) createTokenAndSession(ctx context.Context, userID uuid.UUID) (*string, error) {
+	duration := time.Hour * 1
+
+	token, err := h.authService.GenerateToken(ctx, userID, duration)
+	if err != nil {
+		return nil, fmt.Errorf("could not generate token")
+	}
+
+	session, err := domain.NewUserSession(userID, token)
+	if err != nil {
+		return nil, fmt.Errorf("could not generate user session")
+	}
+
+	if err := h.authService.CreateUserSession(ctx, *session); err != nil {
+		return nil, fmt.Errorf("could not create user session")
+	}
+
+	return &token, nil
 }

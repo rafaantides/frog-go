@@ -43,14 +43,16 @@ type UploadService interface {
 
 type AuthService interface {
 	GenerateToken(ctx context.Context, userID uuid.UUID, duration time.Duration) (string, error)
-	ValidateToken(tokenString string) (*domain.Claims, error)
+	CreateUserSession(ctx context.Context, session domain.UserSession) error
+	ValidateToken(ctx context.Context, tokenString string) (*domain.Claims, error)
 }
 
 type UserService interface {
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
 
-	CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error)
+	CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error)
+	UpdateUser(ctx context.Context, userID uuid.UUID, input domain.User)  (*dto.UserResponse, error)
 	UpdateUserPassword(ctx context.Context, userID uuid.UUID, oldPassword string, newPassword string) error
 }

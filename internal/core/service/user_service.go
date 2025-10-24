@@ -15,6 +15,8 @@ type userService struct {
 	repo repository.Repository
 }
 
+// TODO: Implement the methods
+
 func NewUserService(repo repository.Repository) inbound.UserService {
 	return &userService{repo: repo}
 }
@@ -27,11 +29,15 @@ func (s *userService) GetUserByUsername(ctx context.Context, username string) (*
 	return s.repo.GetUserByUsername(ctx, username)
 }
 
+func (s *userService) GetUser(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error) {
+	return nil, nil
+}
+
 func (s *userService) CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error) {
 	return nil, nil
 }
 
-func (s *userService) GetUser(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error) {
+func (s *userService) UpdateUser(ctx context.Context, userID uuid.UUID, input domain.User) (*dto.UserResponse, error) {
 	return nil, nil
 }
 

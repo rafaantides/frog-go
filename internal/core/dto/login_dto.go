@@ -5,6 +5,3 @@ type LoginRequest struct {
 	Password   string `json:"password" binding:"required"`
 }
 
-type LoginResponse struct {
-	Token string `json:"token"`
-}

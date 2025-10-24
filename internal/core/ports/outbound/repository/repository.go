@@ -38,4 +38,8 @@ type Repository interface {
 
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*domain.User, error)
+
+	GetUserSessionByToken(ctx context.Context, token string) (*domain.UserSession, error)
+	CreateUserSession(ctx context.Context, session domain.UserSession) error
+	DeleteUserSession(ctx context.Context, session domain.UserSession) error
 }
