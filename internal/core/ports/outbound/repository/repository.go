@@ -12,12 +12,12 @@ import (
 type Repository interface {
 	Close()
 
-	GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.CategoryResponse, error)
+	GetCategoryByID(ctx context.Context, id uuid.UUID) (*domain.Category, error)
 	GetCategoryIDByName(ctx context.Context, name *string) (*uuid.UUID, error)
-	CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error)
-	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error)
+	CreateCategory(ctx context.Context, input domain.Category) (*domain.Category, error)
+	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*domain.Category, error)
 	DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
-	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, error)
+	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]domain.Category, error)
 	CountCategories(ctx context.Context, pgn *pagination.Pagination) (int, error)
 
 	GetTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.TransactionResponse, error)

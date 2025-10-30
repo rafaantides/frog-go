@@ -214,11 +214,11 @@ func applyInvoiceFilters(query *ent.InvoiceQuery, flt dto.InvoiceFilters, pgn *p
 		)
 	}
 
-	if t := utils.ToDateTimeUnsafe(flt.StartDate); t != nil {
+	if t := utils.ToNillableDateTimeUnsafe(flt.StartDate); t != nil {
 		query = query.Where(invoice.DueDateGTE(*t))
 	}
 
-	if t := utils.ToDateTimeUnsafe(flt.EndDate); t != nil {
+	if t := utils.ToNillableDateTimeUnsafe(flt.EndDate); t != nil {
 		query = query.Where(invoice.DueDateLTE(*t))
 	}
 

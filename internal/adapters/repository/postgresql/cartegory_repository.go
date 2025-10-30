@@ -4,7 +4,6 @@ import (
 	"context"
 	"frog-go/internal/config"
 	"frog-go/internal/core/domain"
-	"frog-go/internal/core/dto"
 	appError "frog-go/internal/core/errors"
 	"frog-go/internal/ent"
 	"frog-go/internal/ent/category"
@@ -15,7 +14,7 @@ import (
 
 const categoryEntity = "categories"
 
-func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.CategoryResponse, error) {
+func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*domain.Category, error) {
 	row, err := p.Client.Category.Get(ctx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -23,7 +22,7 @@ func (p *PostgreSQL) GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.Ca
 		}
 		return nil, appError.FailedToFind(categoryEntity, err)
 	}
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
+	return domain.NewCategory(&row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage, &row.CreatedAt, &row.UpdatedAt)
 }
 
 func (p *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uuid.UUID, error) {
@@ -43,7 +42,7 @@ func (p *PostgreSQL) GetCategoryIDByName(ctx context.Context, name *string) (*uu
 	return &id, nil
 }
 
-func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error) {
+func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) (*domain.Category, error) {
 	row, err := p.Client.Category.
 		Create().
 		SetName(input.Name).
@@ -56,10 +55,10 @@ func (p *PostgreSQL) CreateCategory(ctx context.Context, input domain.Category) 
 		return nil, appError.FailedToSave(categoryEntity, err)
 	}
 
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
+	return domain.NewCategory(&row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage, &row.CreatedAt, &row.UpdatedAt)
 }
 
-func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error) {
+func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*domain.Category, error) {
 	row, err := p.Client.Category.
 		UpdateOneID(id).
 		SetName(input.Name).
@@ -75,7 +74,7 @@ func (p *PostgreSQL) UpdateCategory(ctx context.Context, id uuid.UUID, input dom
 		return nil, appError.FailedToUpdate(categoryEntity, err)
 	}
 
-	return dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage), nil
+	return domain.NewCategory(&row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage, &row.CreatedAt, &row.UpdatedAt)
 }
 
 func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error {
@@ -89,7 +88,7 @@ func (p *PostgreSQL) DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (p *PostgreSQL) ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, error) {
+func (p *PostgreSQL) ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]domain.Category, error) {
 	query := p.Client.Category.Query()
 	query = applyCategoryFilters(query, pgn)
 
@@ -103,12 +102,13 @@ func (p *PostgreSQL) ListCategories(ctx context.Context, pgn *pagination.Paginat
 
 	rows, err := query.All(ctx)
 	if err != nil {
-		return []dto.CategoryResponse{}, err
+		return []domain.Category{}, err
 	}
 
-	response := make([]dto.CategoryResponse, 0, len(rows))
+	response := make([]domain.Category, 0, len(rows))
 	for _, row := range rows {
-		response = append(response, *dto.NewCategoryResponse(row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage))
+		category, _ := domain.NewCategory(&row.ID, row.Name, row.Description, row.Color, row.SuggestedPercentage, &row.CreatedAt, &row.UpdatedAt)
+		response = append(response, *category)
 	}
 	return response, nil
 

@@ -32,6 +32,6 @@ func NewCategoryResponse(id uuid.UUID, name string, description, color *string, 
 }
 
 func (r *CategoryRequest) ToDomain() (*domain.Category, error) {
-	return domain.NewCategory(r.Name, r.Description, r.Color, r.SuggestedPercentage)
+	return domain.NewCategory(nil, r.Name, r.Description, r.Color, r.SuggestedPercentage, nil, nil)
 
 }

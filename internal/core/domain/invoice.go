@@ -9,14 +9,14 @@ import (
 )
 
 type Invoice struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
-	Title     string    `json:"title"`
-	Amount    float64   `json:"amount"`
-	DueDate   time.Time `json:"due_date"`
-	Status    TxnStatus `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	Title     string
+	Amount    float64
+	DueDate   time.Time
+	Status    TxnStatus
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func NewInvoice(

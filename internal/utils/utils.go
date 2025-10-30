@@ -81,8 +81,8 @@ func ToDateTime(dateStr string) (time.Time, error) {
 	return parseDate(dateStr)
 }
 
-// ToDateTimeUnsafe: retorna *time.Time sem erro, nil se inválido
-func ToDateTimeUnsafe(dateStr *string) *time.Time {
+// ToNillableDateTimeUnsafe: retorna *time.Time sem erro, nil se inválido
+func ToNillableDateTimeUnsafe(dateStr *string) *time.Time {
 	if dateStr == nil || *dateStr == "" {
 		return nil
 	}
@@ -130,4 +130,18 @@ func FormatDuration(d time.Duration) string {
 
 func HashPassword(password string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
+func TimeOrNow(date *time.Time) time.Time {
+	if date == nil {
+		return time.Now()
+	}
+	return *date
+}
+
+func UUIDOrZero(id *uuid.UUID) uuid.UUID {
+	if id == nil {
+		return uuid.UUID{}
+	}
+	return *id
 }

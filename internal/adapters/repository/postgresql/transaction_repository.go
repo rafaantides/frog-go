@@ -506,11 +506,11 @@ func applyTransactionFilters(query *ent.TransactionQuery, flt dto.TransactionFil
 		)
 	}
 
-	if t := utils.ToDateTimeUnsafe(flt.StartDate); t != nil {
+	if t := utils.ToNillableDateTimeUnsafe(flt.StartDate); t != nil {
 		query = query.Where(transaction.RecordDateGTE(*t))
 	}
 
-	if t := utils.ToDateTimeUnsafe(flt.EndDate); t != nil {
+	if t := utils.ToNillableDateTimeUnsafe(flt.EndDate); t != nil {
 		query = query.Where(transaction.RecordDateLTE(*t))
 	}
 
