@@ -20,20 +20,20 @@ type Repository interface {
 	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]domain.Category, error)
 	CountCategories(ctx context.Context, pgn *pagination.Pagination) (int, error)
 
-	GetTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.TransactionResponse, error)
-	CreateTransaction(ctx context.Context, userID uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
-	UpdateTransaction(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Transaction) (*dto.TransactionResponse, error)
+	GetTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*domain.Transaction, error)
+	CreateTransaction(ctx context.Context, userID uuid.UUID, input domain.Transaction) (*domain.Transaction, error)
+	UpdateTransaction(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Transaction) (*domain.Transaction, error)
 	DeleteTransactionByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error
-	ListTransactions(ctx context.Context, userID uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]dto.TransactionResponse, error)
+	ListTransactions(ctx context.Context, userID uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) ([]domain.Transaction, error)
 	CountTransactions(ctx context.Context, userID uuid.UUID, flt dto.TransactionFilters, pgn *pagination.Pagination) (int, error)
 	TransactionsSummary(ctx context.Context, userID uuid.UUID, flt dto.ChartFilters) ([]dto.SummaryByDate, error)
 	TransactionsGeneralStats(ctx context.Context, userID uuid.UUID, flt dto.ChartFilters) (*dto.TransactionStatsSummary, error)
 
-	GetInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*dto.InvoiceResponse, error)
-	CreateInvoice(ctx context.Context, userID uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
-	UpdateInvoice(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Invoice) (*dto.InvoiceResponse, error)
+	GetInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) (*domain.Invoice, error)
+	CreateInvoice(ctx context.Context, userID uuid.UUID, input domain.Invoice) (*domain.Invoice, error)
+	UpdateInvoice(ctx context.Context, userID uuid.UUID, id uuid.UUID, input domain.Invoice) (*domain.Invoice, error)
 	DeleteInvoiceByID(ctx context.Context, userID uuid.UUID, id uuid.UUID) error
-	ListInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]dto.InvoiceResponse, error)
+	ListInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) ([]domain.Invoice, error)
 	CountInvoices(ctx context.Context, userID uuid.UUID, flt dto.InvoiceFilters, pgn *pagination.Pagination) (int, error)
 
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)

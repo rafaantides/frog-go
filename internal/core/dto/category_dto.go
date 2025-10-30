@@ -21,14 +21,22 @@ type CategoryResponse struct {
 	SuggestedPercentage *int      `json:"suggested_percentage"`
 }
 
-func NewCategoryResponse(id uuid.UUID, name string, description, color *string, suggestedPercentage *int) *CategoryResponse {
-	return &CategoryResponse{
-		ID:                  id,
-		Name:                name,
-		Description:         description,
-		Color:               color,
-		SuggestedPercentage: suggestedPercentage,
+func DomainToCategoryResponse(data domain.Category) CategoryResponse {
+	return CategoryResponse{
+		ID:                  data.ID,
+		Name:                data.Name,
+		Description:         data.Description,
+		Color:               data.Color,
+		SuggestedPercentage: data.SuggestedPercentage,
 	}
+}
+
+func DomainToCategoryResponseList(domains []domain.Category) []CategoryResponse {
+	responses := make([]CategoryResponse, len(domains))
+	for i, d := range domains {
+		responses[i] = DomainToCategoryResponse(d)
+	}
+	return responses
 }
 
 func (r *CategoryRequest) ToDomain() (*domain.Category, error) {

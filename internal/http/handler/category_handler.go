@@ -52,7 +52,7 @@ func (h *CategoryHandler) CreateCategoryHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, data)
+	c.JSON(http.StatusCreated, dto.DomainToCategoryResponse(*data))
 }
 
 // GetCategoryByIDHandler godoc
@@ -83,7 +83,7 @@ func (h *CategoryHandler) GetCategoryByIDHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, dto.DomainToCategoryResponse(*data))
 }
 
 // ListCategorysHandler godoc
@@ -121,7 +121,7 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 
 	fmt.Printf("%v", pgn)
 
-	response, total, err := h.service.ListCategories(ctx, pgn)
+	data, total, err := h.service.ListCategories(ctx, pgn)
 
 	if err != nil {
 		c.Error(appError.NewAppError(http.StatusInternalServerError, err))
@@ -129,8 +129,7 @@ func (h *CategoryHandler) ListCategorysHandler(c *gin.Context) {
 	}
 
 	pgn.SetPaginationHeaders(c, total)
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, dto.DomainToCategoryResponseList(data))
 }
 
 // UpdateCategoryHandler godoc
@@ -170,7 +169,7 @@ func (h *CategoryHandler) UpdateCategoryHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, dto.DomainToCategoryResponse(*data))
 }
 
 // DeleteCategoryHandler godoc

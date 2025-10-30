@@ -12,11 +12,11 @@ import (
 )
 
 type CategoryService interface {
-	GetCategoryByID(ctx context.Context, id uuid.UUID) (*dto.CategoryResponse, error)
-	CreateCategory(ctx context.Context, input domain.Category) (*dto.CategoryResponse, error)
-	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*dto.CategoryResponse, error)
+	GetCategoryByID(ctx context.Context, id uuid.UUID) (*domain.Category, error)
+	CreateCategory(ctx context.Context, input domain.Category) (*domain.Category, error)
+	UpdateCategory(ctx context.Context, id uuid.UUID, input domain.Category) (*domain.Category, error)
 	DeleteCategoryByID(ctx context.Context, id uuid.UUID) error
-	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]dto.CategoryResponse, int, error)
+	ListCategories(ctx context.Context, pgn *pagination.Pagination) ([]domain.Category, int, error)
 }
 
 type TransactionService interface {
@@ -53,6 +53,6 @@ type UserService interface {
 
 	GetUser(ctx context.Context, userID uuid.UUID) (*dto.UserResponse, error)
 	CreateUser(ctx context.Context, input domain.User) (*dto.UserResponse, error)
-	UpdateUser(ctx context.Context, userID uuid.UUID, input domain.User)  (*dto.UserResponse, error)
+	UpdateUser(ctx context.Context, userID uuid.UUID, input domain.User) (*dto.UserResponse, error)
 	UpdateUserPassword(ctx context.Context, userID uuid.UUID, oldPassword string, newPassword string) error
 }
